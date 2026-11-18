@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+package-lock.json
+docs/assets/
+.freebuff/
+.cloud-attachments/
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.ico

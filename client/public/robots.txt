@@ -1,0 +1,4 @@
+# Development default. The production build regenerates this file with the
+# canonical site URL (see scripts/generate-seo.mjs).
+User-agent: *
+Disallow: /

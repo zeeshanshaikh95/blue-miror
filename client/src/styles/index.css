@@ -1,0 +1,72 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Jost', ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-indigo: #424273;
+  --color-brand-indigo-deep: #26254b;
+  --color-brand-gold: #c0994d;
+  --color-brand-gold-deep: #8a6a2f;
+  --color-brand-gold-800: #6f5526;
+  --color-brand-azure: #077cb3;
+  --color-brand-azure-deep: #05618f;
+  --color-brand-ivory: #f7f4ee;
+  --color-brand-porcelain: #fcfaf6;
+  --color-brand-ink: #23233d;
+  --color-brand-muted: #6b6a80;
+  --color-brand-line: #e6dfd3;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-brand-ivory);
+    color: var(--color-brand-ink);
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    background-color: var(--color-brand-ivory);
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :target {
+    scroll-margin-top: 8rem;
+  }
+
+  ::selection {
+    background-color: var(--color-brand-gold);
+    color: var(--color-brand-indigo-deep);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-azure);
+    outline-offset: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
