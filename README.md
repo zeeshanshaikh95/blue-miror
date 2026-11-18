@@ -2,7 +2,7 @@
 
 A premium public website and secure admin platform for **Blue Miror**, an aesthetic clinic.
 
-> **Status: Phase 3 — Public website complete.** The responsive public experience, design system, API-driven treatment pages and tests are in place. Authentication, admin CRUD, booking persistence and deployment are not implemented yet. **Nothing has been deployed.**
+> **Status: frontend preview deployed.** The public website, admin platform, API, authentication and booking persistence are implemented. The static frontend is live at <https://zeeshanshaikh95.github.io/blue-miror/> via GitHub Pages. The API and MongoDB are not hosted yet, so data-driven sections display their error states until `VITE_API_BASE_URL` points at a deployed API.
 
 ---
 
@@ -51,7 +51,21 @@ VITE_ALLOW_INDEXING="false" \
 npm run build
 ```
 
-Current coverage: 38 tests — 20 client and 18 server.
+Current coverage: 85 client tests across 17 files, plus the server suite. Run `npm run verify` for the full gate.
+
+---
+
+## Deployment
+
+The public site is deployed to GitHub Pages by [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml) on every push to `main`.
+
+- Live URL: <https://zeeshanshaikh95.github.io/blue-miror/>
+- The build runs with `VITE_BASE=/blue-miror/` so assets and client-side routes resolve under the project sub-path.
+- Repository variables (Settings → Secrets and variables → Actions → Variables):
+  - `VITE_API_BASE_URL` — deployed API URL including `/api`; without it the build defaults to `http://localhost:4000/api`.
+  - `VITE_CLOUDINARY_CLOUD_NAME` — optional, for responsive image delivery.
+- The Express API and MongoDB still need a host (for example Render + MongoDB Atlas). Set `VITE_API_BASE_URL` and re-run the workflow once they are live. Until then, API-driven sections show their normal error states.
+- Indexing stays disabled (`VITE_ALLOW_INDEXING=false`) until clinic-approved content is supplied.
 
 ---
 
