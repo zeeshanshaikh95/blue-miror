@@ -1,0 +1,54 @@
+# Render Blueprint — Blue Miror API
+#
+# Deploy: Render dashboard -> New -> Blueprint -> connect this repo.
+# Render reads this file and creates the web service below.
+#
+# After the service is created, fill in the env vars marked sync:false in the
+# Render dashboard (Settings -> Environment). Then run the admin bootstrap once
+# (see docs/setup.md) and rotate/remove ADMIN_BOOTSTRAP_SECRET.
+
+services:
+  - type: web
+    name: blue-miror-api
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: npm ci && npm run build --workspace server
+    startCommand: node server/dist/server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: LOG_LEVEL
+        value: info
+      - key: TRUST_PROXY
+        value: "true"
+      - key: REQUEST_BODY_LIMIT
+        value: 100kb
+      - key: NODE_VERSION
+        value: "22"
+      - key: ADMIN_SESSION_TTL_MINUTES
+        value: "60"
+      - key: JWT_ISSUER
+        value: blue-miror-api
+      - key: JWT_AUDIENCE
+        value: blue-miror-admin
+      - key: CLOUDINARY_FOLDER_PREFIX
+        value: blue-miror
+      # --- secrets (fill in the Render dashboard) ---
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_BOOTSTRAP_SECRET
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
