@@ -18,7 +18,6 @@ import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ServiceCard } from '@/components/ui/ServiceCard';
 import { TestimonialMarquee } from '@/components/ui/TestimonialMarquee';
 import {
-  useFaqs,
   useGallery,
   useProducts,
   useServices,
@@ -49,10 +48,8 @@ export function HomePage() {
   const servicesQuery = useServices({ featured: true, limit: 3 });
   const productsQuery = useProducts({ featured: true, limit: 3 });
   const galleryQuery = useGallery();
-  const faqsQuery = useFaqs();
   const testimonialsQuery = useTestimonials();
   const galleryItems = galleryQuery.data?.items.slice(0, 4) ?? [];
-  const faqs = faqsQuery.data?.items.slice(0, 4) ?? [];
   const testimonials = testimonialsQuery.data?.items ?? [];
   const settingsQuery = useSiteSettings();
   const homepage = settingsQuery.data?.homepage;
@@ -401,79 +398,26 @@ export function HomePage() {
         </section>
       )}
 
-      {homepage?.showFaqs === false ? null : (
-        <section className="py-16 sm:py-20 lg:py-24">
-          <Container className="grid gap-12 lg:grid-cols-[0.78fr_1.22fr] lg:gap-20">
-            <div className="min-w-0">
-              <Eyebrow>Questions</Eyebrow>
-              <h2 className="mt-5 max-w-md font-display text-[clamp(2.5rem,4.8vw,4rem)] leading-[0.96] text-brand-indigo">
-                A little more clarity.
-              </h2>
-              <p className="mt-6 max-w-sm text-sm leading-7 text-brand-muted">
-                The questions we expect to shape the visit. Every answer will be reviewed by the
-                clinic before the website goes live.
-              </p>
+      {homepage?.showFaqs === false || testimonials.length === 0 ? null : (
+        <section className="border-y border-brand-line bg-brand-porcelain py-16 sm:py-20 lg:py-24">
+          <Container>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <Eyebrow>Client stories</Eyebrow>
+                <h2 className="mt-4 font-display text-[clamp(2.5rem,4.8vw,4rem)] leading-[0.96] text-brand-indigo">
+                  Kind words, <em className="text-brand-gold-deep">shared</em>.
+                </h2>
+              </div>
               <Link
-                to="/faqs"
-                className="mt-6 inline-flex items-center gap-2 border-b border-brand-gold pb-1 text-[0.67rem] font-medium tracking-[0.18em] text-brand-indigo uppercase transition-colors hover:text-brand-gold-deep"
+                to="/testimonials"
+                className="inline-flex shrink-0 items-center gap-2 border-b border-brand-gold pb-1 text-[0.67rem] font-medium tracking-[0.18em] text-brand-indigo uppercase transition-colors hover:text-brand-gold-deep"
               >
-                All FAQs
+                All stories
                 <ArrowUpRight aria-hidden="true" size={15} strokeWidth={1.5} />
               </Link>
             </div>
 
-            <div className="min-w-0">
-              {faqsQuery.isPending ? (
-                <div
-                  className="space-y-4"
-                  role="status"
-                  aria-label="Loading frequently asked questions"
-                >
-                  {Array.from({ length: 4 }).map((_, index) => (
-                    <div
-                      key={index}
-                      className="h-14 animate-pulse border-b border-brand-line bg-brand-line/40"
-                    />
-                  ))}
-                </div>
-              ) : null}
-              {faqsQuery.isError ? (
-                <ErrorState
-                  title="FAQs could not be loaded"
-                  message="Please try again or explore the contact page."
-                  onRetry={() => void faqsQuery.refetch()}
-                />
-              ) : null}
-              {faqs.length > 0 ? (
-                <div className="border-t border-brand-line">
-                  {faqs.map((faq) => (
-                    <Link
-                      key={faq.id}
-                      to="/faqs"
-                      className="group flex items-start justify-between gap-6 border-b border-brand-line py-5"
-                    >
-                      <span className="font-display text-xl leading-snug text-brand-indigo transition-colors group-hover:text-brand-gold-deep sm:text-2xl">
-                        {faq.question}
-                      </span>
-                      <ArrowUpRight
-                        aria-hidden="true"
-                        className="mt-1 shrink-0 text-brand-gold-deep"
-                        size={17}
-                        strokeWidth={1.5}
-                      />
-                    </Link>
-                  ))}
-                </div>
-              ) : null}
-
-              {!faqsQuery.isPending && !faqsQuery.isError && faqs.length === 0 ? (
-                <EmptyState eyebrow="Coming soon" title="Questions are being prepared">
-                  The clinic FAQ will appear here once the answers have been reviewed and approved.
-                </EmptyState>
-              ) : null}
-
-              <TestimonialMarquee testimonials={testimonials} />
-            </div>
+            <TestimonialMarquee testimonials={testimonials} showHeader={false} />
           </Container>
         </section>
       )}

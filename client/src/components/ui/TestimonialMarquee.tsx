@@ -4,6 +4,8 @@ import type { PublicTestimonial } from '@/services/public-content';
 
 type TestimonialMarqueeProps = {
   testimonials: PublicTestimonial[];
+  /** When false the internal heading row is hidden; the parent supplies one. */
+  showHeader?: boolean;
 };
 
 /**
@@ -12,7 +14,7 @@ type TestimonialMarqueeProps = {
  * technology. Hovering pauses the animation, and reduced-motion users get a
  * static row.
  */
-export function TestimonialMarquee({ testimonials }: TestimonialMarqueeProps) {
+export function TestimonialMarquee({ testimonials, showHeader = true }: TestimonialMarqueeProps) {
   if (testimonials.length === 0) return null;
 
   // Repeat the set so the track is always wider than the viewport, then double
@@ -22,20 +24,26 @@ export function TestimonialMarquee({ testimonials }: TestimonialMarqueeProps) {
   const loop = [...half, ...half];
 
   return (
-    <div className="mt-10">
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-[0.62rem] tracking-[0.18em] text-brand-gold-deep uppercase">
-          Client stories
-        </p>
-        <Link
-          to="/testimonials"
-          className="text-[0.6rem] font-medium tracking-[0.14em] text-brand-indigo uppercase underline decoration-brand-gold/60 underline-offset-4 transition-colors hover:text-brand-gold-deep"
-        >
-          All stories
-        </Link>
-      </div>
+    <div className={showHeader ? 'mt-10' : 'mt-12'}>
+      {showHeader ? (
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-[0.62rem] tracking-[0.18em] text-brand-gold-deep uppercase">
+            Client stories
+          </p>
+          <Link
+            to="/testimonials"
+            className="text-[0.6rem] font-medium tracking-[0.14em] text-brand-indigo uppercase underline decoration-brand-gold/60 underline-offset-4 transition-colors hover:text-brand-gold-deep"
+          >
+            All stories
+          </Link>
+        </div>
+      ) : null}
 
-      <div className="relative mt-4 overflow-hidden border-y border-brand-line py-4">
+      <div
+        className={`relative overflow-hidden border-y border-brand-line py-4 ${
+          showHeader ? 'mt-4' : ''
+        }`}
+      >
         <div className="marquee-track flex w-max gap-4">
           {loop.map((testimonial, index) => (
             <figure

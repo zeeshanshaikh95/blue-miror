@@ -1112,7 +1112,7 @@ function SettingsForm({ settings }: { settings: AdminSettings | null }) {
             [
               ['showFeatured', 'Show featured treatments'],
               ['showGallery', 'Show the gallery preview'],
-              ['showFaqs', 'Show the FAQ preview'],
+              ['showFaqs', 'Show client stories'],
             ] as const
           ).map(([key, label]) => (
             <Checkbox
