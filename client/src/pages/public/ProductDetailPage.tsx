@@ -9,7 +9,6 @@ import { Container } from '@/components/ui/Container';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Eyebrow } from '@/components/ui/Eyebrow';
-import { PageHero } from '@/components/ui/PageHero';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { useProduct } from '@/hooks/use-public-content';
 import { ApiError } from '@/lib/api-client';
@@ -22,7 +21,7 @@ export function ProductDetailPage() {
     return (
       <>
         <Seo title="Loading product" noindex />
-        <section className="py-20 sm:py-28">
+        <section className="py-16 sm:py-20">
           <Container>
             <LoadingState label="Loading product" cards={1} />
           </Container>
@@ -76,16 +75,15 @@ export function ProductDetailPage() {
   }
 
   const product = productQuery.data;
+  const paragraphs =
+    product.description.length > 0 ? product.description : [product.shortDescription];
 
   return (
     <>
-      <Seo
-        title={product.name}
-        description={product.shortDescription}
-      />
+      <Seo title={product.name} description={product.shortDescription} />
 
-      <PageHero
-        breadcrumbs={
+      <section className="py-10 sm:py-14">
+        <Container>
           <Breadcrumbs
             items={[
               { label: 'Home', to: '/' },
@@ -93,81 +91,118 @@ export function ProductDetailPage() {
               { label: product.name },
             ]}
           />
-        }
-        eyebrow={product.brand ?? product.category}
-        title={product.name}
-        intro={product.shortDescription}
-        aside={
-          <div className="border border-brand-line bg-brand-porcelain p-5">
-            {product.imageUrl ? (
-              <img
-                src={product.imageUrl}
-                alt={product.brand ? `${product.name} by ${product.brand}` : product.name}
-                loading="lazy"
-                decoding="async"
-                className="aspect-[4/5] w-full border border-brand-line object-cover"
-              />
-            ) : null}
 
-            <dl className="mt-5 space-y-3 text-sm">
-              {product.brand ? (
-                <div className="flex items-center justify-between gap-3 border-b border-brand-line pb-3">
-                  <dt className="text-[0.62rem] tracking-[0.14em] text-brand-muted uppercase">
+          <div className="mt-8 grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start lg:gap-16">
+            <div className="group relative">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -inset-2 border border-brand-gold/25 transition-colors duration-500 group-hover:border-brand-gold/50"
+              />
+              <div className="relative overflow-hidden border border-brand-line bg-brand-porcelain p-3">
+                {product.imageUrl ? (
+                  <img
+                    src={product.imageUrl}
+                    alt={product.brand ? `${product.name} by ${product.brand}` : product.name}
+                    loading="eager"
+                    decoding="async"
+                    className="aspect-[4/5] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+                  />
+                ) : (
+                  <div className="grid aspect-[4/5] w-full place-items-center bg-brand-indigo-deep">
+                    <span className="font-display text-6xl text-brand-gold">
+                      {product.name.charAt(0)}
+                    </span>
+                  </div>
+                )}
+
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-3 ring-1 ring-inset ring-brand-ivory/20"
+                />
+
+                {product.isFeatured ? (
+                  <span className="absolute top-6 left-6 border border-brand-gold/60 bg-brand-ivory/95 px-3 py-1.5 text-[0.58rem] font-medium tracking-[0.16em] text-brand-indigo uppercase">
+                    Popular
+                  </span>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="lg:pt-2">
+              <Eyebrow>{product.brand ?? product.category}</Eyebrow>
+              <h1 className="mt-4 font-display text-[clamp(2.4rem,4.8vw,3.8rem)] leading-[0.98] text-brand-indigo">
+                {product.name}
+              </h1>
+              <p className="mt-5 max-w-xl text-base leading-8 text-brand-muted">
+                {product.shortDescription}
+              </p>
+
+              <dl className="mt-8 grid grid-cols-2 gap-x-8 gap-y-4 border-y border-brand-line py-5 text-sm">
+                <div>
+                  <dt className="text-[0.58rem] tracking-[0.16em] text-brand-muted uppercase">
+                    Category
+                  </dt>
+                  <dd className="mt-1 font-medium text-brand-indigo">{product.category}</dd>
+                </div>
+                <div>
+                  <dt className="text-[0.58rem] tracking-[0.16em] text-brand-muted uppercase">
                     Brand
                   </dt>
-                  <dd className="font-medium text-brand-indigo">{product.brand}</dd>
+                  <dd className="mt-1 font-medium text-brand-indigo">{product.brand ?? '—'}</dd>
                 </div>
-              ) : null}
-              {product.size ? (
-                <div className="flex items-center justify-between gap-3 border-b border-brand-line pb-3">
-                  <dt className="text-[0.62rem] tracking-[0.14em] text-brand-muted uppercase">
+                <div>
+                  <dt className="text-[0.58rem] tracking-[0.16em] text-brand-muted uppercase">
                     Size
                   </dt>
-                  <dd className="font-medium text-brand-indigo">{product.size}</dd>
+                  <dd className="mt-1 font-medium text-brand-indigo">{product.size ?? '—'}</dd>
                 </div>
-              ) : null}
-              <div className="flex items-center justify-between gap-3">
-                <dt className="text-[0.62rem] tracking-[0.14em] text-brand-muted uppercase">
-                  Price
-                </dt>
-                <dd className="font-medium text-brand-gold-deep">
-                  {product.price ?? 'Ask in salon'}
-                </dd>
-              </div>
-            </dl>
+                <div>
+                  <dt className="text-[0.58rem] tracking-[0.16em] text-brand-muted uppercase">
+                    Price
+                  </dt>
+                  <dd className="mt-1 font-medium text-brand-gold-deep">
+                    {product.price ?? 'Ask in salon'}
+                  </dd>
+                </div>
+              </dl>
 
-            <div className="mt-5">
-              <BookingLink />
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <BookingLink
+                  serviceName={product.name}
+                  label="Enquire about this product"
+                />
+                <ButtonLink to="/products" variant="secondary">
+                  Back to products
+                </ButtonLink>
+              </div>
+
+              <p className="mt-4 max-w-md text-xs leading-6 text-brand-muted">
+                Availability, shades and pricing are confirmed in the salon or over WhatsApp.
+              </p>
             </div>
           </div>
-        }
-      />
 
-      <section className="py-12 sm:py-16 lg:py-20">
-        <Container>
-          <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_19rem] lg:gap-16">
+          <div className="mt-16 grid gap-12 border-t border-brand-line pt-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-16">
             <div>
               <section aria-labelledby="product-overview-heading">
                 <Eyebrow>About the product</Eyebrow>
                 <h2
                   id="product-overview-heading"
-                  className="mt-4 font-display text-[clamp(2.1rem,4vw,3.3rem)] leading-[0.99] text-brand-indigo"
+                  className="mt-4 font-display text-[clamp(2rem,3.6vw,3rem)] leading-[1] text-brand-indigo"
                 >
                   Why we work with it.
                 </h2>
                 <div className="mt-6 space-y-5 text-base leading-8 text-brand-muted">
-                  {(product.description.length > 0 ? product.description : [product.shortDescription]).map(
-                    (paragraph) => (
-                      <p key={paragraph}>{paragraph}</p>
-                    ),
-                  )}
+                  {paragraphs.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
                 </div>
               </section>
 
               {product.features.length > 0 ? (
                 <section
                   aria-labelledby="product-features-heading"
-                  className="mt-14 border-t border-brand-line pt-10"
+                  className="mt-12 border-t border-brand-line pt-10"
                 >
                   <Eyebrow>Product features</Eyebrow>
                   <h2
@@ -176,14 +211,17 @@ export function ProductDetailPage() {
                   >
                     The details that matter.
                   </h2>
-                  <ul className="mt-6 space-y-3">
+                  <ul className="mt-6 grid gap-3 sm:grid-cols-2">
                     {product.features.map((feature) => (
-                      <li key={feature} className="flex gap-3 text-sm leading-7 text-brand-muted">
+                      <li
+                        key={feature}
+                        className="flex gap-3 border border-brand-line bg-brand-porcelain p-4 text-sm leading-6 text-brand-muted"
+                      >
                         <Check
                           aria-hidden="true"
-                          className="mt-1.5 shrink-0 text-brand-gold-deep"
+                          className="mt-0.5 shrink-0 text-brand-gold-deep"
                           size={16}
-                          strokeWidth={1.5}
+                          strokeWidth={1.6}
                         />
                         {feature}
                       </li>
@@ -191,32 +229,23 @@ export function ProductDetailPage() {
                   </ul>
                 </section>
               ) : null}
-
-              <section className="mt-14 border-t border-brand-line pt-10">
-                <Eyebrow>Availability</Eyebrow>
-                <h2 className="mt-4 font-display text-3xl leading-tight text-brand-indigo sm:text-4xl">
-                  Shown in the salon, confirmed in person.
-                </h2>
-                <p className="mt-4 max-w-2xl text-sm leading-7 text-brand-muted">
-                  Shades, stock and pricing are confirmed at your visit or over WhatsApp. Ask us
-                  about the product you are interested in and we will check availability for you.
-                </p>
-                <div className="mt-6">
-                  <BookingLink />
-                </div>
-              </section>
             </div>
 
-            <aside className="lg:pt-2">
+            <aside className="lg:sticky lg:top-28 lg:self-start">
               <div className="border border-brand-line bg-brand-porcelain p-5">
-                <p className="text-[0.62rem] tracking-[0.16em] text-brand-muted uppercase">
-                  Product category
+                <p className="text-[0.58rem] tracking-[0.16em] text-brand-muted uppercase">
+                  Ask about this product
                 </p>
-                <p className="mt-2 font-display text-xl text-brand-indigo">{product.category}</p>
-                <div className="mt-5">
-                  <ButtonLink to="/products" variant="secondary">
-                    Back to products
-                  </ButtonLink>
+                <p className="mt-2 font-display text-xl leading-snug text-brand-indigo">
+                  Check shades and availability with us.
+                </p>
+                <div className="mt-4">
+                  <BookingLink
+                    serviceName={product.name}
+                    label="Enquire on WhatsApp"
+                    variant="secondary"
+                    className="w-full"
+                  />
                 </div>
               </div>
             </aside>
