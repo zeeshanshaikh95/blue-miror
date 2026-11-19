@@ -11,7 +11,7 @@ services:
   - type: web
     name: blue-miror-api
     runtime: node
-    plan: starter
+    plan: free
     region: oregon
     buildCommand: npm ci && npm run build --workspace server
     startCommand: node server/dist/server.js
