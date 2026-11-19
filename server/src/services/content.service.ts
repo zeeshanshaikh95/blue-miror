@@ -31,6 +31,8 @@ export type PublicServiceSummary = {
   isPlaceholder: false;
   /** Delivery URL for the uploaded treatment image, null when none is set. */
   imageUrl: string | null;
+  /** Published price line, null when the clinic has not supplied one. */
+  price: string | null;
   visual: 'arch' | 'orbit' | 'drape' | 'horizon' | 'bloom' | 'column';
 };
 
@@ -215,6 +217,7 @@ export async function findServices(filters: ServiceFilters = {}): Promise<{
           isFeatured: 1,
           isPlaceholder: { $literal: false },
           visual: 1,
+          price: { $ifNull: ['$price', null] },
           imageUrl: { $ifNull: ['$image.url', null] },
           imagePublicId: '$image.publicId',
         },
@@ -278,6 +281,7 @@ export async function findServiceBySlug(slug: string): Promise<PublicServiceDeta
     visual: doc.visual,
     imageUrl:
       buildCloudinaryImageUrl(doc.image?.publicId, { width: 1200 }) ?? doc.image?.url ?? null,
+    price: doc.price ?? null,
     description: doc.description,
     steps: doc.steps,
     benefits: doc.benefits,

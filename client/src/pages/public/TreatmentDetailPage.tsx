@@ -132,6 +132,11 @@ export function TreatmentDetailPage() {
               className="absolute -inset-2 rounded-t-full border border-brand-gold/25"
             />
             <div className="relative">
+              {service.price ? (
+                <p className="mb-3 text-[0.72rem] font-medium tracking-[0.16em] text-brand-gold-deep uppercase">
+                  {service.price}
+                </p>
+              ) : null}
               {service.imageUrl ? (
                 <img
                   src={service.imageUrl}

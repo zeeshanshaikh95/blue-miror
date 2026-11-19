@@ -44,6 +44,12 @@ export function ServiceCard({ service }: ServiceCardProps) {
         </h3>
         <p className="mt-3 flex-1 text-sm leading-6 text-brand-muted">{service.shortDescription}</p>
 
+        {service.price ? (
+          <p className="mt-3 text-[0.72rem] font-medium tracking-[0.14em] text-brand-gold-deep uppercase">
+            {service.price}
+          </p>
+        ) : null}
+
         <span className="mt-6 inline-flex items-center gap-2 text-[0.66rem] font-medium tracking-[0.16em] text-brand-indigo uppercase">
           Explore treatment
           <ArrowUpRight aria-hidden="true" size={15} strokeWidth={1.5} />

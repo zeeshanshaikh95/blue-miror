@@ -18,12 +18,14 @@ export function TreatmentsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get('q') ?? '';
   const category = searchParams.get('category') ?? '';
+  const page = Math.max(1, Number(searchParams.get('p') ?? '1') || 1);
   const deferredSearch = useDeferredValue(search);
 
   const servicesQuery = useServices({
     q: deferredSearch.trim() || undefined,
     category: category || undefined,
     limit: 24,
+    page,
   });
 
   function updateFilter(key: 'q' | 'category', value: string) {
@@ -35,6 +37,8 @@ export function TreatmentsPage() {
       next.delete(key);
     }
 
+    // Any filter change returns to the first page of results.
+    next.delete('p');
     setSearchParams(next, { replace: true });
   }
 
@@ -42,8 +46,22 @@ export function TreatmentsPage() {
     setSearchParams(new URLSearchParams(), { replace: true });
   }
 
+  function goToPage(nextPage: number) {
+    const next = new URLSearchParams(searchParams);
+
+    if (nextPage <= 1) {
+      next.delete('p');
+    } else {
+      next.set('p', String(nextPage));
+    }
+
+    setSearchParams(next);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   const categories = servicesQuery.data?.categories ?? [];
   const hasFilters = Boolean(search || category);
+  const totalPages = servicesQuery.data?.totalPages ?? 1;
 
   return (
     <>
@@ -60,13 +78,13 @@ export function TreatmentsPage() {
             <br /> <em className="text-brand-gold-deep">considered care</em>.
           </>
         }
-        intro="Search the current structure or filter by category. Every treatment page is connected to the content API; the final menu requires clinic approval."
+        intro="Search the full menu or filter by category. Every treatment page is connected to the content API, so the menu stays current."
         aside={
           <div className="border-l border-brand-gold/60 pl-5">
-            <ContentBadge>Sample service menu</ContentBadge>
+            <ContentBadge>Beauty & hair menu</ContentBadge>
             <p className="mt-3 text-sm leading-6 text-brand-muted">
-              No prices or treatment outcomes are published. No service has been presented as
-              verified clinic information.
+              Prices are published as supplied by the clinic and are confirmed at your appointment.
+              Services may be adjusted for hair length, volume and product usage.
             </p>
           </div>
         }
@@ -183,8 +201,7 @@ export function TreatmentsPage() {
                   </Button>
                 }
               >
-                Try a broader search, choose another category, or return to the full sample service
-                menu.
+                Try a broader search, choose another category, or return to the full menu.
               </EmptyState>
             ) : null}
 
@@ -194,6 +211,31 @@ export function TreatmentsPage() {
                   <ServiceCard key={service.id} service={service} />
                 ))}
               </div>
+            ) : null}
+
+            {totalPages > 1 ? (
+              <nav
+                aria-label="Treatment menu pages"
+                className="mt-12 flex items-center justify-between gap-4 border-t border-brand-line pt-6"
+              >
+                <Button
+                  variant="secondary"
+                  onClick={() => goToPage(page - 1)}
+                  disabled={page <= 1 || servicesQuery.isFetching}
+                >
+                  Previous
+                </Button>
+                <p className="text-[0.62rem] tracking-[0.14em] text-brand-muted uppercase">
+                  Page {page} of {totalPages}
+                </p>
+                <Button
+                  variant="secondary"
+                  onClick={() => goToPage(page + 1)}
+                  disabled={page >= totalPages || servicesQuery.isFetching}
+                >
+                  Next
+                </Button>
+              </nav>
             ) : null}
           </div>
         </Container>

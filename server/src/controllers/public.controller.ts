@@ -69,6 +69,10 @@ publicContentRouter.get('/services', async (request, response) => {
       items: result.items,
       categories: result.categories,
       total: result.total,
+      // Mirrors meta so paginated listings can render page controls.
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
     },
     meta: {
       page: result.page,

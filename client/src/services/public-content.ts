@@ -25,6 +25,7 @@ const serviceSummarySchema = z.object({
   isFeatured: z.boolean(),
   isPlaceholder: z.boolean(),
   imageUrl: z.string().nullable().optional(),
+  price: z.string().nullable().optional(),
   visual: visualSchema,
 });
 
@@ -41,6 +42,9 @@ const serviceListSchema = z.object({
   items: z.array(serviceSummarySchema),
   categories: z.array(categorySchema),
   total: z.number(),
+  page: z.number().optional(),
+  limit: z.number().optional(),
+  totalPages: z.number().optional(),
 });
 
 const serviceDetailResponseSchema = serviceDetailSchema.extend({
@@ -194,6 +198,7 @@ export type ServiceFilters = {
   category?: string;
   featured?: boolean;
   limit?: number;
+  page?: number;
 };
 
 async function getValidated<T>(path: string, schema: z.ZodType<T>): Promise<T> {
@@ -212,6 +217,7 @@ export function getServices(filters: ServiceFilters = {}): Promise<ServiceListRe
   if (filters.category) params.set('category', filters.category);
   if (filters.featured) params.set('featured', 'true');
   if (filters.limit) params.set('limit', String(filters.limit));
+  if (filters.page) params.set('page', String(filters.page));
 
   const query = params.size > 0 ? `?${params.toString()}` : '';
   return getValidated(`/public/services${query}`, serviceListSchema);

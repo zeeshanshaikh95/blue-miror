@@ -27,6 +27,7 @@ export const publicQueryKeys = {
       filters.category ?? '',
       Boolean(filters.featured),
       filters.limit ?? 24,
+      filters.page ?? 1,
     ] as const,
   service: (slug: string) => [...publicRoot, 'service', slug] as const,
   gallery: [...publicRoot, 'gallery'] as const,
