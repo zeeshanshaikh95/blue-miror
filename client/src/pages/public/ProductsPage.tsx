@@ -70,26 +70,6 @@ export function ProductsPage() {
         description="The professional nail and beauty products used and available at Blue Miror, from gel polish and cat-eye collections to nail essentials."
       />
 
-      <PageHero
-        eyebrow="The product shelf"
-        title={
-          <>
-            Professional products,
-            <br /> <em className="text-brand-gold-deep">used in the salon</em>.
-          </>
-        }
-        intro="The brands and products we work with every day, from gel polish and cat-eye collections to nail essentials. Ask us in the salon for shades, availability and pricing."
-        aside={
-          <div className="border-l border-brand-gold/60 pl-5">
-            <ContentBadge>Salon product shelf</ContentBadge>
-            <p className="mt-3 text-sm leading-6 text-brand-muted">
-              Availability and pricing are confirmed in the salon. Product imagery shows the items
-              used and stocked by Blue Miror.
-            </p>
-          </div>
-        }
-      />
-
       <section className="py-12 sm:py-16 lg:py-20">
         <Container>
           <div className="border border-brand-line bg-brand-porcelain p-5 sm:p-7">
@@ -241,6 +221,28 @@ export function ProductsPage() {
             ) : null}
           </div>
         </Container>
+      </section>
+
+      <section className="border-t border-brand-line pt-12 sm:pt-16">
+        <PageHero
+          eyebrow="The product shelf"
+          title={
+            <>
+              Professional products,
+              <br /> <em className="text-brand-gold-deep">used in the salon</em>.
+            </>
+          }
+          intro="The brands and products we work with every day, from gel polish and cat-eye collections to nail essentials. Ask us in the salon for shades, availability and pricing."
+          aside={
+            <div className="border-l border-brand-gold/60 pl-5">
+              <ContentBadge>Salon product shelf</ContentBadge>
+              <p className="mt-3 text-sm leading-6 text-brand-muted">
+                Availability and pricing are confirmed in the salon. Product imagery shows the
+                items used and stocked by Blue Miror.
+              </p>
+            </div>
+          }
+        />
       </section>
     </>
   );
