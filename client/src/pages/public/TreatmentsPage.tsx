@@ -70,26 +70,6 @@ export function TreatmentsPage() {
         description="Explore the Blue Miror treatment structure. Final treatment names, suitability information and aftercare are awaiting clinic approval."
       />
 
-      <PageHero
-        eyebrow="Treatments"
-        title={
-          <>
-            A service menu built on
-            <br /> <em className="text-brand-gold-deep">considered care</em>.
-          </>
-        }
-        intro="Search the full menu or filter by category. Every treatment page is connected to the content API, so the menu stays current."
-        aside={
-          <div className="border-l border-brand-gold/60 pl-5">
-            <ContentBadge>Beauty & hair menu</ContentBadge>
-            <p className="mt-3 text-sm leading-6 text-brand-muted">
-              Prices are published as supplied by the clinic and are confirmed at your appointment.
-              Services may be adjusted for hair length, volume and product usage.
-            </p>
-          </div>
-        }
-      />
-
       <section className="py-12 sm:py-16 lg:py-20">
         <Container>
           <div className="border border-brand-line bg-brand-porcelain p-5 sm:p-7">
@@ -239,6 +219,28 @@ export function TreatmentsPage() {
             ) : null}
           </div>
         </Container>
+      </section>
+
+      <section className="border-t border-brand-line pt-12 sm:pt-16">
+        <PageHero
+          eyebrow="Treatments"
+          title={
+            <>
+              A service menu built on
+              <br /> <em className="text-brand-gold-deep">considered care</em>.
+            </>
+          }
+          intro="Search the full menu or filter by category. Every treatment page is connected to the content API, so the menu stays current."
+          aside={
+            <div className="border-l border-brand-gold/60 pl-5">
+              <ContentBadge>Beauty & hair menu</ContentBadge>
+              <p className="mt-3 text-sm leading-6 text-brand-muted">
+                Prices are published as supplied by the clinic and are confirmed at your
+                appointment. Services may be adjusted for hair length, volume and product usage.
+              </p>
+            </div>
+          }
+        />
       </section>
     </>
   );
