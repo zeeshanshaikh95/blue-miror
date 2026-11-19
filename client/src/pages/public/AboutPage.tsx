@@ -39,28 +39,6 @@ export function AboutPage() {
         description="The approach behind Blue Miror: considered aesthetic care, clear communication and a service-led clinic experience."
       />
 
-      <PageHero
-        eyebrow="About Blue Miror"
-        title={
-          <>
-            A clinic shaped around
-            <br /> <em className="text-brand-gold-deep">the conversation</em>.
-          </>
-        }
-        intro="Blue Miror is conceived as a calm, contemporary aesthetic clinic — premium in feeling, honest in its detail and intentionally centred on consultation."
-        aside={
-          <div className="border-l border-brand-gold/60 pl-5">
-            <p className="text-[0.6rem] tracking-[0.18em] text-brand-gold-deep uppercase">
-              Content status
-            </p>
-            <p className="mt-2 text-sm leading-6 text-brand-muted">
-              The clinic story, founder details and milestones will be published only after
-              verification.
-            </p>
-          </div>
-        }
-      />
-
       <section className="py-16 sm:py-20 lg:py-24">
         <Container className="grid gap-12 lg:grid-cols-[0.92fr_1.08fr] lg:items-center lg:gap-20">
           <div className="relative">
@@ -192,6 +170,30 @@ export function AboutPage() {
             </div>
           </div>
         </Container>
+      </section>
+
+      <section className="border-t border-brand-line pt-12 sm:pt-16">
+        <PageHero
+          eyebrow="About Blue Miror"
+          title={
+            <>
+              A clinic shaped around
+              <br /> <em className="text-brand-gold-deep">the conversation</em>.
+            </>
+          }
+          intro="Blue Miror is conceived as a calm, contemporary aesthetic clinic — premium in feeling, honest in its detail and intentionally centred on consultation."
+          aside={
+            <div className="border-l border-brand-gold/60 pl-5">
+              <p className="text-[0.6rem] tracking-[0.18em] text-brand-gold-deep uppercase">
+                Content status
+              </p>
+              <p className="mt-2 text-sm leading-6 text-brand-muted">
+                The clinic story, founder details and milestones will be published only after
+                verification.
+              </p>
+            </div>
+          }
+        />
       </section>
     </>
   );
