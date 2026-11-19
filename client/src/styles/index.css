@@ -138,6 +138,45 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Admin-only dark theme
+   The class is added to <html> only while the admin area is mounted.
+   --------------------------------------------------------------------------- */
+
+html.admin-dark {
+  color-scheme: dark;
+  --color-brand-ivory: #12111f;
+  --color-brand-porcelain: #1b1a2e;
+  --color-brand-indigo: #e9e6f6;
+  --color-brand-indigo-deep: #0f0e1c;
+  --color-brand-ink: #f3f1fb;
+  --color-brand-muted: #a6a3bd;
+  --color-brand-line: #302e4a;
+  --color-brand-gold: #d9b469;
+  --color-brand-gold-deep: #e5c58c;
+  --color-brand-gold-800: #f0d6a4;
+  --color-brand-azure: #5cb8e0;
+  --color-brand-azure-deep: #8fd4f0;
+}
+
+/* The sidebar keeps its deep indigo identity and light text. */
+html.admin-dark .admin-sidebar {
+  --color-brand-indigo-deep: #1b1a33;
+  --color-brand-ivory: #f7f4ee;
+  --color-brand-muted: #b9b6cc;
+  --color-brand-line: #353252;
+}
+
+/* Keep error/success text readable on dark panels. */
+html.admin-dark .text-\[\#8a3b34\],
+html.admin-dark .text-\[\#7a332d\] {
+  color: #f0a79e;
+}
+
+html.admin-dark .text-\[\#2f6b4f\] {
+  color: #93d6b4;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal {
     opacity: 1;

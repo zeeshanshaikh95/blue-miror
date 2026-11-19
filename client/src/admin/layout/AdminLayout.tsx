@@ -11,9 +11,11 @@ import {
   LogOut,
   MessageSquareQuote,
   Menu,
+  Moon,
   Package,
   Settings,
   Sparkles,
+  Sun,
   Users,
   X,
 } from 'lucide-react';
@@ -22,6 +24,7 @@ import { cn } from '@/utils/cn';
 
 import { getInboxSummary } from '../api';
 import { useAdminAuth } from '../auth-context';
+import { useAdminTheme } from '../theme';
 import { ToastProvider } from '../components/AdminUI';
 
 const navigation = [
@@ -69,6 +72,7 @@ export function AdminLayout() {
   });
   const inboxCount = inboxSummary.data?.inboxTotal ?? 0;
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { dark, toggle } = useAdminTheme();
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -106,7 +110,7 @@ export function AdminLayout() {
         {/* Sidebar */}
         <aside
           className={cn(
-            'z-40 w-full shrink-0 bg-brand-indigo-deep text-brand-ivory lg:w-68 lg:min-h-dvh',
+            'admin-sidebar z-40 w-full shrink-0 bg-brand-indigo-deep text-brand-ivory lg:w-68 lg:min-h-dvh',
             mobileOpen ? 'block' : 'hidden lg:block',
           )}
         >
@@ -202,6 +206,20 @@ export function AdminLayout() {
                   {admin?.role ?? 'admin'}
                 </p>
               </div>
+              <button
+                type="button"
+                onClick={toggle}
+                aria-label={dark ? 'Switch to light theme' : 'Switch to dark theme'}
+                title={dark ? 'Switch to light theme' : 'Switch to dark theme'}
+                className="inline-flex min-h-9 items-center gap-2 border border-brand-line bg-brand-porcelain px-3 text-[0.625rem] font-medium tracking-[0.14em] text-brand-indigo uppercase hover:border-brand-indigo/40"
+              >
+                {dark ? (
+                  <Sun aria-hidden="true" size={14} strokeWidth={1.75} />
+                ) : (
+                  <Moon aria-hidden="true" size={14} strokeWidth={1.75} />
+                )}
+                <span className="hidden sm:inline">{dark ? 'Light' : 'Dark'}</span>
+              </button>
               <button
                 type="button"
                 onClick={() => void handleSignOut()}

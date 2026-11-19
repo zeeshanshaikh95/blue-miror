@@ -156,7 +156,7 @@ export function MediaUploadField({
                 event.target.value.trim() ? { publicId: event.target.value.trim(), url: '' } : null,
               );
             }}
-            className="mt-2 w-full border border-brand-line bg-white px-3 py-2 font-mono text-xs text-brand-indigo"
+            className="mt-2 w-full border border-brand-line bg-brand-porcelain px-3 py-2 font-mono text-xs text-brand-indigo"
           />
           <p className="mt-1 text-[0.625rem] leading-5 text-brand-muted">
             For assets that already exist in the Blue Miror media library.
@@ -164,7 +164,7 @@ export function MediaUploadField({
         </div>
       </details>
 
-      <div className="flex flex-col gap-3 border border-brand-line bg-white/60 p-3 sm:flex-row sm:items-start">
+      <div className="flex flex-col gap-3 border border-brand-line bg-brand-porcelain/60 p-3 sm:flex-row sm:items-start">
         <div className="grid size-24 shrink-0 place-items-center overflow-hidden border border-brand-line bg-brand-ivory/70">
           {currentUrl ? (
             <img

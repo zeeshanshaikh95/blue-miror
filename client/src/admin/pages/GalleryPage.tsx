@@ -216,7 +216,7 @@ function GalleryEditor({
           </div>
         </div>
 
-        <div className="border border-brand-line bg-white/60 p-4">
+        <div className="border border-brand-line bg-brand-porcelain/60 p-4">
           <p className="text-[0.625rem] tracking-[0.18em] text-brand-muted uppercase">Preview</p>
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
             {form.imageUrl ? (

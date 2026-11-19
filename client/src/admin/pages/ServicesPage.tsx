@@ -479,7 +479,7 @@ function ServiceEditor({
           </Field>
         </div>
 
-        <fieldset className="border border-brand-line bg-white/60 p-4">
+        <fieldset className="border border-brand-line bg-brand-porcelain/60 p-4">
           <legend className="px-1 text-[0.6875rem] font-medium tracking-[0.14em] text-brand-indigo uppercase">
             Search listing
           </legend>
@@ -526,7 +526,7 @@ function ServiceEditor({
           </div>
         </fieldset>
 
-        <fieldset className="border border-brand-line bg-white/60 p-4">
+        <fieldset className="border border-brand-line bg-brand-porcelain/60 p-4">
           <legend className="px-1 text-[0.6875rem] font-medium tracking-[0.14em] text-brand-indigo uppercase">
             Service image
           </legend>
@@ -578,7 +578,7 @@ function ServiceEditor({
           </div>
         </fieldset>
 
-        <fieldset className="border border-brand-line bg-white/60 p-4">
+        <fieldset className="border border-brand-line bg-brand-porcelain/60 p-4">
           <legend className="px-1 text-[0.6875rem] font-medium tracking-[0.14em] text-brand-indigo uppercase">
             FAQs
           </legend>

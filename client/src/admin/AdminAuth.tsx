@@ -3,6 +3,7 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 import { AdminAuthContext, useAdminAuth, type AdminAuthState } from './auth-context';
 import { adminUnauthorizedEvent, ADMIN_UNAUTHORIZED_EVENT, login, logout } from './api';
+import { AdminThemeProvider } from './theme';
 import { clearSession, readSession, writeSession } from './session';
 import { Spinner } from './components/AdminUI';
 
@@ -99,9 +100,11 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 /** Route element that scopes the auth provider to /admin only. */
 export function AdminAuthBoundary() {
   return (
-    <AdminAuthProvider>
-      <Outlet />
-    </AdminAuthProvider>
+    <AdminThemeProvider>
+      <AdminAuthProvider>
+        <Outlet />
+      </AdminAuthProvider>
+    </AdminThemeProvider>
   );
 }
 

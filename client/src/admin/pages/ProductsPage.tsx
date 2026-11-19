@@ -205,7 +205,7 @@ export function ProductsPage() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search products"
-              className="h-10 w-full border border-brand-line bg-white pr-3 pl-9 text-sm text-brand-ink placeholder:text-brand-muted focus:border-brand-azure focus:outline-none"
+              className="h-10 w-full border border-brand-line bg-brand-porcelain pr-3 pl-9 text-sm text-brand-ink placeholder:text-brand-muted focus:border-brand-azure focus:outline-none"
             />
           </div>
         </div>

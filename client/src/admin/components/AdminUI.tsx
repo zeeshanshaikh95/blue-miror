@@ -131,7 +131,7 @@ export function AdminButton({
 // ---------------------------------------------------------------------------
 
 const controlClasses =
-  'w-full min-h-11 border border-brand-line bg-white px-3 py-2 text-sm text-brand-ink placeholder:text-brand-muted/70 focus:border-brand-azure focus:outline-none disabled:bg-brand-ivory disabled:text-brand-muted';
+  'w-full min-h-11 border border-brand-line bg-brand-porcelain px-3 py-2 text-sm text-brand-ink placeholder:text-brand-muted/70 focus:border-brand-azure focus:outline-none disabled:bg-brand-ivory disabled:text-brand-muted';
 
 export function Field({
   label,

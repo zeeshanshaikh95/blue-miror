@@ -901,7 +901,7 @@ function SettingsForm({ settings }: { settings: AdminSettings | null }) {
 
           <div className="space-y-4">
             {draft.homepage.slides.map((slide, index) => (
-              <div key={slide.id} className="border border-brand-line bg-white/70 p-4">
+              <div key={slide.id} className="border border-brand-line bg-brand-porcelain/70 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-xs font-medium text-brand-indigo">Slide {index + 1}</p>
                   <div className="flex flex-wrap gap-2">
