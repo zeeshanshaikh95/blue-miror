@@ -332,7 +332,17 @@ export function GalleryPage() {
         <ul className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {items.map((item) => (
             <li key={item.id} className="border border-brand-line bg-brand-porcelain">
-              <BrandVisual variant={item.variant} label={item.title} className="aspect-[4/3]" />
+              {item.imageUrl ? (
+                <img
+                  src={previewImageUrl(item.imageUrl, 640) ?? item.imageUrl}
+                  alt={item.alt || item.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-[4/3] w-full border-b border-brand-line object-cover"
+                />
+              ) : (
+                <BrandVisual variant={item.variant} label={item.title} className="aspect-[4/3]" />
+              )}
               <div className="space-y-3 p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
