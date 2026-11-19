@@ -10,10 +10,19 @@ import { ContentBadge } from '@/components/ui/ContentBadge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Eyebrow } from '@/components/ui/Eyebrow';
+import { HeroSlider } from '@/components/ui/HeroSlider';
 import { LoadingState } from '@/components/ui/LoadingState';
+import { ProductCard } from '@/components/ui/ProductCard';
+import { Reveal } from '@/components/ui/Reveal';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ServiceCard } from '@/components/ui/ServiceCard';
-import { useFaqs, useGallery, useServices, useSiteSettings } from '@/hooks/use-public-content';
+import {
+  useFaqs,
+  useGallery,
+  useProducts,
+  useServices,
+  useSiteSettings,
+} from '@/hooks/use-public-content';
 import { cn } from '@/utils/cn';
 
 const principles = [
@@ -36,12 +45,14 @@ const principles = [
 
 export function HomePage() {
   const servicesQuery = useServices({ featured: true, limit: 3 });
+  const productsQuery = useProducts({ featured: true, limit: 3 });
   const galleryQuery = useGallery();
   const faqsQuery = useFaqs();
   const galleryItems = galleryQuery.data?.items.slice(0, 4) ?? [];
   const faqs = faqsQuery.data?.items.slice(0, 4) ?? [];
   const settingsQuery = useSiteSettings();
   const homepage = settingsQuery.data?.homepage;
+  const slides = homepage?.slides ?? [];
   const heroCta =
     homepage?.heroCtaLabel && homepage?.heroCtaHref
       ? { label: homepage.heroCtaLabel, href: homepage.heroCtaHref }
@@ -51,6 +62,9 @@ export function HomePage() {
     <>
       <Seo description="Blue Miror is a service-led aesthetic clinic designed around considered care, clear communication and unhurried consultation." />
 
+      {slides.length > 0 ? (
+        <HeroSlider slides={slides} />
+      ) : (
       <section className="relative overflow-hidden">
         <div
           aria-hidden="true"
@@ -132,6 +146,7 @@ export function HomePage() {
           </div>
         </Container>
       </section>
+      )}
 
       <section className="border-y border-brand-line bg-brand-porcelain py-16 sm:py-20 lg:py-24">
         <Container>
@@ -238,6 +253,40 @@ export function HomePage() {
         </section>
       )}
 
+      {productsQuery.data && productsQuery.data.items.length > 0 ? (
+        <section className="border-t border-brand-line bg-brand-porcelain py-16 sm:py-20 lg:py-24">
+          <Container>
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+              <SectionHeading
+                eyebrow="The product shelf"
+                title={
+                  <>
+                    Products we use
+                    <br /> <em className="text-brand-gold-deep">every day</em>.
+                  </>
+                }
+                intro="The professional brands behind our nail and beauty services, from gel polish to cat-eye collections."
+              />
+              <Link
+                to="/products"
+                className="inline-flex shrink-0 items-center gap-2 border-b border-brand-gold pb-1 text-[0.67rem] font-medium tracking-[0.18em] text-brand-indigo uppercase transition-colors hover:text-brand-gold-deep"
+              >
+                View all products
+                <ArrowRight aria-hidden="true" size={15} strokeWidth={1.5} />
+              </Link>
+            </div>
+
+            <Reveal className="mt-10">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {productsQuery.data.items.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </Reveal>
+          </Container>
+        </section>
+      ) : null}
+
       <section className="bg-brand-indigo-deep text-brand-ivory">
         <Container className="grid gap-12 py-16 sm:py-20 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20 lg:py-24">
           <div>
@@ -314,7 +363,9 @@ export function HomePage() {
                     <Link
                       key={item.id}
                       to="/gallery"
-                      className={index === 1 ? 'group mt-8 sm:mt-12' : 'group'}
+                      className={
+                        index === 1 ? 'group mt-8 overflow-hidden sm:mt-12' : 'group overflow-hidden'
+                      }
                     >
                       {item.imageUrl ? (
                         <img
@@ -323,7 +374,7 @@ export function HomePage() {
                           loading="lazy"
                           decoding="async"
                           className={cn(
-                            'w-full border border-brand-line object-cover',
+                            'w-full border border-brand-line object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]',
                             index % 2 === 0 ? 'aspect-[4/5]' : 'aspect-square',
                           )}
                         />
@@ -331,7 +382,10 @@ export function HomePage() {
                         <BrandVisual
                           variant={item.variant}
                           label={item.title}
-                          className={index % 2 === 0 ? 'aspect-[4/5]' : 'aspect-square'}
+                          className={cn(
+                            'transition-transform duration-700 ease-out group-hover:scale-[1.05]',
+                            index % 2 === 0 ? 'aspect-[4/5]' : 'aspect-square',
+                          )}
                         />
                       )}
                     </Link>

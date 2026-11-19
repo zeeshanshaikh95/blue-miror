@@ -274,6 +274,22 @@ export const SettingsSchema = z
         heroCtaHref: z.string().trim().max(300).nullable().optional(),
         aboutHeading: z.string().trim().max(160).nullable().optional(),
         aboutBody: z.string().trim().max(1200).nullable().optional(),
+        slides: z
+          .array(
+            z
+              .object({
+                id: z.string().trim().min(1).max(60),
+                eyebrow: z.string().trim().max(80).nullable().optional(),
+                heading: z.string().trim().max(160).nullable().optional(),
+                description: z.string().trim().max(400).nullable().optional(),
+                imageUrl: z.string().trim().max(500).nullable().optional(),
+                ctaLabel: z.string().trim().max(80).nullable().optional(),
+                ctaHref: z.string().trim().max(300).nullable().optional(),
+              })
+              .strict(),
+          )
+          .max(6)
+          .optional(),
         showFeatured: z.boolean().optional(),
         showGallery: z.boolean().optional(),
         showFaqs: z.boolean().optional(),

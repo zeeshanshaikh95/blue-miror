@@ -103,6 +103,19 @@ const siteSettingsSchema = z.object({
       heroCtaHref: z.string().nullable(),
       aboutHeading: z.string().nullable(),
       aboutBody: z.string().nullable(),
+      slides: z
+        .array(
+          z.object({
+            id: z.string(),
+            eyebrow: z.string().nullable().optional(),
+            heading: z.string().nullable().optional(),
+            description: z.string().nullable().optional(),
+            imageUrl: z.string().nullable().optional(),
+            ctaLabel: z.string().nullable().optional(),
+            ctaHref: z.string().nullable().optional(),
+          }),
+        )
+        .optional(),
       showFeatured: z.boolean(),
       showGallery: z.boolean(),
       showFaqs: z.boolean(),

@@ -2,6 +2,16 @@ import mongoose, { Schema, type Types } from 'mongoose';
 
 export type VisualVariant = 'arch' | 'orbit' | 'drape' | 'horizon' | 'bloom' | 'column';
 
+export type HeroSlide = {
+  id: string;
+  eyebrow: string | null;
+  heading: string | null;
+  description: string | null;
+  imageUrl: string | null;
+  ctaLabel: string | null;
+  ctaHref: string | null;
+};
+
 export type ServiceDocument = {
   _id: Types.ObjectId;
   slug: string;
@@ -142,6 +152,7 @@ export type WebsiteSettingsDocument = {
     heroCtaHref: string | null;
     aboutHeading: string | null;
     aboutBody: string | null;
+    slides: HeroSlide[];
     showFeatured: boolean;
     showGallery: boolean;
     showFaqs: boolean;
@@ -342,6 +353,19 @@ const serviceSeoSchema = new Schema(
   { _id: false },
 );
 
+const heroSlideSchema = new Schema(
+  {
+    id: { type: String, trim: true, required: true, maxlength: 60 },
+    eyebrow: { type: String, trim: true, maxlength: 80, default: null },
+    heading: { type: String, trim: true, maxlength: 160, default: null },
+    description: { type: String, trim: true, maxlength: 400, default: null },
+    imageUrl: { type: String, trim: true, maxlength: 500, default: null },
+    ctaLabel: { type: String, trim: true, maxlength: 80, default: null },
+    ctaHref: { type: String, trim: true, maxlength: 300, default: null },
+  },
+  { _id: false },
+);
+
 const homepageSchema = new Schema(
   {
     heroHeading: { type: String, trim: true, maxlength: 160, default: null },
@@ -351,6 +375,7 @@ const homepageSchema = new Schema(
     heroCtaHref: { type: String, trim: true, maxlength: 300, default: null },
     aboutHeading: { type: String, trim: true, maxlength: 160, default: null },
     aboutBody: { type: String, trim: true, maxlength: 1200, default: null },
+    slides: { type: [heroSlideSchema], default: [] },
     showFeatured: { type: Boolean, default: true },
     showGallery: { type: Boolean, default: true },
     showFaqs: { type: Boolean, default: true },

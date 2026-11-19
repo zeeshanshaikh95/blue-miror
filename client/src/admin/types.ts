@@ -194,6 +194,16 @@ export type SettingsHoursEntry = { label: string; value: string };
 export type SettingsSocialEntry = { label: string; url: string };
 
 /** Homepage copy and section visibility; every field is optional in storage. */
+export type HeroSlide = {
+  id: string;
+  eyebrow: string | null;
+  heading: string | null;
+  description: string | null;
+  imageUrl: string | null;
+  ctaLabel: string | null;
+  ctaHref: string | null;
+};
+
 export type AdminHomepage = {
   heroHeading: string | null;
   heroDescription: string | null;
@@ -202,6 +212,7 @@ export type AdminHomepage = {
   heroCtaHref: string | null;
   aboutHeading: string | null;
   aboutBody: string | null;
+  slides: HeroSlide[];
   showFeatured: boolean;
   showGallery: boolean;
   showFaqs: boolean;
@@ -215,6 +226,7 @@ export const emptyHomepage: AdminHomepage = {
   heroCtaHref: null,
   aboutHeading: null,
   aboutBody: null,
+  slides: [],
   showFeatured: true,
   showGallery: true,
   showFaqs: true,

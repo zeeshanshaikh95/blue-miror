@@ -18,19 +18,23 @@ export function ServiceCard({ service }: ServiceCardProps) {
       className="group flex h-full flex-col border border-brand-line bg-brand-porcelain transition-colors duration-300 hover:border-brand-gold/70"
     >
       {service.imageUrl ? (
-        <img
-          src={service.imageUrl}
-          alt={`${service.name} treatment`}
-          loading="lazy"
-          decoding="async"
-          className="aspect-[4/5] w-full border-b border-brand-line object-cover"
-        />
+        <div className="overflow-hidden">
+          <img
+            src={service.imageUrl}
+            alt={`${service.name} treatment`}
+            loading="lazy"
+            decoding="async"
+            className="aspect-[4/5] w-full border-b border-brand-line object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+          />
+        </div>
       ) : (
-        <BrandVisual
-          variant={service.visual}
-          label={`${service.name} visual`}
-          className="aspect-[4/5] w-full"
-        />
+        <div className="overflow-hidden">
+          <BrandVisual
+            variant={service.visual}
+            label={`${service.name} visual`}
+            className="aspect-[4/5] w-full transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+          />
+        </div>
       )}
 
       <div className="flex flex-1 flex-col p-5 sm:p-6">

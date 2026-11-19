@@ -17,13 +17,15 @@ export function ProductCard({ product }: ProductCardProps) {
       className="group flex h-full flex-col border border-brand-line bg-brand-porcelain transition-colors duration-300 hover:border-brand-gold/70"
     >
       {product.imageUrl ? (
-        <img
-          src={product.imageUrl}
-          alt={product.brand ? `${product.name} by ${product.brand}` : product.name}
-          loading="lazy"
-          decoding="async"
-          className="aspect-[4/5] w-full border-b border-brand-line object-cover"
-        />
+        <div className="overflow-hidden">
+          <img
+            src={product.imageUrl}
+            alt={product.brand ? `${product.name} by ${product.brand}` : product.name}
+            loading="lazy"
+            decoding="async"
+            className="aspect-[4/5] w-full border-b border-brand-line object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+          />
+        </div>
       ) : (
         <div
           aria-hidden="true"

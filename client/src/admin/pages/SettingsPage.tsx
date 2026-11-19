@@ -18,8 +18,15 @@ import {
   TextInput,
 } from '../components/AdminUI';
 import { datetimeLocalToIso, isoToDatetimeLocal } from '../format';
+import { MediaUploadField } from '../components/MediaUploadField';
 import { useToast } from '../toast';
-import { emptyHomepage, emptySettings, type AdminHomepage, type AdminSettings } from '../types';
+import {
+  emptyHomepage,
+  emptySettings,
+  type AdminHomepage,
+  type AdminSettings,
+  type HeroSlide,
+} from '../types';
 
 type SettingsDraft = Omit<AdminSettings, 'legal' | 'homepage'> & {
   legal: { lastUpdated: string | null };
@@ -82,6 +89,63 @@ function SettingsForm({ settings }: { settings: AdminSettings | null }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const dirty = useMemo(() => JSON.stringify(draft) !== baseline.json, [draft, baseline.json]);
+
+  function updateSlide(id: string, patch: Partial<HeroSlide>) {
+    setDraft((current) => ({
+      ...current,
+      homepage: {
+        ...current.homepage,
+        slides: current.homepage.slides.map((slide) =>
+          slide.id === id ? { ...slide, ...patch } : slide,
+        ),
+      },
+    }));
+  }
+
+  function addSlide() {
+    setDraft((current) => {
+      if (current.homepage.slides.length >= 6) return current;
+      const id = `slide-${Date.now().toString(36)}`;
+      return {
+        ...current,
+        homepage: {
+          ...current.homepage,
+          slides: [
+            ...current.homepage.slides,
+            {
+              id,
+              eyebrow: null,
+              heading: null,
+              description: null,
+              imageUrl: null,
+              ctaLabel: null,
+              ctaHref: null,
+            },
+          ],
+        },
+      };
+    });
+  }
+
+  function removeSlide(id: string) {
+    setDraft((current) => ({
+      ...current,
+      homepage: {
+        ...current.homepage,
+        slides: current.homepage.slides.filter((slide) => slide.id !== id),
+      },
+    }));
+  }
+
+  function moveSlide(index: number, direction: -1 | 1) {
+    setDraft((current) => {
+      const slides = [...current.homepage.slides];
+      const target = index + direction;
+      if (target < 0 || target >= slides.length) return current;
+      [slides[index], slides[target]] = [slides[target], slides[index]];
+      return { ...current, homepage: { ...current.homepage, slides } };
+    });
+  }
 
   useEffect(() => {
     if (!dirty) return;
@@ -808,6 +872,139 @@ function SettingsForm({ settings }: { settings: AdminSettings | null }) {
         title="Homepage"
         description="Hero copy, introduction and which sections appear. Blank fields keep the current designed copy."
       >
+        <div className="mb-6 space-y-4 border border-brand-line bg-brand-ivory/40 p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-brand-indigo uppercase">
+                Hero slides
+              </p>
+              <p className="mt-1 max-w-xl text-xs leading-5 text-brand-muted">
+                Up to 6 slides. When slides exist the homepage shows a slider; otherwise the hero
+                copy below is used.
+              </p>
+            </div>
+            <AdminButton
+              size="sm"
+              variant="secondary"
+              onClick={addSlide}
+              disabled={draft.homepage.slides.length >= 6}
+            >
+              <Plus aria-hidden="true" size={13} /> Add slide
+            </AdminButton>
+          </div>
+
+          {draft.homepage.slides.length === 0 ? (
+            <p className="text-xs text-brand-muted">
+              No slides yet — the single hero copy below is shown on the homepage.
+            </p>
+          ) : null}
+
+          <div className="space-y-4">
+            {draft.homepage.slides.map((slide, index) => (
+              <div key={slide.id} className="border border-brand-line bg-white/70 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-xs font-medium text-brand-indigo">Slide {index + 1}</p>
+                  <div className="flex flex-wrap gap-2">
+                    <AdminButton
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => moveSlide(index, -1)}
+                      disabled={index === 0}
+                    >
+                      Move up
+                    </AdminButton>
+                    <AdminButton
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => moveSlide(index, 1)}
+                      disabled={index === draft.homepage.slides.length - 1}
+                    >
+                      Move down
+                    </AdminButton>
+                    <AdminButton
+                      size="sm"
+                      variant="danger"
+                      onClick={() => removeSlide(slide.id)}
+                    >
+                      <Trash2 aria-hidden="true" size={13} /> Remove
+                    </AdminButton>
+                  </div>
+                </div>
+
+                <div className="mt-4 space-y-4">
+                  <MediaUploadField
+                    id={`hero-slide-${slide.id}`}
+                    label="Slide image"
+                    folder="homepage"
+                    publicId=""
+                    previewUrl={slide.imageUrl}
+                    alt={slide.heading ?? ''}
+                    hint="Optional. A full-width image works best here."
+                    onChange={(asset) => updateSlide(slide.id, { imageUrl: asset?.url ?? null })}
+                  />
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <Field label="Eyebrow" htmlFor={`slide-${slide.id}-eyebrow`}>
+                      <TextInput
+                        id={`slide-${slide.id}-eyebrow`}
+                        value={slide.eyebrow ?? ''}
+                        onChange={(event) =>
+                          updateSlide(slide.id, { eyebrow: nullIfEmpty(event.target.value) })
+                        }
+                      />
+                    </Field>
+                    <Field label="Heading" htmlFor={`slide-${slide.id}-heading`}>
+                      <TextInput
+                        id={`slide-${slide.id}-heading`}
+                        value={slide.heading ?? ''}
+                        onChange={(event) =>
+                          updateSlide(slide.id, { heading: nullIfEmpty(event.target.value) })
+                        }
+                      />
+                    </Field>
+                    <Field
+                      label="Description"
+                      htmlFor={`slide-${slide.id}-description`}
+                      className="sm:col-span-2"
+                    >
+                      <TextArea
+                        id={`slide-${slide.id}-description`}
+                        value={slide.description ?? ''}
+                        onChange={(event) =>
+                          updateSlide(slide.id, { description: nullIfEmpty(event.target.value) })
+                        }
+                        className="min-h-20"
+                      />
+                    </Field>
+                    <Field label="Button label" htmlFor={`slide-${slide.id}-cta-label`}>
+                      <TextInput
+                        id={`slide-${slide.id}-cta-label`}
+                        value={slide.ctaLabel ?? ''}
+                        onChange={(event) =>
+                          updateSlide(slide.id, { ctaLabel: nullIfEmpty(event.target.value) })
+                        }
+                      />
+                    </Field>
+                    <Field
+                      label="Button link"
+                      htmlFor={`slide-${slide.id}-cta-href`}
+                      hint="For example /treatments or /book."
+                    >
+                      <TextInput
+                        id={`slide-${slide.id}-cta-href`}
+                        value={slide.ctaHref ?? ''}
+                        onChange={(event) =>
+                          updateSlide(slide.id, { ctaHref: nullIfEmpty(event.target.value) })
+                        }
+                      />
+                    </Field>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="grid gap-5 sm:grid-cols-2">
           <Field
             label="Hero heading"

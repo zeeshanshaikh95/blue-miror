@@ -70,6 +70,7 @@ export async function getPublicSettings() {
         heroCtaHref: null,
         aboutHeading: null,
         aboutBody: null,
+        slides: [],
         showFeatured: true,
         showGallery: true,
         showFaqs: true,
