@@ -13,14 +13,12 @@ services:
     runtime: node
     plan: free
     region: oregon
-    buildCommand: npm ci && npm run build --workspace server
+    buildCommand: npx --yes npm@11.21.2 ci --include=dev && npx --yes npm@11.21.2 run build --workspace server
     startCommand: node server/dist/server.js
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 10000
       - key: LOG_LEVEL
         value: info
       - key: TRUST_PROXY
@@ -28,7 +26,7 @@ services:
       - key: REQUEST_BODY_LIMIT
         value: 100kb
       - key: NODE_VERSION
-        value: "22"
+        value: "22.19.0"
       - key: ADMIN_SESSION_TTL_MINUTES
         value: "60"
       - key: JWT_ISSUER
