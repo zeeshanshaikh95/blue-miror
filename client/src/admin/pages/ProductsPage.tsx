@@ -254,12 +254,15 @@ export function ProductsPage() {
         )}
       </Panel>
 
-      <ProductEditor
-        open={editorOpen}
-        product={editing}
-        onClose={closeEditor}
-        onSaved={() => void queryClient.invalidateQueries({ queryKey: ['admin', 'products'] })}
-      />
+      {editorOpen ? (
+        <ProductEditor
+          key={editing?.id ?? 'new'}
+          open={editorOpen}
+          product={editing}
+          onClose={closeEditor}
+          onSaved={() => void queryClient.invalidateQueries({ queryKey: ['admin', 'products'] })}
+        />
+      ) : null}
 
       <ConfirmDialog
         open={Boolean(pendingDelete)}
