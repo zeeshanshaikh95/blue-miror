@@ -14,6 +14,7 @@ import type {
   TestimonialSubmission,
   AdminFaq,
   AdminGalleryItem,
+  AdminProduct,
   AdminService,
   AdminSession,
   AdminSettings,
@@ -24,6 +25,7 @@ import type {
   GalleryInput,
   ListResponse,
   Paginated,
+  ProductInput,
   ServiceInput,
   TeamInput,
   TestimonialInput,
@@ -248,6 +250,45 @@ export function updateService(id: string, input: Partial<ServiceInput>): Promise
 
 export function archiveService(id: string): Promise<AdminService> {
   return adminRequest<AdminService>(`/admin/services/${id}`, { method: 'DELETE' });
+}
+
+// ---------------------------------------------------------------------------
+// Products
+// ---------------------------------------------------------------------------
+
+export type ProductQuery = {
+  page?: number;
+  limit?: number;
+  q?: string;
+  category?: string;
+};
+
+export function listProducts(query: ProductQuery = {}): Promise<Paginated<AdminProduct>> {
+  const params = new URLSearchParams();
+
+  if (query.page) params.set('page', String(query.page));
+  if (query.limit) params.set('limit', String(query.limit));
+  if (query.q?.trim()) params.set('q', query.q.trim());
+  if (query.category?.trim()) params.set('category', query.category.trim());
+
+  const suffix = params.size > 0 ? `?${params.toString()}` : '';
+  return adminRequest<Paginated<AdminProduct>>(`/admin/products${suffix}`);
+}
+
+export function getProduct(id: string): Promise<AdminProduct & { _id?: string }> {
+  return adminRequest<AdminProduct>(`/admin/products/${id}`);
+}
+
+export function createProduct(input: ProductInput): Promise<AdminProduct> {
+  return adminRequest<AdminProduct>('/admin/products', { method: 'POST', body: input });
+}
+
+export function updateProduct(id: string, input: Partial<ProductInput>): Promise<AdminProduct> {
+  return adminRequest<AdminProduct>(`/admin/products/${id}`, { method: 'PUT', body: input });
+}
+
+export function archiveProduct(id: string): Promise<AdminProduct> {
+  return adminRequest<AdminProduct>(`/admin/products/${id}`, { method: 'DELETE' });
 }
 
 // ---------------------------------------------------------------------------

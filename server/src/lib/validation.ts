@@ -90,6 +90,41 @@ export const ServiceUpdateSchema = ServiceCreateSchema.partial()
   })
   .strict();
 
+const productImageInput = z
+  .object({
+    url: z.string().trim().url().max(500),
+    publicId: z.string().trim().min(1).max(300),
+    alt: z.string().trim().max(220),
+  })
+  .strict();
+
+export const ProductCreateSchema = z
+  .object({
+    slug: Slug,
+    name: z.string().trim().min(1).max(120),
+    brand: z.string().trim().max(90).nullable().optional(),
+    category: z.string().trim().min(1).max(90),
+    shortDescription: z.string().trim().min(1).max(240),
+    description: z.array(z.string().trim().min(1).max(1200)).max(12).optional(),
+    features: z.array(z.string().trim().min(1).max(320)).max(12).optional(),
+    price: z.string().trim().max(80).nullable().optional(),
+    size: z.string().trim().max(80).nullable().optional(),
+    isFeatured: z.boolean().optional(),
+    publishedAt: isoDateToDate,
+    order: z.number().int().min(0).max(10_000).optional(),
+    seo: z
+      .object({
+        title: z.string().trim().max(90).nullable(),
+        description: z.string().trim().max(320).nullable(),
+      })
+      .strict()
+      .optional(),
+    image: productImageInput.nullable().optional(),
+  })
+  .strict();
+
+export const ProductUpdateSchema = ProductCreateSchema.partial().strict();
+
 export const GalleryCreateSchema = z
   .object({
     title: z.string().trim().min(1).max(160),

@@ -36,3 +36,9 @@ export {
   type FaqDocument,
   type WebsiteSettingsDocument,
 } from './service.model.js';
+export {
+  Product,
+  lookupProductBySlug,
+  type ProductDocument,
+  type ProductImage,
+} from './product.model.js';

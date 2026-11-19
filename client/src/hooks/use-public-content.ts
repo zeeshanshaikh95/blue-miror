@@ -3,11 +3,14 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import {
   getFaqs,
   getGallery,
+  getProduct,
+  getProducts,
   getService,
   getServices,
   getSiteSettings,
   getTeam,
   getTestimonials,
+  type ProductFilters,
   type ServiceFilters,
 } from '@/services/public-content';
 
@@ -30,6 +33,17 @@ export const publicQueryKeys = {
       filters.page ?? 1,
     ] as const,
   service: (slug: string) => [...publicRoot, 'service', slug] as const,
+  products: (filters: ProductFilters) =>
+    [
+      ...publicRoot,
+      'products',
+      filters.q ?? '',
+      filters.category ?? '',
+      Boolean(filters.featured),
+      filters.limit ?? 24,
+      filters.page ?? 1,
+    ] as const,
+  product: (slug: string) => [...publicRoot, 'product', slug] as const,
   gallery: [...publicRoot, 'gallery'] as const,
   faqs: [...publicRoot, 'faqs'] as const,
   testimonials: [...publicRoot, 'testimonials'] as const,
@@ -57,6 +71,24 @@ export function useService(slug: string) {
   return useQuery({
     queryKey: publicQueryKeys.service(slug),
     queryFn: () => getService(slug),
+    enabled: slug.length > 0,
+    staleTime: publicStaleTime,
+  });
+}
+
+export function useProducts(filters: ProductFilters = {}) {
+  return useQuery({
+    queryKey: publicQueryKeys.products(filters),
+    queryFn: () => getProducts(filters),
+    placeholderData: keepPreviousData,
+    staleTime: publicStaleTime,
+  });
+}
+
+export function useProduct(slug: string) {
+  return useQuery({
+    queryKey: publicQueryKeys.product(slug),
+    queryFn: () => getProduct(slug),
     enabled: slug.length > 0,
     staleTime: publicStaleTime,
   });

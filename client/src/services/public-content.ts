@@ -119,6 +119,39 @@ const siteSettingsSchema = z.object({
   }),
 });
 
+const productSummarySchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  name: z.string(),
+  brand: z.string().nullable().optional(),
+  category: z.string(),
+  shortDescription: z.string(),
+  price: z.string().nullable().optional(),
+  size: z.string().nullable().optional(),
+  isFeatured: z.boolean(),
+  imageUrl: z.string().nullable().optional(),
+  isPlaceholder: z.boolean().optional(),
+});
+
+const productDetailSchema = productSummarySchema.extend({
+  description: z.array(z.string()),
+  features: z.array(z.string()),
+});
+
+const productListSchema = z.object({
+  isDemo: z.boolean(),
+  items: z.array(productSummarySchema),
+  categories: z.array(z.string()),
+  total: z.number(),
+  page: z.number().optional(),
+  limit: z.number().optional(),
+  totalPages: z.number().optional(),
+});
+
+export type ProductSummary = z.infer<typeof productSummarySchema>;
+export type ProductDetail = z.infer<typeof productDetailSchema>;
+export type ProductListResponse = z.infer<typeof productListSchema>;
+
 const galleryItemSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -201,6 +234,14 @@ export type ServiceFilters = {
   page?: number;
 };
 
+export type ProductFilters = {
+  q?: string;
+  category?: string;
+  featured?: boolean;
+  limit?: number;
+  page?: number;
+};
+
 async function getValidated<T>(path: string, schema: z.ZodType<T>): Promise<T> {
   const data = await apiRequest<unknown>(path);
   return schema.parse(data);
@@ -225,6 +266,23 @@ export function getServices(filters: ServiceFilters = {}): Promise<ServiceListRe
 
 export function getService(slug: string): Promise<ServiceDetail & { related: ServiceSummary[] }> {
   return getValidated(`/public/services/${encodeURIComponent(slug)}`, serviceDetailResponseSchema);
+}
+
+export function getProducts(filters: ProductFilters = {}): Promise<ProductListResponse> {
+  const params = new URLSearchParams();
+
+  if (filters.q) params.set('q', filters.q);
+  if (filters.category) params.set('category', filters.category);
+  if (filters.featured) params.set('featured', 'true');
+  if (filters.limit) params.set('limit', String(filters.limit));
+  if (filters.page) params.set('page', String(filters.page));
+
+  const query = params.size > 0 ? `?${params.toString()}` : '';
+  return getValidated(`/public/products${query}`, productListSchema);
+}
+
+export function getProduct(slug: string): Promise<ProductDetail> {
+  return getValidated(`/public/products/${encodeURIComponent(slug)}`, productDetailSchema);
 }
 
 export function getGallery(): Promise<PublicGalleryResponse> {

@@ -20,6 +20,14 @@ const TreatmentDetailPage = lazy(() =>
     default: module.TreatmentDetailPage,
   })),
 );
+const ProductsPage = lazy(() =>
+  import('@/pages/public/ProductsPage').then((module) => ({ default: module.ProductsPage })),
+);
+const ProductDetailPage = lazy(() =>
+  import('@/pages/public/ProductDetailPage').then((module) => ({
+    default: module.ProductDetailPage,
+  })),
+);
 const GalleryPage = lazy(() =>
   import('@/pages/public/GalleryPage').then((module) => ({ default: module.GalleryPage })),
 );
@@ -66,6 +74,9 @@ const OverviewPage = lazy(() =>
 );
 const ServicesPage = lazy(() =>
   import('@/admin/pages/ServicesPage').then((module) => ({ default: module.ServicesPage })),
+);
+const ProductsPageAdmin = lazy(() =>
+  import('@/admin/pages/ProductsPage').then((module) => ({ default: module.ProductsPage })),
 );
 const CategoriesPage = lazy(() =>
   import('@/admin/pages/CategoriesPage').then((module) => ({ default: module.CategoriesPage })),
@@ -160,6 +171,14 @@ export function App() {
             }
           />
           <Route
+            path="products"
+            element={
+              <Suspended>
+                <ProductsPageAdmin />
+              </Suspended>
+            }
+          />
+          <Route
             path="categories"
             element={
               <Suspended>
@@ -248,6 +267,22 @@ export function App() {
           element={
             <Suspended>
               <TreatmentDetailPage />
+            </Suspended>
+          }
+        />
+        <Route
+          path="products"
+          element={
+            <Suspended>
+              <ProductsPage />
+            </Suspended>
+          }
+        />
+        <Route
+          path="products/:slug"
+          element={
+            <Suspended>
+              <ProductDetailPage />
             </Suspended>
           }
         />

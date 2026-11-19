@@ -3,6 +3,8 @@ import {
   findCategories,
   findFaqs,
   findGalleryItems,
+  findProductBySlug,
+  findProducts,
   findServiceBySlug,
   findServices,
   findTeamMembers,
@@ -133,6 +135,31 @@ export async function getPublicService(
     ...service,
     related: relatedFiltered,
   };
+}
+
+export async function getPublicProducts(
+  filters: {
+    category?: string;
+    q?: string;
+    featured?: boolean;
+    limit?: number;
+    page?: number;
+  } = {},
+) {
+  const result = await findProducts(filters);
+  return {
+    isDemo: result.items.length === 0,
+    items: result.items,
+    categories: result.categories,
+    total: result.total,
+    page: result.page,
+    limit: result.limit,
+    totalPages: result.totalPages,
+  };
+}
+
+export async function getPublicProduct(slug: string) {
+  return findProductBySlug(slug);
 }
 
 export async function getPublicGallery(category?: string) {

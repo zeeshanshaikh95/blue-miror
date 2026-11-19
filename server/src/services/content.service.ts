@@ -6,6 +6,7 @@ import {
   Category,
   Faq,
   Gallery,
+  Product,
   Service,
   Team,
   Testimonial,
@@ -13,6 +14,7 @@ import {
   type CategoryDocument,
   type FaqDocument,
   type GalleryDocument,
+  type ProductDocument,
   type ServiceDocument,
   type TeamDocument,
   type TestimonialDocument,
@@ -48,6 +50,26 @@ export type PublicCategorySummary = {
   slug: string;
   name: string;
   description: string;
+};
+
+export type PublicProductSummary = {
+  id: string;
+  slug: string;
+  name: string;
+  brand: string | null;
+  category: string;
+  shortDescription: string;
+  price: string | null;
+  size: string | null;
+  isFeatured: boolean;
+  /** Delivery URL for the product image, null when none is set. */
+  imageUrl: string | null;
+  isPlaceholder: false;
+};
+
+export type PublicProductDetail = PublicProductSummary & {
+  description: string[];
+  features: string[];
 };
 
 export type PublicGalleryItem = {
@@ -305,6 +327,95 @@ export async function findRelatedServiceIds(
   ]);
 
   return ids.map((item) => ({ id: item._id, slug: item.slug, name: item.name }));
+}
+
+function toPublicProductSummary(doc: ProductDocument): PublicProductSummary {
+  return {
+    id: doc._id.toString(),
+    slug: doc.slug,
+    name: doc.name,
+    brand: doc.brand,
+    category: doc.category,
+    shortDescription: doc.shortDescription,
+    price: doc.price,
+    size: doc.size,
+    isFeatured: doc.isFeatured,
+    imageUrl: buildCloudinaryImageUrl(doc.image?.publicId, { width: 900 }) ?? doc.image?.url ?? null,
+    isPlaceholder: false,
+  };
+}
+
+export async function findProducts(filters: {
+  category?: string;
+  q?: string;
+  featured?: boolean;
+  limit?: number;
+  page?: number;
+} = {}): Promise<{
+  items: PublicProductSummary[];
+  categories: string[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}> {
+  const limit = Math.max(1, Math.min(48, Number(filters.limit ?? 24)));
+  const page = Math.max(1, Number(filters.page ?? 1));
+  const skip = (page - 1) * limit;
+  const normalizedCategory = (filters.category ?? '').trim();
+  const normalizedQuery = (filters.q ?? '').trim();
+
+  const match: Record<string, unknown> = {
+    isArchived: false,
+    publishedAt: mongoose.trusted({ $ne: null }),
+  };
+  if (normalizedCategory) match.category = normalizedCategory;
+  if (filters.featured === true) match.isFeatured = true;
+
+  if (normalizedQuery) {
+    const pattern = new RegExp(normalizedQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    match.$or = [
+      { name: pattern },
+      { brand: pattern },
+      { category: pattern },
+      { shortDescription: pattern },
+    ];
+  }
+
+  const published = { isArchived: false, publishedAt: mongoose.trusted({ $ne: null }) };
+  const [docs, categories, total] = await Promise.all([
+    Product.find(match)
+      .sort({ isFeatured: -1, order: 1, name: 1 })
+      .skip(skip)
+      .limit(limit)
+      .lean<ProductDocument[]>(),
+    Product.distinct('category', published),
+    Product.countDocuments(match),
+  ]);
+
+  return {
+    items: docs.map(toPublicProductSummary),
+    categories: categories.filter(Boolean).sort(),
+    total,
+    page,
+    limit,
+    totalPages: total > 0 ? Math.ceil(total / limit) : 0,
+  };
+}
+
+export async function findProductBySlug(slug: string): Promise<PublicProductDetail | null> {
+  const doc = await Product.findOne({
+    slug: slug.trim().toLowerCase(),
+    isArchived: false,
+  }).lean<ProductDocument>();
+
+  if (!doc) return null;
+
+  return {
+    ...toPublicProductSummary(doc),
+    description: doc.description,
+    features: doc.features,
+  };
 }
 
 export async function findGalleryItems(

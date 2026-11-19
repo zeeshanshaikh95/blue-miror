@@ -5,6 +5,7 @@ import {
   Category,
   Faq,
   Gallery,
+  Product,
   Service,
   Team,
   Testimonial,
@@ -16,6 +17,8 @@ import {
   CategoryUpsertSchema,
   ServiceCreateSchema,
   ServiceUpdateSchema,
+  ProductCreateSchema,
+  ProductUpdateSchema,
   GalleryCreateSchema,
   GalleryUpdateSchema,
   TeamCreateSchema,
@@ -303,6 +306,112 @@ adminRouter.patch('/admin/categories/reorder', async (request, response, next) =
       success: true,
       data: { items: items.map((item) => ({ ...item, id: item._id })), total: items.length },
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// -----------------------------------------------------------------------------------
+// Products
+// -----------------------------------------------------------------------------------
+
+adminRouter.get('/admin/products', async (request, response, next) => {
+  try {
+    const {
+      page = 1,
+      limit = 24,
+      category,
+      q,
+    } = request.query as {
+      page?: string;
+      limit?: string;
+      category?: string;
+      q?: string;
+    };
+    const limitCount = Math.max(1, Math.min(48, Number(limit) || 24));
+    const skip = Math.max(0, (Math.max(1, Number(page) || 1) - 1) * limitCount);
+
+    const match: Record<string, unknown> = { isArchived: false };
+    if (category && typeof category === 'string') match.category = category.trim();
+    if (q && typeof q === 'string' && q.trim()) {
+      const pattern = new RegExp(q.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+      match.$or = [
+        { name: pattern },
+        { brand: pattern },
+        { category: pattern },
+        { shortDescription: pattern },
+      ];
+    }
+
+    const [items, total] = await Promise.all([
+      Product.find(match)
+        .sort({ isFeatured: -1, order: 1, name: 1 })
+        .skip(skip)
+        .limit(limitCount)
+        .lean(),
+      Product.countDocuments(match),
+    ]);
+
+    return response.json({
+      success: true,
+      data: buildPaginated(
+        items.map((item) => ({ ...item, id: item._id })),
+        Math.max(1, Number(page) || 1),
+        limitCount,
+        total,
+      ),
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.post('/admin/products', async (request, response, next) => {
+  try {
+    const input = ProductCreateSchema.parse(request.body);
+    const product = await Product.create(input);
+    return response
+      .status(201)
+      .json({ success: true, data: { ...product.toObject(), id: product._id } });
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.get('/admin/products/:id', async (request, response, next) => {
+  try {
+    const product = await Product.findOne({ _id: request.params.id, isArchived: false }).lean();
+    if (!product) return next(new AppError(404, 'PRODUCT_NOT_FOUND', 'Product not found.'));
+    return response.json({ success: true, data: { ...product, id: product._id } });
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.put('/admin/products/:id', async (request, response, next) => {
+  try {
+    const input = ProductUpdateSchema.parse(request.body);
+    const product = await Product.findOneAndUpdate(
+      { _id: request.params.id, isArchived: false },
+      { $set: input },
+      { new: true, runValidators: true },
+    ).lean();
+    if (!product) return next(new AppError(404, 'PRODUCT_NOT_FOUND', 'Product not found.'));
+    return response.json({ success: true, data: { ...product, id: product._id } });
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.delete('/admin/products/:id', async (request, response, next) => {
+  try {
+    const product = await Product.findOneAndUpdate(
+      { _id: request.params.id },
+      { $set: { isArchived: true } },
+      { new: true },
+    ).lean();
+    if (!product) return next(new AppError(404, 'PRODUCT_NOT_FOUND', 'Product not found.'));
+    return response.json({ success: true, data: { ...product, id: product._id } });
   } catch (error) {
     next(error);
   }

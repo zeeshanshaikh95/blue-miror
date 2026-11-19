@@ -4,6 +4,8 @@ import {
   getPublicSettings,
   getPublicService,
   getPublicServiceList,
+  getPublicProducts,
+  getPublicProduct,
   getPublicGallery,
   getPublicTestimonials,
   getPublicTeam,
@@ -81,6 +83,49 @@ publicContentRouter.get('/services', async (request, response) => {
       totalPages: result.totalPages,
     },
   });
+});
+
+publicContentRouter.get('/products', async (request, response) => {
+  const query = listQuerySchema.parse(request.query as Record<string, unknown>);
+  const filters = {
+    q: query.q,
+    category: query.category,
+    featured: query.featured === 'true' ? true : undefined,
+    limit: query.limit,
+    page: query.page,
+  };
+
+  const result = await getPublicProducts(filters);
+
+  response.json({
+    success: true,
+    data: {
+      isDemo: result.isDemo,
+      items: result.items,
+      categories: result.categories,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
+    },
+    meta: {
+      page: result.page,
+      limit: result.limit,
+      total: result.total,
+      totalPages: result.totalPages,
+    },
+  });
+});
+
+publicContentRouter.get('/products/:slug', async (request, response) => {
+  const slug = typeof request.params.slug === 'string' ? request.params.slug : '';
+  const product = await getPublicProduct(slug);
+
+  if (!product) {
+    throw new AppError(404, 'PRODUCT_NOT_FOUND', 'This product could not be found.');
+  }
+
+  response.json({ success: true, data: product });
 });
 
 publicContentRouter.get('/services/:slug', async (request, response) => {

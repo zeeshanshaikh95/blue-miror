@@ -35,6 +35,8 @@ export {
   CategoryUpsertSchema,
   ServiceCreateSchema,
   ServiceUpdateSchema,
+  ProductCreateSchema,
+  ProductUpdateSchema,
   GalleryCreateSchema,
   GalleryUpdateSchema,
   TeamCreateSchema,

@@ -416,3 +416,40 @@ export type InboxQuery = {
   q?: string;
   status?: string;
 };
+
+export type AdminProduct = {
+  id: string;
+  slug: string;
+  name: string;
+  brand: string | null;
+  category: string;
+  shortDescription: string;
+  description: string[];
+  features: string[];
+  price: string | null;
+  size: string | null;
+  isFeatured: boolean;
+  publishedAt: string | null;
+  isArchived: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  seo: { title: string | null; description: string | null } | null;
+  image: { publicId: string; url: string; alt: string } | null;
+  imageUrl?: string | null;
+};
+
+export type ProductInput = {
+  slug: string;
+  name: string;
+  brand: string | null;
+  category: string;
+  shortDescription: string;
+  description: string[];
+  features: string[];
+  price: string | null;
+  size: string | null;
+  isFeatured: boolean;
+  publishedAt: string | null;
+  seo: { title: string | null; description: string | null };
+  image: { publicId: string; url: string; alt: string } | null;
+};

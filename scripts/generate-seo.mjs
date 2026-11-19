@@ -55,6 +55,13 @@ const routes = [
     changeFrequency: 'weekly',
   },
   {
+    path: '/products',
+    title: 'Products - Blue Miror',
+    description: 'Professional nail and beauty products used and available at Blue Miror.',
+    priority: '0.8',
+    changeFrequency: 'weekly',
+  },
+  {
     path: '/gallery',
     title: 'Gallery — Blue Miror',
     description: 'A first look at the Blue Miror clinic visual direction.',

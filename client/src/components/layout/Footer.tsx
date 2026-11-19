@@ -11,6 +11,7 @@ import { Eyebrow } from '../ui/Eyebrow';
 const exploreLinks = [
   { label: 'About', to: '/about' },
   { label: 'Treatments', to: '/treatments' },
+  { label: 'Products', to: '/products' },
   { label: 'Gallery', to: '/gallery' },
   { label: 'Team', to: '/team' },
 ];
