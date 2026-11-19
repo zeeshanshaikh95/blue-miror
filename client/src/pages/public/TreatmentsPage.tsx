@@ -113,46 +113,54 @@ export function TreatmentsPage() {
               </div>
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                aria-pressed={!category}
-                onClick={() => updateFilter('category', '')}
-                className={cn(
-                  'border px-3 py-2 text-[0.6rem] font-medium tracking-[0.14em] uppercase transition-colors',
-                  !category
-                    ? 'border-brand-indigo bg-brand-indigo text-brand-ivory'
-                    : 'border-brand-line bg-transparent text-brand-muted hover:border-brand-indigo hover:text-brand-indigo',
-                )}
-              >
-                All treatments
-              </button>
+            <div className="mt-6 flex items-center gap-3">
+              <div className="relative min-w-0 flex-1">
+                <div className="scrollbar-none flex snap-x gap-2 overflow-x-auto pb-1">
+                  <button
+                    type="button"
+                    aria-pressed={!category}
+                    onClick={() => updateFilter('category', '')}
+                    className={cn(
+                      'shrink-0 snap-start border px-4 py-2 text-[0.6rem] font-medium tracking-[0.14em] uppercase transition-colors',
+                      !category
+                        ? 'border-brand-indigo bg-brand-indigo text-brand-ivory'
+                        : 'border-brand-line bg-transparent text-brand-muted hover:border-brand-indigo hover:text-brand-indigo',
+                    )}
+                  >
+                    All treatments
+                  </button>
 
-              {categories.map((item) => (
-                <button
-                  key={item.slug}
-                  type="button"
-                  aria-pressed={category === item.slug}
-                  onClick={() => updateFilter('category', item.slug)}
-                  className={cn(
-                    'border px-3 py-2 text-[0.6rem] font-medium tracking-[0.14em] uppercase transition-colors',
-                    category === item.slug
-                      ? 'border-brand-indigo bg-brand-indigo text-brand-ivory'
-                      : 'border-brand-line bg-transparent text-brand-muted hover:border-brand-indigo hover:text-brand-indigo',
-                  )}
-                >
-                  {item.name}
-                </button>
-              ))}
+                  {categories.map((item) => (
+                    <button
+                      key={item.slug}
+                      type="button"
+                      aria-pressed={category === item.slug}
+                      onClick={() => updateFilter('category', item.slug)}
+                      className={cn(
+                        'shrink-0 snap-start border px-4 py-2 text-[0.6rem] font-medium tracking-[0.14em] uppercase transition-colors',
+                        category === item.slug
+                          ? 'border-brand-indigo bg-brand-indigo text-brand-ivory'
+                          : 'border-brand-line bg-transparent text-brand-muted hover:border-brand-indigo hover:text-brand-indigo',
+                      )}
+                    >
+                      {item.name}
+                    </button>
+                  ))}
+                </div>
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-brand-porcelain to-transparent"
+                />
+              </div>
 
               {hasFilters ? (
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="ml-auto inline-flex items-center gap-1.5 px-2 py-2 text-[0.6rem] font-medium tracking-[0.14em] text-brand-gold-deep uppercase underline decoration-brand-gold/60 underline-offset-4"
+                  className="shrink-0 inline-flex items-center gap-1.5 px-2 py-2 text-[0.6rem] font-medium tracking-[0.14em] text-brand-gold-deep uppercase underline decoration-brand-gold/60 underline-offset-4"
                 >
                   <X aria-hidden="true" size={13} />
-                  Clear filters
+                  Clear
                 </button>
               ) : null}
             </div>
