@@ -28,26 +28,6 @@ export function GalleryPage() {
         description="A visual direction for Blue Miror. Final gallery photography is pending, with no simulated treatment results."
       />
 
-      <PageHero
-        eyebrow="A glimpse"
-        title={
-          <>
-            Space to feel
-            <br /> <em className="text-brand-gold-deep">at ease</em>.
-          </>
-        }
-        intro="A first look at the visual language of the clinic. Images published here have been supplied and approved by the clinic; anything still pending is shown as a clearly marked placeholder."
-        aside={
-          <div className="border-l border-brand-gold/60 pl-5">
-            <ContentBadge>Photography pending</ContentBadge>
-            <p className="mt-3 text-sm leading-6 text-brand-muted">
-              No before/after results, stock clinic images or simulated outcomes are used in this
-              preview.
-            </p>
-          </div>
-        }
-      />
-
       <section className="py-12 sm:py-16 lg:py-20">
         <Container>
           <div className="flex flex-wrap gap-2 border-b border-brand-line pb-6">
@@ -145,6 +125,28 @@ export function GalleryPage() {
             </p>
           </div>
         </Container>
+      </section>
+
+      <section className="border-t border-brand-line pt-12 sm:pt-16">
+        <PageHero
+          eyebrow="A glimpse"
+          title={
+            <>
+              Space to feel
+              <br /> <em className="text-brand-gold-deep">at ease</em>.
+            </>
+          }
+          intro="A first look at the visual language of the clinic. Images published here have been supplied and approved by the clinic; anything still pending is shown as a clearly marked placeholder."
+          aside={
+            <div className="border-l border-brand-gold/60 pl-5">
+              <ContentBadge>Photography pending</ContentBadge>
+              <p className="mt-3 text-sm leading-6 text-brand-muted">
+                No before/after results, stock clinic images or simulated outcomes are used in this
+                preview.
+              </p>
+            </div>
+          }
+        />
       </section>
     </>
   );
