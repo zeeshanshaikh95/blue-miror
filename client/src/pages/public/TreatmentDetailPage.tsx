@@ -132,11 +132,21 @@ export function TreatmentDetailPage() {
               className="absolute -inset-2 rounded-t-full border border-brand-gold/25"
             />
             <div className="relative">
-              <BrandVisual
-                variant={service.visual}
-                label={`${service.name} visual`}
-                className="aspect-[5/4] rounded-t-full sm:aspect-[4/3]"
-              />
+              {service.imageUrl ? (
+                <img
+                  src={service.imageUrl}
+                  alt={`${service.name} treatment`}
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-[5/4] w-full rounded-t-full border border-brand-line object-cover sm:aspect-[4/3]"
+                />
+              ) : (
+                <BrandVisual
+                  variant={service.visual}
+                  label={`${service.name} visual`}
+                  className="aspect-[5/4] rounded-t-full sm:aspect-[4/3]"
+                />
+              )}
               {service.isPlaceholder ? (
                 <div className="mt-3 flex justify-end">
                   <ContentBadge>Sample treatment content</ContentBadge>

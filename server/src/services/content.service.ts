@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+import { buildCloudinaryImageUrl } from '../config/cloudinary.js';
 import { type ServiceFilters } from '../lib/validation.js';
 import {
   Category,
@@ -28,6 +29,8 @@ export type PublicServiceSummary = {
   shortDescription: string;
   isFeatured: boolean;
   isPlaceholder: false;
+  /** Delivery URL for the uploaded treatment image, null when none is set. */
+  imageUrl: string | null;
   visual: 'arch' | 'orbit' | 'drape' | 'horizon' | 'bloom' | 'column';
 };
 
@@ -51,6 +54,8 @@ export type PublicGalleryItem = {
   alt: string;
   category: string;
   variant: 'arch' | 'orbit' | 'drape' | 'horizon' | 'bloom' | 'column';
+  /** Delivery URL for the uploaded image, null while only a placeholder exists. */
+  imageUrl: string | null;
   isPlaceholder: false;
 };
 
@@ -67,6 +72,8 @@ export type PublicTeamMember = {
   name: string;
   designation: string;
   bio: string | null;
+  /** Delivery URL for the uploaded portrait, null when no image is set. */
+  imageUrl: string | null;
   isPlaceholder: false;
 };
 
@@ -181,8 +188,8 @@ export async function findServices(filters: ServiceFilters = {}): Promise<{
   if (filters.featured === true) baseFilter.isFeatured = true;
 
   const match = buildSearchMatch(baseFilter, normalizedQuery);
-  const [items, total] = await Promise.all([
-    Service.aggregate<PublicServiceSummary>([
+  const [rows, total] = await Promise.all([
+    Service.aggregate<PublicServiceSummary & { imagePublicId: string | null }>([
       { $match: match },
       { $sort: { isFeatured: -1, name: 1 } },
       { $skip: skip },
@@ -208,11 +215,18 @@ export async function findServices(filters: ServiceFilters = {}): Promise<{
           isFeatured: 1,
           isPlaceholder: { $literal: false },
           visual: 1,
+          imageUrl: { $ifNull: ['$image.url', null] },
+          imagePublicId: '$image.publicId',
         },
       },
     ]),
     Service.countDocuments(match),
   ]);
+
+  const items: PublicServiceSummary[] = rows.map(({ imagePublicId, ...row }) => ({
+    ...row,
+    imageUrl: buildCloudinaryImageUrl(imagePublicId, { width: 900 }) ?? row.imageUrl ?? null,
+  }));
 
   return {
     items,
@@ -262,6 +276,8 @@ export async function findServiceBySlug(slug: string): Promise<PublicServiceDeta
     isFeatured: doc.isFeatured,
     isPlaceholder: false,
     visual: doc.visual,
+    imageUrl:
+      buildCloudinaryImageUrl(doc.image?.publicId, { width: 1200 }) ?? doc.image?.url ?? null,
     description: doc.description,
     steps: doc.steps,
     benefits: doc.benefits,
@@ -311,6 +327,7 @@ export async function findGalleryItems(
       alt: doc.alt,
       category: doc.category,
       variant: doc.variant,
+      imageUrl: buildCloudinaryImageUrl(doc.cloudId, { width: 900 }),
       isPlaceholder: false,
     })),
     categories: categories.filter(Boolean).sort(),
@@ -365,6 +382,7 @@ export async function findTeamMembers(): Promise<{ items: PublicTeamMember[]; no
       name: doc.name,
       designation: doc.designation,
       bio: doc.bio,
+      imageUrl: buildCloudinaryImageUrl(doc.cloudId, { width: 700 }),
       isPlaceholder: false,
     })),
   };

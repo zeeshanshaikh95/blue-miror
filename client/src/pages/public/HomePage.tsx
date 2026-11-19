@@ -14,6 +14,7 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ServiceCard } from '@/components/ui/ServiceCard';
 import { useFaqs, useGallery, useServices, useSiteSettings } from '@/hooks/use-public-content';
+import { cn } from '@/utils/cn';
 
 const principles = [
   {
@@ -315,11 +316,24 @@ export function HomePage() {
                       to="/gallery"
                       className={index === 1 ? 'group mt-8 sm:mt-12' : 'group'}
                     >
-                      <BrandVisual
-                        variant={item.variant}
-                        label={item.title}
-                        className={index % 2 === 0 ? 'aspect-[4/5]' : 'aspect-square'}
-                      />
+                      {item.imageUrl ? (
+                        <img
+                          src={item.imageUrl}
+                          alt={item.alt}
+                          loading="lazy"
+                          decoding="async"
+                          className={cn(
+                            'w-full border border-brand-line object-cover',
+                            index % 2 === 0 ? 'aspect-[4/5]' : 'aspect-square',
+                          )}
+                        />
+                      ) : (
+                        <BrandVisual
+                          variant={item.variant}
+                          label={item.title}
+                          className={index % 2 === 0 ? 'aspect-[4/5]' : 'aspect-square'}
+                        />
+                      )}
                     </Link>
                   ))}
                 </div>

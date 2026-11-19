@@ -147,7 +147,7 @@ describe('MediaUploadField', () => {
     );
     expect(screen.getByRole('img', { name: /selected image preview/i })).toHaveAttribute(
       'src',
-      'https://res.cloudinary.com/blue/image/upload/gallery/clinic.png',
+      'https://res.cloudinary.com/blue/image/upload/f_auto,q_auto,w_320/gallery/clinic.png',
     );
   });
 

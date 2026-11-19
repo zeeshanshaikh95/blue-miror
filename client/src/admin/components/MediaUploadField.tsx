@@ -2,6 +2,7 @@ import { useId, useRef, useState } from 'react';
 import { ImagePlus, Loader2, Trash2 } from 'lucide-react';
 
 import { ApiError } from '@/lib/api-client';
+import { previewImageUrl } from '@/utils/cloudinary-image';
 
 import {
   acceptedMediaTypes,
@@ -167,8 +168,10 @@ export function MediaUploadField({
         <div className="grid size-24 shrink-0 place-items-center overflow-hidden border border-brand-line bg-brand-ivory/70">
           {currentUrl ? (
             <img
-              src={currentUrl}
+              src={previewImageUrl(currentUrl, 320) ?? currentUrl}
               alt={alt?.trim() ? alt : 'Selected image preview'}
+              loading="lazy"
+              decoding="async"
               className="size-full object-cover"
             />
           ) : publicId ? (

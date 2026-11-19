@@ -11,6 +11,7 @@ import {
   WebsiteSettings,
 } from '../models/index.js';
 import type { AuthenticatedRequest } from '../middleware/auth.middleware.js';
+import { buildCloudinaryImageUrl } from '../config/cloudinary.js';
 import {
   CategoryUpsertSchema,
   ServiceCreateSchema,
@@ -314,7 +315,16 @@ adminRouter.patch('/admin/categories/reorder', async (request, response, next) =
 adminRouter.get('/admin/gallery', async (_request, response, next) => {
   try {
     const items = await Gallery.find({ isArchived: false }).sort({ createdAt: -1 }).lean();
-    return response.json({ success: true, data: { items, total: items.length } });
+    return response.json({
+      success: true,
+      data: {
+        items: items.map((item) => ({
+          ...item,
+          imageUrl: buildCloudinaryImageUrl(item.cloudId, { width: 900 }),
+        })),
+        total: items.length,
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -324,7 +334,14 @@ adminRouter.post('/admin/gallery', async (request, response, next) => {
   try {
     const input = GalleryCreateSchema.parse(request.body);
     const item = await Gallery.create(input);
-    return response.status(201).json({ success: true, data: { ...item.toObject(), id: item._id } });
+    return response.status(201).json({
+      success: true,
+      data: {
+        ...item.toObject(),
+        id: item._id,
+        imageUrl: buildCloudinaryImageUrl(item.cloudId, { width: 900 }),
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -339,7 +356,10 @@ adminRouter.put('/admin/gallery/:id', async (request, response, next) => {
       { new: true, runValidators: true },
     ).lean();
     if (!item) return next(new AppError(404, 'GALLERY_ITEM_NOT_FOUND', 'Gallery item not found.'));
-    return response.json({ success: true, data: { ...item, id: item._id } });
+    return response.json({
+      success: true,
+      data: { ...item, id: item._id, imageUrl: buildCloudinaryImageUrl(item.cloudId, { width: 900 }) },
+    });
   } catch (error) {
     next(error);
   }
@@ -353,7 +373,10 @@ adminRouter.delete('/admin/gallery/:id', async (request, response, next) => {
       { new: true },
     ).lean();
     if (!item) return next(new AppError(404, 'GALLERY_ITEM_NOT_FOUND', 'Gallery item not found.'));
-    return response.json({ success: true, data: { ...item, id: item._id } });
+    return response.json({
+      success: true,
+      data: { ...item, id: item._id, imageUrl: buildCloudinaryImageUrl(item.cloudId, { width: 900 }) },
+    });
   } catch (error) {
     next(error);
   }
@@ -366,7 +389,16 @@ adminRouter.delete('/admin/gallery/:id', async (request, response, next) => {
 adminRouter.get('/admin/team', async (_request, response, next) => {
   try {
     const items = await Team.find({ isArchived: false }).sort({ createdAt: -1 }).lean();
-    return response.json({ success: true, data: { items, total: items.length } });
+    return response.json({
+      success: true,
+      data: {
+        items: items.map((member) => ({
+          ...member,
+          imageUrl: buildCloudinaryImageUrl(member.cloudId, { width: 700 }),
+        })),
+        total: items.length,
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -376,9 +408,14 @@ adminRouter.post('/admin/team', async (request, response, next) => {
   try {
     const input = TeamCreateSchema.parse(request.body);
     const member = await Team.create(input);
-    return response
-      .status(201)
-      .json({ success: true, data: { ...member.toObject(), id: member._id } });
+    return response.status(201).json({
+      success: true,
+      data: {
+        ...member.toObject(),
+        id: member._id,
+        imageUrl: buildCloudinaryImageUrl(member.cloudId, { width: 700 }),
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -393,7 +430,14 @@ adminRouter.put('/admin/team/:id', async (request, response, next) => {
       { new: true, runValidators: true },
     ).lean();
     if (!member) return next(new AppError(404, 'TEAM_MEMBER_NOT_FOUND', 'Team member not found.'));
-    return response.json({ success: true, data: { ...member, id: member._id } });
+    return response.json({
+      success: true,
+      data: {
+        ...member,
+        id: member._id,
+        imageUrl: buildCloudinaryImageUrl(member.cloudId, { width: 700 }),
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -407,7 +451,14 @@ adminRouter.delete('/admin/team/:id', async (request, response, next) => {
       { new: true },
     ).lean();
     if (!member) return next(new AppError(404, 'TEAM_MEMBER_NOT_FOUND', 'Team member not found.'));
-    return response.json({ success: true, data: { ...member, id: member._id } });
+    return response.json({
+      success: true,
+      data: {
+        ...member,
+        id: member._id,
+        imageUrl: buildCloudinaryImageUrl(member.cloudId, { width: 700 }),
+      },
+    });
   } catch (error) {
     next(error);
   }

@@ -17,11 +17,21 @@ export function ServiceCard({ service }: ServiceCardProps) {
       to={`/treatments/${service.slug}`}
       className="group flex h-full flex-col border border-brand-line bg-brand-porcelain transition-colors duration-300 hover:border-brand-gold/70"
     >
-      <BrandVisual
-        variant={service.visual}
-        label={`${service.name} visual`}
-        className="aspect-[4/5] w-full"
-      />
+      {service.imageUrl ? (
+        <img
+          src={service.imageUrl}
+          alt={`${service.name} treatment`}
+          loading="lazy"
+          decoding="async"
+          className="aspect-[4/5] w-full border-b border-brand-line object-cover"
+        />
+      ) : (
+        <BrandVisual
+          variant={service.visual}
+          label={`${service.name} visual`}
+          className="aspect-[4/5] w-full"
+        />
+      )}
 
       <div className="flex flex-1 flex-col p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">

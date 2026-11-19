@@ -26,4 +26,24 @@ export const cloudinaryStatus = {
   folderPrefix: env.CLOUDINARY_FOLDER_PREFIX,
 };
 
+/**
+ * Build a delivery URL for a stored Cloudinary public ID.
+ *
+ * The transformation asks Cloudinary for an auto-format, auto-quality image at
+ * a bounded width so admin previews and public cards never decode a phone-sized
+ * original (which is what made the editors lag).
+ */
+export function buildCloudinaryImageUrl(
+  publicId: string | null | undefined,
+  options: { width?: number } = {},
+): string | null {
+  const id = publicId?.trim();
+  if (!id || !env.CLOUDINARY_CLOUD_NAME) return null;
+
+  const width = options.width ?? 900;
+  const transformation = `f_auto,q_auto,w_${width}`;
+
+  return `https://res.cloudinary.com/${env.CLOUDINARY_CLOUD_NAME}/image/upload/${transformation}/${id}`;
+}
+
 export { cloudinary };

@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Pencil, Plus, Search, Star, Trash2 } from 'lucide-react';
 
 import { ApiError } from '@/lib/api-client';
+import { previewImageUrl } from '@/utils/cloudinary-image';
 
 import { archiveService, createService, listCategories, listServices, updateService } from '../api';
 import {
@@ -274,6 +275,35 @@ function ServiceEditor({
       }
     >
       <form id="service-form" onSubmit={handleSubmit} noValidate className="space-y-5">
+        {Object.keys(errors).length > 0 ? (
+          <Alert tone="error">
+            <strong className="font-medium">This service is missing required details:</strong>{' '}
+            {[
+              ['name', 'service name'],
+              ['slug', 'slug'],
+              ['category', 'category'],
+              ['shortDescription', 'short description'],
+              ['description', 'overview'],
+              ['steps', 'steps'],
+              ['benefits', 'benefits'],
+              ['considerations', 'considerations'],
+              ['faqs', 'at least one FAQ'],
+              ['imageUrl', 'a valid image upload'],
+            ]
+              .filter(([key]) => errors[key as keyof typeof errors])
+              .map(([, label]) => label)
+              .join(', ')}
+            .
+          </Alert>
+        ) : null}
+
+        {categories.length === 0 ? (
+          <Alert tone="info">
+            No categories exist yet. Create one in <strong>Categories</strong> first, then come back
+            to add this service.
+          </Alert>
+        ) : null}
+
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="Service name" htmlFor="service-name" required error={errors.name}>
             <TextInput
@@ -530,6 +560,21 @@ function ServiceEditor({
                   onChange={(event) => update('imageAlt', event.target.value)}
                 />
               </Field>
+            ) : null}
+
+            {form.imageUrl ? (
+              <div>
+                <p className="text-[0.625rem] tracking-[0.18em] text-brand-muted uppercase">
+                  Image preview
+                </p>
+                <img
+                  src={previewImageUrl(form.imageUrl, 800) ?? form.imageUrl}
+                  alt={form.imageAlt.trim() || 'Service image preview'}
+                  loading="lazy"
+                  decoding="async"
+                  className="mt-2 aspect-[4/3] w-full max-w-sm border border-brand-line object-cover"
+                />
+              </div>
             ) : null}
           </div>
         </fieldset>

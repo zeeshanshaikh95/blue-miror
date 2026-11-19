@@ -24,6 +24,7 @@ const serviceSummarySchema = z.object({
   shortDescription: z.string(),
   isFeatured: z.boolean(),
   isPlaceholder: z.boolean(),
+  imageUrl: z.string().nullable().optional(),
   visual: visualSchema,
 });
 
@@ -120,6 +121,7 @@ const galleryItemSchema = z.object({
   alt: z.string(),
   category: z.string(),
   variant: visualSchema,
+  imageUrl: z.string().nullable().optional(),
   isPlaceholder: z.boolean(),
 });
 
@@ -163,6 +165,7 @@ const teamMemberSchema = z.object({
   name: z.string(),
   designation: z.string(),
   bio: z.string().nullable(),
+  imageUrl: z.string().nullable().optional(),
 });
 
 const teamResponseSchema = z.object({

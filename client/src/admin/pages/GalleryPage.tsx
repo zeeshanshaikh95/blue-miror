@@ -4,6 +4,7 @@ import { ImageOff, Pencil, Plus, Trash2 } from 'lucide-react';
 
 import { ApiError } from '@/lib/api-client';
 import { BrandVisual } from '@/components/ui/BrandVisual';
+import { previewImageUrl } from '@/utils/cloudinary-image';
 
 import { archiveGalleryItem, createGalleryItem, listGallery, updateGalleryItem } from '../api';
 import {
@@ -34,6 +35,7 @@ type GalleryForm = {
   alt: string;
   category: string;
   cloudId: string;
+  imageUrl: string;
   variant: VisualVariant;
   published: boolean;
 };
@@ -56,6 +58,7 @@ function GalleryEditor({
     alt: item?.alt ?? '',
     category: item?.category ?? '',
     cloudId: item?.cloudId ?? '',
+    imageUrl: item?.imageUrl ?? '',
     variant: item?.variant ?? 'arch',
     published: Boolean(item?.publishedAt),
   }));
@@ -164,6 +167,7 @@ function GalleryEditor({
           label="Image"
           folder="gallery"
           publicId={form.cloudId}
+          previewUrl={form.imageUrl || null}
           alt={form.alt}
           error={errors.cloudId}
           hint="Uploads go to the Blue Miror Cloudinary gallery folder. Only the public ID is saved with the item."
@@ -171,6 +175,7 @@ function GalleryEditor({
             setForm((current) => ({
               ...current,
               cloudId: asset?.publicId ?? '',
+              imageUrl: asset?.url ?? '',
             }))
           }
         />
@@ -214,11 +219,21 @@ function GalleryEditor({
         <div className="border border-brand-line bg-white/60 p-4">
           <p className="text-[0.625rem] tracking-[0.18em] text-brand-muted uppercase">Preview</p>
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
-            <BrandVisual
-              variant={form.variant}
-              label={form.title || 'Untitled image'}
-              className="aspect-[4/5]"
-            />
+            {form.imageUrl ? (
+              <img
+                src={previewImageUrl(form.imageUrl, 800) ?? form.imageUrl}
+                alt={form.alt.trim() || form.title || 'Gallery image preview'}
+                loading="lazy"
+                decoding="async"
+                className="aspect-[4/5] w-full object-cover"
+              />
+            ) : (
+              <BrandVisual
+                variant={form.variant}
+                label={form.title || 'Untitled image'}
+                className="aspect-[4/5]"
+              />
+            )}
           </div>
         </div>
       </form>

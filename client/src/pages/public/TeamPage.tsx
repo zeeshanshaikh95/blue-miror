@@ -86,9 +86,19 @@ export function TeamPage() {
                   key={member.id}
                   className="border border-brand-line bg-brand-porcelain p-6"
                 >
-                  <div className="flex size-16 items-center justify-center rounded-t-full border border-brand-gold/50 bg-brand-indigo/5 font-display text-2xl text-brand-indigo">
-                    {member.name.charAt(0)}
-                  </div>
+                  {member.imageUrl ? (
+                    <img
+                      src={member.imageUrl}
+                      alt={`Portrait of ${member.name}`}
+                      loading="lazy"
+                      decoding="async"
+                      className="aspect-[4/5] w-full border border-brand-line object-cover"
+                    />
+                  ) : (
+                    <div className="flex size-16 items-center justify-center rounded-t-full border border-brand-gold/50 bg-brand-indigo/5 font-display text-2xl text-brand-indigo">
+                      {member.name.charAt(0)}
+                    </div>
+                  )}
                   <Eyebrow className="mt-5">{member.designation}</Eyebrow>
                   <h2 className="mt-3 font-display text-3xl text-brand-indigo">{member.name}</h2>
                   {member.bio ? (

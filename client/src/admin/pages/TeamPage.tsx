@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 
 import { ApiError } from '@/lib/api-client';
+import { previewImageUrl } from '@/utils/cloudinary-image';
 
 import { archiveTeamMember, createTeamMember, listTeam, updateTeamMember } from '../api';
 import {
@@ -28,6 +29,7 @@ type TeamForm = {
   designation: string;
   bio: string;
   cloudId: string;
+  imageUrl: string;
   published: boolean;
 };
 type Errors = Partial<Record<keyof TeamForm, string>>;
@@ -48,6 +50,7 @@ function TeamEditor({
     designation: member?.designation ?? '',
     bio: member?.bio ?? '',
     cloudId: member?.cloudId ?? '',
+    imageUrl: member?.imageUrl ?? '',
     published: Boolean(member?.publishedAt),
   }));
   const [errors, setErrors] = useState<Errors>({});
@@ -153,12 +156,41 @@ function TeamEditor({
           label="Profile image"
           folder="team"
           publicId={form.cloudId}
+          previewUrl={form.imageUrl || null}
           alt={form.name}
           hint="Optional. Only publish photographs the practitioner has approved."
           onChange={(asset) =>
-            setForm((current) => ({ ...current, cloudId: asset?.publicId ?? '' }))
+            setForm((current) => ({
+              ...current,
+              cloudId: asset?.publicId ?? '',
+              imageUrl: asset?.url ?? '',
+            }))
           }
         />
+
+        <div className="border border-brand-line bg-white/60 p-4">
+          <p className="text-[0.625rem] tracking-[0.18em] text-brand-muted uppercase">Preview</p>
+          <div className="mt-3 flex items-center gap-4">
+            {form.imageUrl ? (
+              <img
+                src={previewImageUrl(form.imageUrl, 400) ?? form.imageUrl}
+                alt={form.name.trim() || 'Team portrait preview'}
+                loading="lazy"
+                decoding="async"
+                className="size-28 border border-brand-line object-cover"
+              />
+            ) : (
+              <div className="grid size-28 place-items-center border border-brand-line bg-brand-ivory/70 text-[0.625rem] text-brand-muted">
+                No image yet
+              </div>
+            )}
+            <p className="max-w-xs text-xs leading-5 text-brand-muted">
+              {form.imageUrl
+                ? 'This is the exact image that will be published with the profile.'
+                : 'Upload a portrait to publish the exact image instead of the placeholder.'}
+            </p>
+          </div>
+        </div>
 
         <label className="flex items-center gap-3 border border-brand-line bg-brand-ivory/60 p-4 text-sm text-brand-indigo">
           <input

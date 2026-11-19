@@ -101,11 +101,24 @@ export function GalleryPage() {
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {items.map((item, index) => (
                   <figure key={item.id} className={index % 3 === 1 ? 'lg:mt-10' : undefined}>
-                    <BrandVisual
-                      variant={item.variant}
-                      label={item.alt}
-                      className={index % 2 === 0 ? 'aspect-[4/5]' : 'aspect-square'}
-                    />
+                    {item.imageUrl ? (
+                      <img
+                        src={item.imageUrl}
+                        alt={item.alt}
+                        loading="lazy"
+                        decoding="async"
+                        className={cn(
+                          'w-full border border-brand-line object-cover',
+                          index % 2 === 0 ? 'aspect-[4/5]' : 'aspect-square',
+                        )}
+                      />
+                    ) : (
+                      <BrandVisual
+                        variant={item.variant}
+                        label={item.alt}
+                        className={index % 2 === 0 ? 'aspect-[4/5]' : 'aspect-square'}
+                      />
+                    )}
                     <figcaption className="flex items-start justify-between gap-4 border-b border-brand-line py-4">
                       <div>
                         <p className="text-[0.625rem] tracking-[0.16em] text-brand-gold-deep uppercase">
@@ -114,7 +127,7 @@ export function GalleryPage() {
                         <p className="mt-1 font-display text-xl text-brand-indigo">{item.title}</p>
                       </div>
                       <span className="pt-1 text-[0.625rem] tracking-[0.12em] text-brand-muted uppercase">
-                        Pending
+                        {item.imageUrl ? 'Published' : 'Pending'}
                       </span>
                     </figcaption>
                   </figure>

@@ -115,6 +115,7 @@ export type AdminGalleryItem = {
   category: string;
   cloudId: string;
   variant: VisualVariant;
+  imageUrl?: string | null;
   publishedAt: string | null;
   isArchived: boolean;
   createdAt?: string;
@@ -136,6 +137,7 @@ export type AdminTeamMember = {
   designation: string;
   bio: string | null;
   cloudId: string | null;
+  imageUrl?: string | null;
   publishedAt: string | null;
   isArchived: boolean;
   createdAt?: string;
