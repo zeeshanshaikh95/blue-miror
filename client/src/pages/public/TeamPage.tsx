@@ -36,17 +36,6 @@ export function TeamPage() {
             <br /> <em className="text-brand-gold-deep">the care</em>.
           </>
         }
-        intro="The clinic’s practitioners will be introduced here with verified roles and credentials. No sample names, qualifications or portraits have been invented for this preview."
-        aside={
-          <div className="border-l border-brand-gold/60 pl-5">
-            <p className="text-[0.6rem] tracking-[0.18em] text-brand-gold-deep uppercase">
-              Publication standard
-            </p>
-            <p className="mt-2 text-sm leading-6 text-brand-muted">
-              Credentials first. A profile is unpublished rather than filled with assumptions.
-            </p>
-          </div>
-        }
       />
 
       <section className="py-12 sm:py-16 lg:py-20">
@@ -137,6 +126,26 @@ export function TeamPage() {
               <div className="mt-8">
                 <BookingLink />
               </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      <section className="border-t border-brand-line py-12 sm:py-16">
+        <Container>
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.65fr] lg:items-end">
+            <p className="max-w-2xl text-[0.98rem] leading-8 text-brand-muted sm:text-lg">
+              The clinic’s practitioners will be introduced here with verified roles and
+              credentials. No sample names, qualifications or portraits have been invented for this
+              preview.
+            </p>
+            <div className="border-l border-brand-gold/60 pl-5">
+              <p className="text-[0.6rem] tracking-[0.18em] text-brand-gold-deep uppercase">
+                Publication standard
+              </p>
+              <p className="mt-2 text-sm leading-6 text-brand-muted">
+                Credentials first. A profile is unpublished rather than filled with assumptions.
+              </p>
             </div>
           </div>
         </Container>
