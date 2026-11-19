@@ -170,7 +170,6 @@ export function MediaUploadField({
             <img
               src={previewImageUrl(currentUrl, 320) ?? currentUrl}
               alt={alt?.trim() ? alt : 'Selected image preview'}
-              loading="lazy"
               decoding="async"
               className="size-full object-cover"
             />

@@ -175,7 +175,6 @@ function TeamEditor({
               <img
                 src={previewImageUrl(form.imageUrl, 400) ?? form.imageUrl}
                 alt={form.name.trim() || 'Team portrait preview'}
-                loading="lazy"
                 decoding="async"
                 className="size-28 border border-brand-line object-cover"
               />

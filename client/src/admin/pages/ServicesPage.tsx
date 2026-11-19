@@ -570,7 +570,6 @@ function ServiceEditor({
                 <img
                   src={previewImageUrl(form.imageUrl, 800) ?? form.imageUrl}
                   alt={form.imageAlt.trim() || 'Service image preview'}
-                  loading="lazy"
                   decoding="async"
                   className="mt-2 aspect-[4/3] w-full max-w-sm border border-brand-line object-cover"
                 />

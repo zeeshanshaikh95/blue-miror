@@ -223,7 +223,6 @@ function GalleryEditor({
               <img
                 src={previewImageUrl(form.imageUrl, 800) ?? form.imageUrl}
                 alt={form.alt.trim() || form.title || 'Gallery image preview'}
-                loading="lazy"
                 decoding="async"
                 className="aspect-[4/5] w-full object-cover"
               />
@@ -336,7 +335,6 @@ export function GalleryPage() {
                 <img
                   src={previewImageUrl(item.imageUrl, 640) ?? item.imageUrl}
                   alt={item.alt || item.title}
-                  loading="lazy"
                   decoding="async"
                   className="aspect-[4/3] w-full border-b border-brand-line object-cover"
                 />
