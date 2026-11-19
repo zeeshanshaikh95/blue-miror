@@ -153,9 +153,9 @@ export function createEnv(source: NodeJS.ProcessEnv = process.env): AppEnv {
     if (!value.CLOUDINARY_API_SECRET) {
       issues.push('CLOUDINARY_API_SECRET is required in production.');
     }
-    if (!value.ADMIN_BOOTSTRAP_SECRET) {
-      issues.push('ADMIN_BOOTSTRAP_SECRET is required in production.');
-    }
+    // ADMIN_BOOTSTRAP_SECRET is intentionally optional: once the first admin
+    // exists the secret should be removed from the environment. The bootstrap
+    // endpoint returns 503 BOOTSTRAP_DISABLED when it is not configured.
 
     if (value.MONGODB_URI.includes('localhost') || value.MONGODB_URI.includes('127.0.0.1')) {
       issues.push('MONGODB_URI must not point to localhost in production.');

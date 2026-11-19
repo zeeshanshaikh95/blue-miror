@@ -62,6 +62,13 @@ describe('environment validation', () => {
     ).toThrow(/CLOUDINARY_CLOUD_NAME is required/);
   });
 
+  it('allows the bootstrap secret to be removed after the first admin exists', () => {
+    const parsed = createEnv({ ...productionEnv, ADMIN_BOOTSTRAP_SECRET: '' });
+
+    expect(parsed.IS_PRODUCTION).toBe(true);
+    expect(parsed.ADMIN_BOOTSTRAP_SECRET).toBeUndefined();
+  });
+
   it('rejects wildcard CORS origins', () => {
     expect(() => createEnv({ ...productionEnv, CORS_ORIGINS: '*' })).toThrow(/wildcard/);
   });
