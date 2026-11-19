@@ -1,0 +1,55 @@
+import { Link } from 'react-router-dom';
+
+import type { PublicTestimonial } from '@/services/public-content';
+
+type TestimonialMarqueeProps = {
+  testimonials: PublicTestimonial[];
+};
+
+/**
+ * Continuously scrolling strip of published client stories. The list is
+ * duplicated so the loop is seamless; the duplicate is hidden from assistive
+ * technology. Hovering pauses the animation, and reduced-motion users get a
+ * static row.
+ */
+export function TestimonialMarquee({ testimonials }: TestimonialMarqueeProps) {
+  if (testimonials.length === 0) return null;
+
+  const loop = [...testimonials, ...testimonials];
+
+  return (
+    <div className="mt-10">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[0.62rem] tracking-[0.18em] text-brand-gold-deep uppercase">
+          Client stories
+        </p>
+        <Link
+          to="/testimonials"
+          className="text-[0.6rem] font-medium tracking-[0.14em] text-brand-indigo uppercase underline decoration-brand-gold/60 underline-offset-4 transition-colors hover:text-brand-gold-deep"
+        >
+          All stories
+        </Link>
+      </div>
+
+      <div className="relative mt-4 overflow-hidden border-y border-brand-line py-4">
+        <div className="marquee-track flex w-max gap-4">
+          {loop.map((testimonial, index) => (
+            <figure
+              key={`${testimonial.id}-${index}`}
+              aria-hidden={index >= testimonials.length}
+              className="w-72 shrink-0 border border-brand-line bg-brand-porcelain p-5"
+            >
+              <blockquote className="font-display text-lg leading-snug text-brand-indigo">
+                “{testimonial.quote}”
+              </blockquote>
+              <figcaption className="mt-4 text-[0.6rem] tracking-[0.14em] text-brand-muted uppercase">
+                {testimonial.name}
+                {testimonial.treatment ? ` · ${testimonial.treatment}` : ''}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

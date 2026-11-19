@@ -16,12 +16,14 @@ import { ProductCard } from '@/components/ui/ProductCard';
 import { Reveal } from '@/components/ui/Reveal';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ServiceCard } from '@/components/ui/ServiceCard';
+import { TestimonialMarquee } from '@/components/ui/TestimonialMarquee';
 import {
   useFaqs,
   useGallery,
   useProducts,
   useServices,
   useSiteSettings,
+  useTestimonials,
 } from '@/hooks/use-public-content';
 import { cn } from '@/utils/cn';
 
@@ -48,8 +50,10 @@ export function HomePage() {
   const productsQuery = useProducts({ featured: true, limit: 3 });
   const galleryQuery = useGallery();
   const faqsQuery = useFaqs();
+  const testimonialsQuery = useTestimonials();
   const galleryItems = galleryQuery.data?.items.slice(0, 4) ?? [];
   const faqs = faqsQuery.data?.items.slice(0, 4) ?? [];
+  const testimonials = testimonialsQuery.data?.items ?? [];
   const settingsQuery = useSiteSettings();
   const homepage = settingsQuery.data?.homepage;
   const slides = homepage?.slides ?? [];
@@ -461,6 +465,8 @@ export function HomePage() {
                   ))}
                 </div>
               ) : null}
+
+              <TestimonialMarquee testimonials={testimonials} />
             </div>
           </Container>
         </section>
