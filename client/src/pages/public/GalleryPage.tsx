@@ -36,7 +36,7 @@ export function GalleryPage() {
             <br /> <em className="text-brand-gold-deep">at ease</em>.
           </>
         }
-        intro="A first look at the visual language of the clinic. Every image here is a clearly marked placeholder; final photography will be licensed clinic imagery."
+        intro="A first look at the visual language of the clinic. Images published here have been supplied and approved by the clinic; anything still pending is shown as a clearly marked placeholder."
         aside={
           <div className="border-l border-brand-gold/60 pl-5">
             <ContentBadge>Photography pending</ContentBadge>
