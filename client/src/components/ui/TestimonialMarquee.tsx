@@ -15,7 +15,11 @@ type TestimonialMarqueeProps = {
 export function TestimonialMarquee({ testimonials }: TestimonialMarqueeProps) {
   if (testimonials.length === 0) return null;
 
-  const loop = [...testimonials, ...testimonials];
+  // Repeat the set so the track is always wider than the viewport, then double
+  // it so the -50% translation loops seamlessly.
+  const repeat = Math.max(2, Math.ceil(6 / testimonials.length));
+  const half = Array.from({ length: repeat }, () => testimonials).flat();
+  const loop = [...half, ...half];
 
   return (
     <div className="mt-10">
@@ -36,7 +40,7 @@ export function TestimonialMarquee({ testimonials }: TestimonialMarqueeProps) {
           {loop.map((testimonial, index) => (
             <figure
               key={`${testimonial.id}-${index}`}
-              aria-hidden={index >= testimonials.length}
+              aria-hidden={index >= half.length}
               className="w-72 shrink-0 border border-brand-line bg-brand-porcelain p-5"
             >
               <blockquote className="font-display text-lg leading-snug text-brand-indigo">

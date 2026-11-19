@@ -404,7 +404,7 @@ export function HomePage() {
       {homepage?.showFaqs === false ? null : (
         <section className="py-16 sm:py-20 lg:py-24">
           <Container className="grid gap-12 lg:grid-cols-[0.78fr_1.22fr] lg:gap-20">
-            <div>
+            <div className="min-w-0">
               <Eyebrow>Questions</Eyebrow>
               <h2 className="mt-5 max-w-md font-display text-[clamp(2.5rem,4.8vw,4rem)] leading-[0.96] text-brand-indigo">
                 A little more clarity.
@@ -422,7 +422,7 @@ export function HomePage() {
               </Link>
             </div>
 
-            <div>
+            <div className="min-w-0">
               {faqsQuery.isPending ? (
                 <div
                   className="space-y-4"
@@ -464,6 +464,12 @@ export function HomePage() {
                     </Link>
                   ))}
                 </div>
+              ) : null}
+
+              {!faqsQuery.isPending && !faqsQuery.isError && faqs.length === 0 ? (
+                <EmptyState eyebrow="Coming soon" title="Questions are being prepared">
+                  The clinic FAQ will appear here once the answers have been reviewed and approved.
+                </EmptyState>
               ) : null}
 
               <TestimonialMarquee testimonials={testimonials} />
