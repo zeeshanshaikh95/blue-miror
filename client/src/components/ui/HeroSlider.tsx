@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 import { BookingLink } from './BookingLink';
 import { BrandVisual } from './BrandVisual';
@@ -45,7 +44,7 @@ export function HeroSlider({ slides }: { slides: HeroSliderSlide[] }) {
 
     const timer = window.setInterval(() => {
       setIndex((current) => (current + 1) % count);
-    }, 6500);
+    }, 3000);
 
     return () => window.clearInterval(timer);
   }, [count, paused, reducedMotion]);
@@ -61,10 +60,6 @@ export function HeroSlider({ slides }: { slides: HeroSliderSlide[] }) {
   const cta =
     slide.ctaLabel && slide.ctaHref ? { label: slide.ctaLabel, href: slide.ctaHref } : null;
   const variant = visualVariants[index % visualVariants.length];
-
-  function go(next: number) {
-    setIndex((current) => (current + next + count) % count);
-  }
 
   return (
     <section
@@ -135,12 +130,14 @@ export function HeroSlider({ slides }: { slides: HeroSliderSlide[] }) {
             ) : (
               <BookingLink />
             )}
-            <ButtonLink
-              to="/treatments"
-              variant={onImage ? 'light' : 'secondary'}
-            >
-              Explore treatments
-            </ButtonLink>
+            {!cta || cta.href !== '/treatments' ? (
+              <ButtonLink
+                to="/treatments"
+                variant={onImage ? 'light' : 'secondary'}
+              >
+                Explore treatments
+              </ButtonLink>
+            ) : null}
           </div>
 
           <p
@@ -193,65 +190,32 @@ export function HeroSlider({ slides }: { slides: HeroSliderSlide[] }) {
 
       {count > 1 ? (
         <Container className="relative pb-8">
-          <div className="flex items-center justify-between gap-4 border-t border-brand-ivory/15 pt-5">
-            <div className="flex items-center gap-2">
+          <div
+            className={cn(
+              'flex items-center justify-center gap-2 border-t pt-5',
+              onImage ? 'border-brand-ivory/15' : 'border-brand-line',
+            )}
+            role="tablist"
+            aria-label="Choose a slide"
+          >
+            {slides.map((item, itemIndex) => (
               <button
+                key={item.id}
                 type="button"
-                onClick={() => go(-1)}
-                aria-label="Previous slide"
+                role="tab"
+                aria-selected={itemIndex === index}
+                aria-label={`Slide ${itemIndex + 1}`}
+                onClick={() => setIndex(itemIndex)}
                 className={cn(
-                  'grid size-9 place-items-center border transition-colors',
-                  onImage
-                    ? 'border-brand-ivory/30 text-brand-ivory hover:border-brand-gold hover:text-brand-gold'
-                    : 'border-brand-line text-brand-indigo hover:border-brand-gold',
+                  'h-1.5 transition-all',
+                  itemIndex === index
+                    ? 'w-8 bg-brand-gold'
+                    : onImage
+                      ? 'w-3 bg-brand-ivory/35 hover:bg-brand-ivory/60'
+                      : 'w-3 bg-brand-line hover:bg-brand-muted',
                 )}
-              >
-                <ArrowLeft aria-hidden="true" size={15} strokeWidth={1.5} />
-              </button>
-              <button
-                type="button"
-                onClick={() => go(1)}
-                aria-label="Next slide"
-                className={cn(
-                  'grid size-9 place-items-center border transition-colors',
-                  onImage
-                    ? 'border-brand-ivory/30 text-brand-ivory hover:border-brand-gold hover:text-brand-gold'
-                    : 'border-brand-line text-brand-indigo hover:border-brand-gold',
-                )}
-              >
-                <ArrowRight aria-hidden="true" size={15} strokeWidth={1.5} />
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2" role="tablist" aria-label="Choose a slide">
-              {slides.map((item, itemIndex) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={itemIndex === index}
-                  aria-label={`Slide ${itemIndex + 1}`}
-                  onClick={() => setIndex(itemIndex)}
-                  className={cn(
-                    'h-1.5 transition-all',
-                    itemIndex === index
-                      ? 'w-8 bg-brand-gold'
-                      : onImage
-                        ? 'w-3 bg-brand-ivory/35 hover:bg-brand-ivory/60'
-                        : 'w-3 bg-brand-line hover:bg-brand-muted',
-                  )}
-                />
-              ))}
-            </div>
-
-            <p
-              className={cn(
-                'text-[0.6rem] tracking-[0.16em] uppercase',
-                onImage ? 'text-brand-ivory/60' : 'text-brand-muted',
-              )}
-            >
-              {String(index + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}
-            </p>
+              />
+            ))}
           </div>
         </Container>
       ) : null}
