@@ -429,6 +429,7 @@ adminRouter.get('/admin/gallery', async (_request, response, next) => {
       data: {
         items: items.map((item) => ({
           ...item,
+          id: item._id,
           imageUrl: buildCloudinaryImageUrl(item.cloudId, { width: 900 }),
         })),
         total: items.length,
@@ -503,6 +504,7 @@ adminRouter.get('/admin/team', async (_request, response, next) => {
       data: {
         items: items.map((member) => ({
           ...member,
+          id: member._id,
           imageUrl: buildCloudinaryImageUrl(member.cloudId, { width: 700 }),
         })),
         total: items.length,
@@ -580,7 +582,13 @@ adminRouter.delete('/admin/team/:id', async (request, response, next) => {
 adminRouter.get('/admin/testimonials', async (_request, response, next) => {
   try {
     const items = await Testimonial.find({ isArchived: false }).sort({ createdAt: -1 }).lean();
-    return response.json({ success: true, data: { items, total: items.length } });
+    return response.json({
+      success: true,
+      data: {
+        items: items.map((item) => ({ ...item, id: item._id })),
+        total: items.length,
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -636,7 +644,13 @@ adminRouter.delete('/admin/testimonials/:id', async (request, response, next) =>
 adminRouter.get('/admin/faqs', async (_request, response, next) => {
   try {
     const items = await Faq.find({ isArchived: false }).sort({ createdAt: -1 }).lean();
-    return response.json({ success: true, data: { items, total: items.length } });
+    return response.json({
+      success: true,
+      data: {
+        items: items.map((item) => ({ ...item, id: item._id })),
+        total: items.length,
+      },
+    });
   } catch (error) {
     next(error);
   }
