@@ -85,6 +85,16 @@ function normalizeError(error: unknown): NormalizedError {
     };
   }
 
+  // An invalid ObjectId (e.g. a stale client sending "undefined") is a missing
+  // resource, not a server fault.
+  if (error instanceof mongoose.Error.CastError) {
+    return {
+      statusCode: 404,
+      code: 'NOT_FOUND',
+      message: 'The requested resource was not found.',
+    };
+  }
+
   return {
     statusCode: 500,
     code: 'INTERNAL_ERROR',
