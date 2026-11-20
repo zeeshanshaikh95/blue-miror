@@ -83,7 +83,7 @@ export function HeroSlider({ slides }: { slides: HeroSliderSlide[] }) {
         className="pointer-events-none absolute -top-40 right-[-6%] size-[36rem] rounded-full border border-brand-gold/15"
       />
 
-      <Container className="relative grid gap-12 py-14 sm:py-20 lg:grid-cols-[1.03fr_0.97fr] lg:items-center lg:gap-20 lg:py-24">
+      <Container className="relative grid gap-12 py-14 sm:py-20 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-20 lg:py-24">
         <div key={slide.id} className="animate-[heroRise_700ms_ease-out]">
           <Eyebrow>{slide.eyebrow ?? 'Blue Miror · Aesthetic Clinic'}</Eyebrow>
           <h1 className="mt-6 max-w-2xl font-display text-[clamp(3.2rem,6.7vw,6rem)] leading-[0.92] font-normal tracking-[-0.035em] text-brand-indigo">
@@ -119,7 +119,7 @@ export function HeroSlider({ slides }: { slides: HeroSliderSlide[] }) {
 
         <div
           key={`${slide.id}-visual`}
-          className="group relative mx-auto w-full max-w-[30rem] lg:ml-auto"
+          className="group relative mx-auto w-full max-w-[38rem] lg:ml-auto"
         >
           {/* Offset hairline frame */}
           <div
@@ -133,13 +133,13 @@ export function HeroSlider({ slides }: { slides: HeroSliderSlide[] }) {
                 <img
                   src={slide.imageUrl}
                   alt={slide.heading ?? 'Blue Miror clinic'}
-                  className="aspect-[4/5] w-full animate-[heroFade_900ms_ease-out] object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                  className="aspect-[4/3] w-full animate-[heroFade_900ms_ease-out] object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                 />
               ) : (
                 <BrandVisual
                   variant={variant}
                   label="Editorial clinic portrait — photography pending"
-                  className="aspect-[4/5] w-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  className="aspect-[4/3] w-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
                 />
               )}
 
