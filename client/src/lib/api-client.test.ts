@@ -10,8 +10,6 @@ describe('getHealth', () => {
   it('requests the health endpoint and returns a validated response', async () => {
     const payload = {
       status: 'ok' as const,
-      uptime: 12,
-      timestamp: '2026-11-15T00:00:00.000Z',
       checks: { database: 'up' as const },
     };
 

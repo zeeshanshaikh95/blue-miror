@@ -59,7 +59,9 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
       ...(init.body ? { 'Content-Type': 'application/json' } : {}),
       ...init.headers,
     },
-    credentials: 'include',
+    // The API authenticates with bearer tokens and sets no cookies, so the
+    // browser never needs to attach credentials to these requests.
+    credentials: 'omit',
   });
 
   const payload = (await response.json().catch(() => null)) as
@@ -81,8 +83,6 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
 
 const healthSchema = z.object({
   status: z.enum(['ok', 'degraded']),
-  uptime: z.number().nonnegative(),
-  timestamp: z.string(),
   checks: z.object({
     database: z.enum(['up', 'down']),
   }),
