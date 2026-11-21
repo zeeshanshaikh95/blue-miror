@@ -95,8 +95,8 @@ export function HeroSlider({
   return (
     <>
       {/* ------------------------------------------------------------------ */}
-      {/* Phone layout: copy first, then a full-width landscape photo, so    */}
-      {/* the image is never squeezed through a narrow portrait crop.         */}
+      {/* Phone layout: a full-width landscape photo above the copy, so the   */}
+      {/* image is never squeezed through a narrow portrait crop.            */}
       {/* ------------------------------------------------------------------ */}
       <section
         className="relative overflow-hidden bg-brand-indigo-deep lg:hidden"
@@ -105,37 +105,7 @@ export function HeroSlider({
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
-        <Container className="pt-8">
-          <div key={`mobile-copy-${slide.id}`} className="animate-[heroRise_600ms_ease-out]">
-            <div className="flex items-center gap-3">
-              <span aria-hidden="true" className="h-px w-8 bg-brand-gold" />
-              <Eyebrow tone="ivory" className="text-[0.55rem] tracking-[0.16em]">
-                {caption}
-              </Eyebrow>
-            </div>
-
-            <h1 className="mt-4 font-display text-[clamp(2.15rem,9.4vw,2.9rem)] leading-[0.96] tracking-[-0.02em] text-brand-ivory">
-              {slide.heading ?? 'Considered care, guided by conversation.'}
-            </h1>
-
-            <p className="mt-4 text-[0.95rem] leading-7 text-brand-ivory/75">
-              {slide.description ??
-                'A calm, considered salon experience — shaped around listening first, explaining clearly and helping you make an informed choice.'}
-            </p>
-
-            <div className="mt-6 flex flex-col gap-3">
-              {cta ? <HeroCta label={cta.label} href={cta.href} /> : <BookingLink variant="light" />}
-              <Link
-                to="/treatments"
-                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-brand-ivory/35 px-7 py-3.5 text-[0.6875rem] font-medium tracking-[0.16em] text-brand-ivory uppercase transition-colors hover:border-brand-ivory hover:bg-brand-ivory/10"
-              >
-                Explore the menu
-              </Link>
-            </div>
-          </div>
-        </Container>
-
-        <div className="relative mt-7 aspect-[16/10] max-h-[44svh] w-full overflow-hidden bg-brand-indigo-deep">
+        <div className="relative aspect-[16/10] max-h-[44svh] w-full overflow-hidden bg-brand-indigo-deep">
           {slides.map((item, itemIndex) => (
             <div
               key={`mobile-${item.id}`}
@@ -192,9 +162,38 @@ export function HeroSlider({
           ) : null}
         </div>
 
-        {highlights.length > 0 ? (
-          <Container className="py-6">
-            <dl className="grid grid-cols-2 gap-x-4 gap-y-5 rounded-3xl border border-brand-ivory/15 bg-brand-ivory/5 px-5 py-5 backdrop-blur">
+        <Container className="pb-8">
+          <div key={`mobile-copy-${slide.id}`} className="pt-7 animate-[heroRise_600ms_ease-out]">
+            <div className="flex items-center gap-3">
+              <span aria-hidden="true" className="h-px w-8 bg-brand-gold" />
+              <Eyebrow tone="ivory" className="text-[0.55rem] tracking-[0.16em]">
+                {caption}
+              </Eyebrow>
+            </div>
+
+            <h1 className="mt-4 font-display text-[clamp(2.15rem,9.4vw,2.9rem)] leading-[0.96] tracking-[-0.02em] text-brand-ivory">
+              {slide.heading ?? 'Considered care, guided by conversation.'}
+            </h1>
+
+            <p className="mt-4 text-[0.95rem] leading-7 text-brand-ivory/75">
+              {slide.description ??
+                'A calm, considered salon experience — shaped around listening first, explaining clearly and helping you make an informed choice.'}
+            </p>
+
+            <div className="mt-6 flex flex-col gap-3">
+              {cta ? <HeroCta label={cta.label} href={cta.href} /> : <BookingLink variant="light" />}
+              <Link
+                to="/treatments"
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-brand-ivory/35 px-7 py-3.5 text-[0.6875rem] font-medium tracking-[0.16em] text-brand-ivory uppercase transition-colors hover:border-brand-ivory hover:bg-brand-ivory/10"
+              >
+                Explore the menu
+              </Link>
+            </div>
+
+          </div>
+
+          {highlights.length > 0 ? (
+            <dl className="mt-6 grid grid-cols-2 gap-x-4 gap-y-5 rounded-3xl border border-brand-ivory/15 bg-brand-ivory/5 px-5 py-5 backdrop-blur">
               {highlights.map((item) => (
                 <div key={item.label}>
                   <dt className="text-[0.5rem] tracking-[0.18em] text-brand-gold uppercase">
@@ -206,10 +205,8 @@ export function HeroSlider({
                 </div>
               ))}
             </dl>
-          </Container>
-        ) : (
-          <div className="pb-8" />
-        )}
+          ) : null}
+        </Container>
       </section>
 
       {/* ------------------------------------------------------------------ */}
