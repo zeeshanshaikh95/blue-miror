@@ -125,6 +125,8 @@ export async function getPublicService(
         shortDescription: doc.shortDescription,
         isFeatured: doc.isFeatured,
         isPlaceholder: false as const,
+        imageUrl: doc.imageUrl ?? null,
+        price: doc.price ?? null,
         visual: doc.visual,
       };
     }),
@@ -214,5 +216,7 @@ type RelatedEntry = {
   shortDescription: string;
   isFeatured: boolean;
   isPlaceholder: false;
+  imageUrl: string | null;
+  price: string | null;
   visual: 'arch' | 'orbit' | 'drape' | 'horizon' | 'bloom' | 'column';
 };
