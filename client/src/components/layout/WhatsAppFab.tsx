@@ -18,7 +18,7 @@ export function WhatsAppFab() {
       rel="noreferrer"
       aria-label={settings.whatsapp.cta.floating}
       title={settings.whatsapp.cta.floating}
-      className="fixed right-5 bottom-5 z-30 flex size-13 items-center justify-center rounded-full border border-brand-gold bg-brand-indigo text-brand-ivory shadow-[0_12px_30px_rgba(38,37,75,0.24)] transition-colors hover:bg-brand-indigo-deep focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-azure sm:right-7 sm:bottom-7"
+      className="fixed right-5 bottom-24 z-30 hidden size-13 items-center justify-center rounded-full border border-brand-gold bg-brand-indigo text-brand-ivory shadow-[0_12px_30px_rgba(38,37,75,0.24)] transition-colors hover:bg-brand-indigo-deep focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-azure sm:right-7 lg:bottom-7 lg:flex"
     >
       <MessageCircle aria-hidden="true" size={22} strokeWidth={1.5} />
       <span className="sr-only">{settings.whatsapp.cta.floating}</span>

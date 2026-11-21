@@ -72,7 +72,7 @@ export function TreatmentsPage() {
 
       <section className="py-12 sm:py-16 lg:py-20">
         <Container>
-          <div className="border border-brand-line bg-brand-porcelain p-5 sm:p-7">
+          <div className="rounded-[2rem] border border-brand-line bg-brand-porcelain p-5 shadow-[0_24px_60px_-46px_rgba(38,37,75,0.5)] sm:p-7">
             <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
               <div>
                 <label
@@ -94,7 +94,7 @@ export function TreatmentsPage() {
                     value={search}
                     onChange={(event) => updateFilter('q', event.target.value)}
                     placeholder="Search by treatment or concern"
-                    className="h-12 w-full border border-brand-line bg-white pr-4 pl-11 text-sm text-brand-ink placeholder:text-brand-muted focus:border-brand-azure focus:outline-none"
+                    className="h-12 w-full rounded-full border border-brand-line bg-white pr-5 pl-11 text-sm text-brand-ink placeholder:text-brand-muted focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 focus:outline-none"
                   />
                 </div>
               </div>
@@ -121,7 +121,7 @@ export function TreatmentsPage() {
                     aria-pressed={!category}
                     onClick={() => updateFilter('category', '')}
                     className={cn(
-                      'shrink-0 snap-start border px-4 py-2 text-[0.6rem] font-medium tracking-[0.14em] uppercase transition-colors',
+                      'shrink-0 snap-start rounded-full border px-4 py-2 text-[0.6rem] font-medium tracking-[0.14em] uppercase transition-colors',
                       !category
                         ? 'border-brand-indigo bg-brand-indigo text-brand-ivory'
                         : 'border-brand-line bg-transparent text-brand-muted hover:border-brand-indigo hover:text-brand-indigo',
@@ -137,7 +137,7 @@ export function TreatmentsPage() {
                       aria-pressed={category === item.slug}
                       onClick={() => updateFilter('category', item.slug)}
                       className={cn(
-                        'shrink-0 snap-start border px-4 py-2 text-[0.6rem] font-medium tracking-[0.14em] uppercase transition-colors',
+                        'shrink-0 snap-start rounded-full border px-4 py-2 text-[0.6rem] font-medium tracking-[0.14em] uppercase transition-colors',
                         category === item.slug
                           ? 'border-brand-indigo bg-brand-indigo text-brand-ivory'
                           : 'border-brand-line bg-transparent text-brand-muted hover:border-brand-indigo hover:text-brand-indigo',
@@ -253,3 +253,4 @@ export function TreatmentsPage() {
     </>
   );
 }
+

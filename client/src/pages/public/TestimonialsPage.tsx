@@ -10,18 +10,18 @@ import { useTestimonials } from '@/hooks/use-public-content';
 const steps = [
   {
     number: '01',
-    title: 'Verified',
-    body: 'A real client experience is confirmed with the clinic. No review is written or paraphrased on a client’s behalf.',
+    title: 'Shared',
+    body: 'A client sends a few words about their visit — the treatment, the result and how it felt in the chair.',
   },
   {
     number: '02',
-    title: 'Consented',
-    body: 'The client agrees to publication and to how their name will be shown — full name, initials or anonymous.',
+    title: 'Checked',
+    body: 'The clinic confirms the visit and asks how the client would like their name shown: full name, initials or anonymously.',
   },
   {
     number: '03',
-    title: 'Approved',
-    body: 'The clinic approves the final wording. New submissions enter a moderation queue and never publish automatically.',
+    title: 'Published',
+    body: 'Approved stories are added here. Nothing publishes automatically, and a request to remove a story is always honoured.',
   },
 ];
 
@@ -33,8 +33,7 @@ export function TestimonialsPage() {
     <>
       <Seo
         title="Client stories"
-        description="Verified Blue Miror client stories will appear here only after consent and clinic approval. No reviews have been invented."
-        noindex
+        description="Kind words from Blue Miror clients in Mira Road — real experiences, shared with consent."
       />
 
       <PageHero
@@ -45,15 +44,15 @@ export function TestimonialsPage() {
             <br /> <em className="text-brand-gold-deep">words</em>.
           </>
         }
-        intro="A place for genuine, consented client experiences. This preview contains no testimonials, names, ratings or quotes because none have been supplied or verified."
+        intro="The best part of the job is hearing how a colour, facial or set of nails settled into everyday life. These are real client experiences, shared with permission."
         aside={
           <div className="border-l border-brand-gold/60 pl-5">
             <p className="text-[0.6rem] tracking-[0.18em] text-brand-gold-deep uppercase">
-              Publication status
+              Our promise
             </p>
             <p className="mt-2 text-sm leading-6 text-brand-muted">
-              Verified stories only. No review is invented, paraphrased or presented as a guarantee
-              of results.
+              Every story is published with the client&rsquo;s consent. We never write or invent a
+              review on someone&rsquo;s behalf.
             </p>
           </div>
         }
@@ -64,7 +63,7 @@ export function TestimonialsPage() {
           {testimonialsQuery.isError ? (
             <ErrorState
               title="Client stories could not be loaded"
-              message="Please try again. No review content has been substituted."
+              message="Please try again in a moment."
               onRetry={() => void testimonialsQuery.refetch()}
             />
           ) : null}
@@ -78,26 +77,23 @@ export function TestimonialsPage() {
               {Array.from({ length: 3 }).map((_, index) => (
                 <div
                   key={index}
-                  className="h-56 animate-pulse border border-brand-line bg-brand-line/40"
+                  className="h-56 animate-pulse rounded-[1.75rem] border border-brand-line bg-brand-line/40"
                 />
               ))}
             </div>
           ) : null}
 
           {testimonials.length === 0 ? (
-            <EmptyState
-              eyebrow="Awaiting verified stories"
-              title="No testimonials are published yet"
-            >
-              When the clinic has a genuine review with consent and approval, it will appear here.
-              This page intentionally has no sample quotes or invented client names.
+            <EmptyState eyebrow="Be the first" title="Your story could be the first">
+              If we have looked after you, we would love to hear how it went. Share a few words below
+              and the clinic will review them before publishing.
             </EmptyState>
           ) : (
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {testimonials.map((testimonial) => (
                 <blockquote
                   key={testimonial.id}
-                  className="border border-brand-line bg-brand-porcelain p-6"
+                  className="rounded-[1.75rem] border border-brand-line bg-brand-porcelain p-6"
                 >
                   <span
                     aria-hidden="true"

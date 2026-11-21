@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { cn } from '@/utils/cn';
 
 import { BookingLink } from './BookingLink';
 import { BrandVisual } from './BrandVisual';
-import { ButtonLink } from './Button';
 import { Container } from './Container';
 import { Eyebrow } from './Eyebrow';
 
@@ -16,6 +16,11 @@ export type HeroSliderSlide = {
   imageUrl?: string | null;
   ctaLabel?: string | null;
   ctaHref?: string | null;
+};
+
+export type HeroHighlight = {
+  label: string;
+  value: string;
 };
 
 const visualVariants = ['arch', 'orbit', 'drape', 'horizon', 'bloom', 'column'] as const;
@@ -36,7 +41,13 @@ function usePrefersReducedMotion(): boolean {
   return reduced;
 }
 
-export function HeroSlider({ slides }: { slides: HeroSliderSlide[] }) {
+export function HeroSlider({
+  slides,
+  highlights = [],
+}: {
+  slides: HeroSliderSlide[];
+  highlights?: HeroHighlight[];
+}) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const reducedMotion = usePrefersReducedMotion();
@@ -52,21 +63,17 @@ export function HeroSlider({ slides }: { slides: HeroSliderSlide[] }) {
     return () => window.clearInterval(timer);
   }, [count, paused, reducedMotion]);
 
-  useEffect(() => {
-    if (index >= count) setIndex(0);
-  }, [count, index]);
-
   if (count === 0) return null;
 
-  const slide = slides[index];
+  // Keep the active slide valid if the slide list shrinks between renders.
+  const activeIndex = index % count;
+  const slide = slides[activeIndex];
   const cta =
     slide.ctaLabel && slide.ctaHref ? { label: slide.ctaLabel, href: slide.ctaHref } : null;
-  const variant = visualVariants[index % visualVariants.length];
-  const caption = slide.eyebrow ?? 'Blue Miror · Aesthetic Clinic';
 
   return (
     <section
-      className="relative overflow-hidden bg-brand-ivory"
+      className="relative isolate overflow-hidden bg-brand-indigo-deep"
       aria-roledescription="carousel"
       aria-label="Clinic highlights"
       onMouseEnter={() => setPaused(true)}
@@ -74,115 +81,165 @@ export function HeroSlider({ slides }: { slides: HeroSliderSlide[] }) {
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
+      <div className="absolute inset-0" aria-hidden="true">
+        {slides.map((item, itemIndex) => (
+          <div
+            key={item.id}
+            className={cn(
+              'absolute inset-0 transition-opacity duration-1000 ease-out',
+              itemIndex === activeIndex ? 'opacity-100' : 'opacity-0',
+            )}
+          >
+            {item.imageUrl ? (
+              <img
+                src={item.imageUrl}
+                alt=""
+                fetchPriority={itemIndex === 0 ? 'high' : 'auto'}
+                className={cn(
+                  'size-full scale-[1.02] object-cover object-center blur-[1.5px]',
+                  itemIndex === activeIndex && !reducedMotion && 'animate-slow-zoom',
+                )}
+              />
+            ) : (
+              <BrandVisual
+                variant={visualVariants[itemIndex % visualVariants.length]}
+                label="Editorial salon photography — pending"
+                className="size-full"
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-0 right-1/4 h-full w-px bg-linear-to-b from-transparent via-brand-gold/25 to-transparent"
+        className="absolute inset-0 bg-[linear-gradient(100deg,rgba(18,17,36,0.97)_0%,rgba(18,17,36,0.9)_42%,rgba(18,17,36,0.62)_74%,rgba(18,17,36,0.55)_100%)]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-40 right-[-6%] size-[36rem] rounded-full border border-brand-gold/15"
+        className="absolute inset-x-0 bottom-0 h-3/4 bg-[linear-gradient(0deg,rgba(18,17,36,0.95),rgba(18,17,36,0.35)_55%,transparent)]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-24 right-[-8%] hidden size-[30rem] rounded-full border border-brand-gold/20 lg:block"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-40 right-[2%] hidden size-[20rem] rounded-full border border-brand-ivory/10 lg:block"
       />
 
-      <Container className="relative grid gap-12 py-14 sm:py-20 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-20 lg:py-24">
-        <div key={slide.id} className="animate-[heroRise_700ms_ease-out]">
-          <Eyebrow>{slide.eyebrow ?? 'Blue Miror · Aesthetic Clinic'}</Eyebrow>
-          <h1 className="mt-6 max-w-2xl font-display text-[clamp(3.2rem,6.7vw,6rem)] leading-[0.92] font-normal tracking-[-0.035em] text-brand-indigo">
+      <Container className="relative flex min-h-[80svh] flex-col justify-center pt-14 pb-10 lg:min-h-[88svh] lg:pt-20 lg:pb-44">
+        <div key={slide.id} className="max-w-[48rem] animate-[heroRise_700ms_ease-out]">
+          <div className="flex items-center gap-3">
+            <span aria-hidden="true" className="h-px w-10 bg-brand-gold sm:w-14" />
+            <Eyebrow tone="ivory" className="tracking-[0.28em]">
+              {slide.eyebrow ?? 'Blue Miror · Salon & Aesthetic Clinic'}
+            </Eyebrow>
+          </div>
+
+          <h1 className="mt-6 max-w-[46rem] font-display text-[clamp(2.9rem,6.4vw,5.9rem)] leading-[0.94] font-normal tracking-[-0.03em] text-brand-ivory">
             {slide.heading ?? 'Considered care, guided by conversation.'}
           </h1>
 
-          <p className="mt-7 max-w-xl text-[1.02rem] leading-8 text-brand-muted sm:text-lg">
+          <p className="mt-6 max-w-xl text-[1rem] leading-8 text-brand-ivory/78 sm:text-lg">
             {slide.description ??
-              'A calm, considered aesthetic clinic experience — shaped around listening first, explaining clearly and helping you make an informed choice.'}
+              'A calm, considered salon experience — shaped around listening first, explaining clearly and helping you make an informed choice.'}
           </p>
 
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            {cta ? <ButtonLink to={cta.href}>{cta.label}</ButtonLink> : <BookingLink />}
-            {!cta || cta.href !== '/treatments' ? (
-              <ButtonLink to="/treatments" variant="secondary">
-                Explore treatments
-              </ButtonLink>
-            ) : null}
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            {cta ? (
+              <BookingLikeCta label={cta.label} href={cta.href} />
+            ) : (
+              <BookingLink variant="light" />
+            )}
+            <Link
+              to="/treatments"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-brand-ivory/35 px-7 py-3.5 text-[0.6875rem] font-medium tracking-[0.16em] text-brand-ivory uppercase transition-colors hover:border-brand-ivory hover:bg-brand-ivory/10"
+            >
+              Explore the menu
+            </Link>
           </div>
 
-          <p className="mt-5 text-xs leading-6 text-brand-muted">
-            Appointment requests are reviewed by the clinic before they are confirmed.
-          </p>
-
-          <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-brand-line pt-5 text-[0.6rem] tracking-[0.16em] text-brand-muted uppercase">
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-[0.58rem] tracking-[0.18em] text-brand-ivory/65 uppercase">
             <span>Consultation-led</span>
             <span aria-hidden="true" className="size-1 rotate-45 bg-brand-gold" />
-            <span>Service-only</span>
+            <span>Premium products</span>
             <span aria-hidden="true" className="size-1 rotate-45 bg-brand-gold" />
-            <span>No online diagnosis</span>
-          </div>
-        </div>
-
-        <div
-          key={`${slide.id}-visual`}
-          className="group relative mx-auto w-full max-w-[38rem] lg:ml-auto"
-        >
-          {/* Offset hairline frame */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -top-3 -right-3 bottom-3 left-3 border border-brand-gold/45 transition-colors duration-500 group-hover:border-brand-gold/75"
-          />
-
-          <div className="relative bg-brand-porcelain p-2.5 shadow-[0_30px_70px_-40px_rgba(38,37,75,0.45)]">
-            <div className="relative overflow-hidden bg-brand-ivory">
-              {slide.imageUrl ? (
-                <img
-                  src={slide.imageUrl}
-                  alt={slide.heading ?? 'Blue Miror clinic'}
-                  className="aspect-[4/3] w-full animate-[heroFade_900ms_ease-out] object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                />
-              ) : (
-                <BrandVisual
-                  variant={variant}
-                  label="Editorial clinic portrait — photography pending"
-                  className="aspect-[4/3] w-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-                />
-              )}
-
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-brand-ivory/25"
-              />
-            </div>
-          </div>
-
-          <div className="mt-5 flex items-center gap-3">
-            <span aria-hidden="true" className="h-px w-10 bg-brand-gold" />
-            <p className="text-[0.58rem] tracking-[0.2em] text-brand-muted uppercase">{caption}</p>
+            <span>WhatsApp booking</span>
           </div>
         </div>
       </Container>
 
-      {count > 1 ? (
-        <Container className="relative pb-8">
-          <div
-            className="flex items-center justify-center gap-2 border-t border-brand-line pt-5"
-            role="tablist"
-            aria-label="Choose a slide"
-          >
-            {slides.map((item, itemIndex) => (
-              <button
-                key={item.id}
-                type="button"
-                role="tab"
-                aria-selected={itemIndex === index}
-                aria-label={`Slide ${itemIndex + 1}`}
-                onClick={() => setIndex(itemIndex)}
-                className={cn(
-                  'h-1.5 transition-all',
-                  itemIndex === index
-                    ? 'w-8 bg-brand-gold'
-                    : 'w-3 bg-brand-line hover:bg-brand-muted',
-                )}
-              />
-            ))}
+      <div className="relative pb-6 sm:pb-8 lg:absolute lg:inset-x-0 lg:bottom-0">
+        <Container>
+          <div className="flex flex-col gap-5 rounded-3xl border border-brand-ivory/15 bg-brand-indigo-deep/55 px-5 py-4 backdrop-blur-md sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+            {highlights.length > 0 ? (
+              <dl className="grid flex-1 grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6">
+                {highlights.map((item) => (
+                  <div key={item.label}>
+                    <dt className="text-[0.52rem] tracking-[0.2em] text-brand-gold uppercase">
+                      {item.label}
+                    </dt>
+                    <dd className="mt-1 font-display text-lg leading-tight text-brand-ivory sm:text-xl">
+                      {item.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            ) : (
+              <p className="flex-1 font-display text-lg text-brand-ivory/85">
+                A quieter kind of salon, in the heart of Mira Road.
+              </p>
+            )}
+
+            {count > 1 ? (
+              <div
+                className="flex items-center gap-2"
+                role="tablist"
+                aria-label="Choose a slide"
+              >
+                {slides.map((item, itemIndex) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={itemIndex === activeIndex}
+                    aria-label={`Slide ${itemIndex + 1}`}
+                    onClick={() => setIndex(itemIndex)}
+                    className={cn(
+                      'h-1.5 rounded-full transition-all duration-300',
+                      itemIndex === activeIndex
+                        ? 'w-9 bg-brand-gold'
+                        : 'w-3 bg-brand-ivory/35 hover:bg-brand-ivory/70',
+                    )}
+                  />
+                ))}
+              </div>
+            ) : null}
           </div>
         </Container>
-      ) : null}
+      </div>
     </section>
   );
 }
+
+/** Keeps slide CTAs on the dark hero regardless of the destination. */
+function BookingLikeCta({ label, href }: { label: string; href: string }) {
+  const classes =
+    'inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-brand-gold bg-brand-gold px-7 py-3.5 text-[0.6875rem] font-medium tracking-[0.16em] text-brand-indigo-deep uppercase shadow-[0_18px_40px_-18px_rgba(192,153,77,0.9)] transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-ivory hover:bg-brand-ivory';
+
+  if (/^https?:/i.test(href)) {
+    return (
+      <a href={href} target="_blank" rel="noreferrer" className={classes}>
+        {label}
+      </a>
+    );
+  }
+
+  return (
+    <Link to={href} className={classes}>
+      {label}
+    </Link>
+  );
+}
+

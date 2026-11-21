@@ -23,6 +23,17 @@ export default defineConfig(({ command, mode }) => {
     server: {
       port: 5173,
       strictPort: true,
+      // Optional local proxy so `VITE_API_BASE_URL=/api` can reach a remote API
+      // without loosening that API's CORS allow-list.
+      proxy: env.VITE_DEV_PROXY
+        ? {
+            '/api': {
+              target: env.VITE_DEV_PROXY,
+              changeOrigin: true,
+              secure: true,
+            },
+          }
+        : undefined,
     },
     preview: {
       port: 4173,

@@ -1,66 +1,116 @@
 import { useState } from 'react';
+import { ArrowUpRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 import { Seo } from '@/components/seo/Seo';
+import { BookingLink } from '@/components/ui/BookingLink';
 import { BrandVisual } from '@/components/ui/BrandVisual';
 import { Container } from '@/components/ui/Container';
-import { ContentBadge } from '@/components/ui/ContentBadge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Eyebrow } from '@/components/ui/Eyebrow';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { PageHero } from '@/components/ui/PageHero';
-import { useGallery } from '@/hooks/use-public-content';
+import { useGallery, useServices, useSiteSettings } from '@/hooks/use-public-content';
 import { cn } from '@/utils/cn';
+
+type Look = {
+  id: string;
+  title: string;
+  category: string;
+  alt: string;
+  imageUrl?: string | null;
+  variant: 'arch' | 'orbit' | 'drape' | 'horizon' | 'bloom' | 'column';
+  to?: string;
+};
 
 export function GalleryPage() {
   const galleryQuery = useGallery();
-  const [activeCategory, setActiveCategory] = useState('');
-  const categories = galleryQuery.data?.categories ?? [];
-  const items =
-    galleryQuery.data?.items.filter(
-      (item) => !activeCategory || item.category === activeCategory,
-    ) ?? [];
+  const servicesQuery = useServices({ limit: 9 });
+  const settingsQuery = useSiteSettings();
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  const galleryItems = galleryQuery.data?.items ?? [];
+  const serviceLooks = servicesQuery.data?.items ?? [];
+
+  const looks: Look[] = [
+    ...galleryItems.map((item) => ({
+      id: `gallery-${item.id}`,
+      title: item.title,
+      category: item.category,
+      alt: item.alt,
+      imageUrl: item.imageUrl,
+      variant: item.variant,
+    })),
+    ...serviceLooks
+      .filter((service) => service.imageUrl)
+      .map((service) => ({
+        id: `service-${service.id}`,
+        title: service.name,
+        category: service.categoryName,
+        alt: `${service.name} at Blue Miror`,
+        imageUrl: service.imageUrl,
+        variant: service.visual,
+        to: `/treatments/${service.slug}`,
+      })),
+  ];
+
+  const categories = [
+    ...new Set([
+      ...(galleryQuery.data?.categories ?? []),
+      ...serviceLooks.map((service) => service.categoryName),
+    ]),
+  ];
+
+  const filtered = selectedCategory
+    ? looks.filter((look) => look.category === selectedCategory)
+    : looks;
+
+  const instagram =
+    settingsQuery.data?.social.find((item) => /instagram/i.test(item.label))?.url ?? null;
 
   return (
     <>
       <Seo
         title="Gallery"
-        description="A visual direction for Blue Miror. Final gallery photography is pending, with no simulated treatment results."
+        description="A look inside Blue Miror in Mira Road — colour, nails, skin and makeup work from the salon chairs."
       />
 
       <section className="py-12 sm:py-16 lg:py-20">
         <Container>
-          <div className="flex flex-wrap gap-2 border-b border-brand-line pb-6">
-            <button
-              type="button"
-              aria-pressed={!activeCategory}
-              onClick={() => setActiveCategory('')}
-              className={cn(
-                'border px-3 py-2 text-[0.6rem] font-medium tracking-[0.14em] uppercase transition-colors',
-                !activeCategory
-                  ? 'border-brand-indigo bg-brand-indigo text-brand-ivory'
-                  : 'border-brand-line text-brand-muted hover:border-brand-indigo hover:text-brand-indigo',
-              )}
-            >
-              All images
-            </button>
-            {categories.map((category) => (
+          {categories.length > 1 ? (
+            <div className="scrollbar-none flex gap-2 overflow-x-auto border-b border-brand-line pb-5">
               <button
-                key={category}
                 type="button"
-                aria-pressed={activeCategory === category}
-                onClick={() => setActiveCategory(category)}
+                aria-pressed={!selectedCategory}
+                onClick={() => setSelectedCategory('')}
                 className={cn(
-                  'border px-3 py-2 text-[0.6rem] font-medium tracking-[0.14em] uppercase transition-colors',
-                  activeCategory === category
+                  'shrink-0 rounded-full border px-4 py-2 text-[0.6rem] font-medium tracking-[0.14em] uppercase transition-colors',
+                  !selectedCategory
                     ? 'border-brand-indigo bg-brand-indigo text-brand-ivory'
-                    : 'border-brand-line text-brand-muted hover:border-brand-indigo hover:text-brand-indigo',
+                    : 'border-brand-line text-brand-muted hover:border-brand-gold hover:text-brand-indigo',
                 )}
               >
-                {category}
+                All images
               </button>
-            ))}
-          </div>
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  type="button"
+                  aria-pressed={selectedCategory === category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={cn(
+                    'shrink-0 rounded-full border px-4 py-2 text-[0.6rem] font-medium tracking-[0.14em] uppercase transition-colors',
+                    selectedCategory === category
+                      ? 'border-brand-indigo bg-brand-indigo text-brand-ivory'
+                      : 'border-brand-line text-brand-muted hover:border-brand-gold hover:text-brand-indigo',
+                  )}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          ) : null}
 
           <div className="mt-10">
             {galleryQuery.isPending ? <LoadingState label="Loading gallery" cards={4} /> : null}
@@ -71,58 +121,97 @@ export function GalleryPage() {
                 onRetry={() => void galleryQuery.refetch()}
               />
             ) : null}
-            {galleryQuery.data && items.length === 0 ? (
+            {galleryQuery.data && filtered.length === 0 ? (
               <EmptyState eyebrow="No images in this view" title="Nothing to show here yet">
-                Choose another category or return to the full gallery. Final photography will be
-                published after the clinic approves it.
+                Choose another category or return to the full gallery.
               </EmptyState>
             ) : null}
-            {items.length > 0 ? (
+
+            {filtered.length > 0 ? (
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {items.map((item, index) => (
-                  <figure key={item.id} className={index % 3 === 1 ? 'lg:mt-10' : undefined}>
-                    {item.imageUrl ? (
-                      <img
-                        src={item.imageUrl}
-                        alt={item.alt}
-                        loading="lazy"
-                        decoding="async"
-                        className={cn(
-                          'w-full border border-brand-line object-cover',
-                          index % 2 === 0 ? 'aspect-[4/5]' : 'aspect-square',
-                        )}
-                      />
-                    ) : (
-                      <BrandVisual
-                        variant={item.variant}
-                        label={item.alt}
-                        className={index % 2 === 0 ? 'aspect-[4/5]' : 'aspect-square'}
-                      />
-                    )}
+                {filtered.map((look, index) => {
+                  const media = look.imageUrl ? (
+                    <img
+                      src={look.imageUrl}
+                      alt={look.alt}
+                      loading="lazy"
+                      decoding="async"
+                      className={cn(
+                        'w-full rounded-[1.75rem] object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]',
+                        index % 2 === 0 ? 'aspect-[4/5]' : 'aspect-square',
+                      )}
+                    />
+                  ) : (
+                    <BrandVisual
+                      variant={look.variant}
+                      label={look.alt}
+                      className={cn(
+                        'rounded-[1.75rem]',
+                        index % 2 === 0 ? 'aspect-[4/5]' : 'aspect-square',
+                      )}
+                    />
+                  );
+
+                  const caption = (
                     <figcaption className="flex items-start justify-between gap-4 border-b border-brand-line py-4">
                       <div>
                         <p className="text-[0.625rem] tracking-[0.16em] text-brand-gold-deep uppercase">
-                          {item.category}
+                          {look.category}
                         </p>
-                        <p className="mt-1 font-display text-xl text-brand-indigo">{item.title}</p>
+                        <p className="mt-1 font-display text-xl text-brand-indigo">{look.title}</p>
                       </div>
-                      <span className="pt-1 text-[0.625rem] tracking-[0.12em] text-brand-muted uppercase">
-                        {item.imageUrl ? 'Published' : 'Pending'}
-                      </span>
+                      {look.to ? (
+                        <span className="mt-1 grid size-8 shrink-0 place-items-center rounded-full border border-brand-line text-brand-indigo">
+                          <ArrowUpRight aria-hidden="true" size={14} strokeWidth={1.6} />
+                        </span>
+                      ) : null}
                     </figcaption>
-                  </figure>
-                ))}
+                  );
+
+                  return (
+                    <figure key={look.id} className={index % 3 === 1 ? 'lg:mt-10' : undefined}>
+                      {look.to ? (
+                        <Link
+                          to={look.to}
+                          className="group block overflow-hidden rounded-[1.75rem]"
+                        >
+                          {media}
+                        </Link>
+                      ) : (
+                        <div className="group overflow-hidden rounded-[1.75rem]">{media}</div>
+                      )}
+                      {caption}
+                    </figure>
+                  );
+                })}
               </div>
             ) : null}
           </div>
 
-          <div className="mt-14 border border-brand-line bg-brand-porcelain p-6 sm:p-8">
-            <Eyebrow>Before &amp; after</Eyebrow>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-brand-muted">
-              This section is deliberately absent. Before/after imagery will only be considered with
-              genuine photographs, explicit written client consent and clinic approval in the
-              relevant jurisdiction. No comparison image has been simulated.
-            </p>
+          <div className="mt-14 grid gap-6 rounded-[2rem] border border-brand-gold/40 bg-brand-porcelain p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <Eyebrow>Fresh from the salon</Eyebrow>
+              <p className="mt-3 max-w-2xl font-display text-2xl leading-tight text-brand-indigo sm:text-3xl">
+                New looks are added as the team finishes them.
+              </p>
+              <p className="mt-2 text-sm leading-7 text-brand-muted">
+                Booking a colour, facial or set of nails? Send us a reference and we will tell you
+                what is achievable for your hair or skin.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+              <BookingLink />
+              {instagram ? (
+                <a
+                  href={instagram}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-brand-indigo/30 px-6 text-[0.6875rem] font-medium tracking-[0.14em] text-brand-indigo uppercase transition-colors hover:border-brand-gold"
+                >
+                  Follow on Instagram
+                </a>
+              ) : null}
+            </div>
           </div>
         </Container>
       </section>
@@ -136,13 +225,15 @@ export function GalleryPage() {
               <br /> <em className="text-brand-gold-deep">at ease</em>.
             </>
           }
-          intro="A first look at the visual language of the clinic. Images published here have been supplied and approved by the clinic; anything still pending is shown as a clearly marked placeholder."
+          intro="Colour, length, nails and finish — a visual walk through the treatment rooms and the work that leaves them."
           aside={
             <div className="border-l border-brand-gold/60 pl-5">
-              <ContentBadge>Photography pending</ContentBadge>
-              <p className="mt-3 text-sm leading-6 text-brand-muted">
-                No before/after results, stock clinic images or simulated outcomes are used in this
-                preview.
+              <p className="text-[0.6rem] tracking-[0.18em] text-brand-gold-deep uppercase">
+                Before &amp; after
+              </p>
+              <p className="mt-2 text-sm leading-6 text-brand-muted">
+                We publish comparison photos only with the client&rsquo;s written consent — never a
+                simulated result.
               </p>
             </div>
           }

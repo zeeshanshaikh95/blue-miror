@@ -9,11 +9,10 @@ import { Eyebrow } from '@/components/ui/Eyebrow';
 import { PageHero } from '@/components/ui/PageHero';
 import { useTeam } from '@/hooks/use-public-content';
 
-const publicationChecks = [
-  'Name and public role',
-  'Verified professional credentials',
-  'Approved biography',
-  'A licensed photograph with permission',
+const servicePromises = [
+  'Matched with the right stylist or therapist for your treatment',
+  'A clear plan and price before we begin',
+  'Aftercare you can repeat easily at home',
 ];
 
 export function TeamPage() {
@@ -24,8 +23,7 @@ export function TeamPage() {
     <>
       <Seo
         title="Our team"
-        description="Blue Miror practitioner profiles are published only after names, roles and professional credentials have been verified."
-        noindex
+        description="Meet the stylists, therapists and makeup artists behind Blue Miror in Mira Road East."
       />
 
       <PageHero
@@ -43,7 +41,7 @@ export function TeamPage() {
           {teamQuery.isError ? (
             <ErrorState
               title="Team profiles could not be loaded"
-              message="Please try again. No profile content has been substituted."
+              message="Please try again in a moment."
               onRetry={() => void teamQuery.refetch()}
             />
           ) : null}
@@ -57,23 +55,27 @@ export function TeamPage() {
               {Array.from({ length: 3 }).map((_, index) => (
                 <div
                   key={index}
-                  className="h-72 animate-pulse border border-brand-line bg-brand-line/40"
+                  className="h-72 animate-pulse rounded-[1.5rem] border border-brand-line bg-brand-line/40"
                 />
               ))}
             </div>
           ) : null}
 
           {team.length === 0 ? (
-            <EmptyState eyebrow="Verification in progress" title="Profiles are being prepared">
-              Blue Miror has not yet supplied verified practitioner names, roles or credentials. The
-              team will appear here when that information has been reviewed.
+            <EmptyState
+              eyebrow="In the salon"
+              title="Come and meet us"
+              action={<BookingLink />}
+            >
+              Team profiles are being updated here. In the meantime, send the clinic a message and we
+              will match you with the right stylist or therapist for your treatment.
             </EmptyState>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {team.map((member) => (
                 <article
                   key={member.id}
-                  className="border border-brand-line bg-brand-porcelain p-6"
+                  className="overflow-hidden rounded-[1.75rem] border border-brand-line bg-brand-porcelain p-6"
                 >
                   {member.imageUrl ? (
                     <img
@@ -100,18 +102,18 @@ export function TeamPage() {
 
           <div className="mt-16 grid gap-10 border-t border-brand-line pt-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
             <div>
-              <Eyebrow>What we publish</Eyebrow>
+              <Eyebrow>What to expect</Eyebrow>
               <h2 className="mt-4 font-display text-[clamp(2.2rem,4vw,3.5rem)] leading-[0.98] text-brand-indigo">
-                Credentials before portraits.
+                The right hands for the job.
               </h2>
             </div>
             <div>
               <p className="max-w-2xl text-sm leading-7 text-brand-muted">
-                A published profile will include only information the clinic has verified and
-                approved. If a credential or photograph is missing, the profile stays unpublished.
+                Every appointment is handled by someone who works with your hair type, skin concern
+                or occasion every day — and who explains what they are doing as they go.
               </p>
               <ul className="mt-6 space-y-3">
-                {publicationChecks.map((check) => (
+                {servicePromises.map((check) => (
                   <li key={check} className="flex gap-3 text-sm leading-7 text-brand-muted">
                     <Check
                       aria-hidden="true"
@@ -135,16 +137,16 @@ export function TeamPage() {
         <Container>
           <div className="grid gap-10 lg:grid-cols-[1.15fr_0.65fr] lg:items-end">
             <p className="max-w-2xl text-[0.98rem] leading-8 text-brand-muted sm:text-lg">
-              The clinic’s practitioners will be introduced here with verified roles and
-              credentials. No sample names, qualifications or portraits have been invented for this
-              preview.
+              Ask for the same stylist or therapist next time and we will remember what worked. Our
+              team pages will fill out as portraits and introductions are ready.
             </p>
             <div className="border-l border-brand-gold/60 pl-5">
               <p className="text-[0.6rem] tracking-[0.18em] text-brand-gold-deep uppercase">
-                Publication standard
+                A note on profiles
               </p>
               <p className="mt-2 text-sm leading-6 text-brand-muted">
-                Credentials first. A profile is unpublished rather than filled with assumptions.
+                We publish a team profile only with the person&rsquo;s own words and a photograph they
+                are happy with.
               </p>
             </div>
           </div>

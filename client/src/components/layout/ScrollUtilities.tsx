@@ -50,7 +50,7 @@ export function BackToTop() {
       aria-label="Back to top"
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       className={cn(
-        'fixed right-5 bottom-24 z-40 grid size-11 place-items-center border border-brand-gold/60 bg-brand-ivory/90 text-brand-indigo shadow-lg backdrop-blur transition-all duration-300 hover:bg-brand-gold hover:text-brand-indigo-deep',
+        'fixed right-5 bottom-24 z-40 hidden size-11 place-items-center rounded-full border border-brand-gold/60 bg-brand-ivory/90 text-brand-indigo shadow-lg backdrop-blur transition-all duration-300 hover:bg-brand-gold hover:text-brand-indigo-deep lg:grid',
         visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0',
       )}
     >

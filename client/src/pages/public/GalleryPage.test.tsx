@@ -13,7 +13,7 @@ describe('GalleryPage', () => {
     vi.unstubAllGlobals();
   });
 
-  it('filters placeholder images by category', async () => {
+  it('filters gallery images by category', async () => {
     mockPublicApi();
     window.history.pushState({}, '', '/gallery');
     render(
@@ -32,6 +32,6 @@ describe('GalleryPage', () => {
       expect(screen.queryByText('Reception study')).not.toBeInTheDocument();
     });
     expect(screen.getByText('Material detail')).toBeInTheDocument();
-    expect(screen.getByText(/This section is deliberately absent/i)).toBeInTheDocument();
+    expect(screen.getByText(/New looks are added/i)).toBeInTheDocument();
   });
 });

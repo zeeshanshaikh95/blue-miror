@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
+import { MobileBookingBar } from '@/components/layout/MobileBookingBar';
 import { PreviewBar } from '@/components/layout/PreviewBar';
 import { BackToTop, ScrollProgress } from '@/components/layout/ScrollUtilities';
 import { ScrollToTop } from '@/components/layout/ScrollToTop';
@@ -26,6 +27,7 @@ export function PublicLayout() {
       <Footer />
       <WhatsAppFab />
       <BackToTop />
+      <MobileBookingBar />
     </div>
   );
 }

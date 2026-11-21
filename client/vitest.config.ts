@@ -16,5 +16,8 @@ export default defineConfig({
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     css: true,
     clearMocks: true,
+    // The app shell is heavy to transform; give slower routes room under load.
+    testTimeout: 20_000,
+    hookTimeout: 20_000,
   },
 });

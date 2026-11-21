@@ -5,7 +5,6 @@ import type { ServiceSummary } from '@/services/public-content';
 
 import { BrandVisual } from './BrandVisual';
 import { ContentBadge } from './ContentBadge';
-import { Eyebrow } from './Eyebrow';
 
 type ServiceCardProps = {
   service: ServiceSummary;
@@ -15,49 +14,58 @@ export function ServiceCard({ service }: ServiceCardProps) {
   return (
     <Link
       to={`/treatments/${service.slug}`}
-      className="group flex h-full flex-col border border-brand-line bg-brand-porcelain transition-colors duration-300 hover:border-brand-gold/70"
+      className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-brand-line bg-brand-porcelain transition-all duration-500 hover:-translate-y-1 hover:border-brand-gold/60 hover:shadow-[0_30px_60px_-34px_rgba(38,37,75,0.4)]"
     >
-      {service.imageUrl ? (
-        <div className="overflow-hidden">
+      <div className="relative overflow-hidden">
+        {service.imageUrl ? (
           <img
             src={service.imageUrl}
             alt={`${service.name} treatment`}
             loading="lazy"
             decoding="async"
-            className="aspect-[4/5] w-full border-b border-brand-line object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+            className="aspect-[4/5] w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
           />
-        </div>
-      ) : (
-        <div className="overflow-hidden">
+        ) : (
           <BrandVisual
             variant={service.visual}
             label={`${service.name} visual`}
-            className="aspect-[4/5] w-full transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+            className="aspect-[4/5] w-full"
           />
-        </div>
-      )}
+        )}
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-linear-to-t from-brand-indigo-deep/55 via-transparent to-transparent opacity-80"
+        />
+
+        <span className="absolute top-4 left-4 rounded-full border border-brand-ivory/30 bg-brand-indigo-deep/45 px-3 py-1 text-[0.55rem] font-medium tracking-[0.16em] text-brand-ivory uppercase backdrop-blur">
+          {service.categoryName}
+        </span>
+
+        {service.isPlaceholder ? (
+          <span className="absolute top-4 right-4">
+            <ContentBadge>Sample</ContentBadge>
+          </span>
+        ) : null}
+
+        <span className="absolute right-4 bottom-4 grid size-10 place-items-center rounded-full border border-brand-ivory/35 bg-brand-ivory/15 text-brand-ivory backdrop-blur transition-all duration-300 group-hover:border-brand-gold group-hover:bg-brand-gold group-hover:text-brand-indigo-deep">
+          <ArrowUpRight aria-hidden="true" size={17} strokeWidth={1.6} />
+        </span>
+      </div>
 
       <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <Eyebrow>{service.categoryName}</Eyebrow>
-          {service.isPlaceholder ? <ContentBadge>Sample</ContentBadge> : null}
-        </div>
-
-        <h3 className="mt-4 font-display text-[1.8rem] leading-[1.05] text-brand-indigo">
+        <h3 className="font-display text-[1.65rem] leading-[1.08] text-brand-indigo sm:text-[1.8rem]">
           {service.name}
         </h3>
-        <p className="mt-3 flex-1 text-sm leading-6 text-brand-muted">{service.shortDescription}</p>
+        <p className="mt-2.5 line-clamp-2 flex-1 text-sm leading-6 text-brand-muted">
+          {service.shortDescription}
+        </p>
 
         {service.price ? (
-          <p className="mt-3 text-[0.72rem] font-medium tracking-[0.14em] text-brand-gold-deep uppercase">
+          <p className="mt-4 text-[0.7rem] font-medium tracking-[0.12em] text-brand-gold-deep uppercase">
             {service.price}
           </p>
         ) : null}
-
-        <span className="mt-6 inline-flex items-center gap-2 text-[0.66rem] font-medium tracking-[0.16em] text-brand-indigo uppercase">
-          Explore treatment
-          <ArrowUpRight aria-hidden="true" size={15} strokeWidth={1.5} />
-        </span>
       </div>
     </Link>
   );

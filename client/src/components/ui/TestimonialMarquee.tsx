@@ -39,22 +39,24 @@ export function TestimonialMarquee({ testimonials, showHeader = true }: Testimon
         </div>
       ) : null}
 
-      <div
-        className={`relative overflow-hidden border-y border-brand-line py-4 ${
-          showHeader ? 'mt-4' : ''
-        }`}
-      >
-        <div className="marquee-track flex w-max gap-4">
+      <div className={`relative overflow-hidden py-2 ${showHeader ? 'mt-4' : ''}`}>
+        <div className="marquee-track flex w-max gap-5">
           {loop.map((testimonial, index) => (
             <figure
               key={`${testimonial.id}-${index}`}
               aria-hidden={index >= half.length}
-              className="w-72 shrink-0 border border-brand-line bg-brand-porcelain p-5"
+              className="w-80 shrink-0 rounded-[1.5rem] border border-brand-line bg-brand-porcelain p-6 shadow-[0_18px_40px_-32px_rgba(38,37,75,0.45)]"
             >
-              <blockquote className="font-display text-lg leading-snug text-brand-indigo">
-                “{testimonial.quote}”
+              <span
+                aria-hidden="true"
+                className="block font-display text-4xl leading-none text-brand-gold"
+              >
+                “
+              </span>
+              <blockquote className="mt-1 font-display text-xl leading-snug text-brand-indigo">
+                {testimonial.quote}
               </blockquote>
-              <figcaption className="mt-4 text-[0.6rem] tracking-[0.14em] text-brand-muted uppercase">
+              <figcaption className="mt-5 border-t border-brand-line pt-3 text-[0.6rem] tracking-[0.14em] text-brand-muted uppercase">
                 {testimonial.name}
                 {testimonial.treatment ? ` · ${testimonial.treatment}` : ''}
               </figcaption>
