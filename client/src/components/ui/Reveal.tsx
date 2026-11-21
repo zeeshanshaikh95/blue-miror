@@ -15,14 +15,14 @@ type RevealProps = {
  */
 export function Reveal({ children, className, delay = 0 }: RevealProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+  // Browsers without IntersectionObserver get the content immediately.
+  const [visible, setVisible] = useState(() => typeof IntersectionObserver === 'undefined');
 
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
 
     if (typeof IntersectionObserver === 'undefined') {
-      setVisible(true);
       return;
     }
 
