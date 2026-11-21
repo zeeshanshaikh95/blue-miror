@@ -129,7 +129,10 @@ export function HeroSlider({
         <div key={slide.id} className="max-w-[48rem] animate-[heroRise_700ms_ease-out]">
           <div className="flex items-center gap-3">
             <span aria-hidden="true" className="h-px w-10 bg-brand-gold sm:w-14" />
-            <Eyebrow tone="ivory" className="tracking-[0.28em]">
+            <Eyebrow
+              tone="ivory"
+              className="text-[0.56rem] tracking-[0.16em] sm:text-[0.6875rem] sm:tracking-[0.28em]"
+            >
               {slide.eyebrow ?? 'Blue Miror · Salon & Aesthetic Clinic'}
             </Eyebrow>
           </div>
