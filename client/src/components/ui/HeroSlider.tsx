@@ -95,10 +95,7 @@ export function HeroSlider({
                 src={item.imageUrl}
                 alt=""
                 fetchPriority={itemIndex === 0 ? 'high' : 'auto'}
-                className={cn(
-                  'size-full scale-[1.02] object-cover object-center blur-[1.5px]',
-                  itemIndex === activeIndex && !reducedMotion && 'animate-slow-zoom',
-                )}
+                className="size-full object-cover object-center"
               />
             ) : (
               <BrandVisual
@@ -113,11 +110,11 @@ export function HeroSlider({
 
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-[linear-gradient(100deg,rgba(18,17,36,0.97)_0%,rgba(18,17,36,0.9)_42%,rgba(18,17,36,0.62)_74%,rgba(18,17,36,0.55)_100%)]"
+        className="absolute inset-0 bg-[linear-gradient(100deg,rgba(18,17,36,0.93)_0%,rgba(18,17,36,0.82)_42%,rgba(18,17,36,0.45)_74%,rgba(18,17,36,0.35)_100%)]"
       />
       <div
         aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 h-3/4 bg-[linear-gradient(0deg,rgba(18,17,36,0.95),rgba(18,17,36,0.35)_55%,transparent)]"
+        className="absolute inset-x-0 bottom-0 h-3/4 bg-[linear-gradient(0deg,rgba(18,17,36,0.92),rgba(18,17,36,0.3)_55%,transparent)]"
       />
       <div
         aria-hidden="true"
