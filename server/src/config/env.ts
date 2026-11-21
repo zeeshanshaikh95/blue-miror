@@ -187,7 +187,14 @@ export function createEnv(source: NodeJS.ProcessEnv = process.env): AppEnv {
     issues.push('CLOUDINARY_API_SECRET must not contain a placeholder value.');
   }
 
-  const origins = parseCorsOrigins(value.CORS_ORIGINS ?? 'http://localhost:5173', issues);
+  const parsedOrigins = parseCorsOrigins(value.CORS_ORIGINS ?? 'http://localhost:5173', issues);
+
+  // Production traffic must be HTTPS. Ignore any plain-HTTP origin left in the
+  // environment (for example from early domain setup) rather than rejecting
+  // the whole configuration at boot.
+  const origins = isProduction
+    ? parsedOrigins.filter((origin) => origin.startsWith('https://'))
+    : parsedOrigins;
 
   if (issues.length > 0) {
     throw new Error(`Invalid environment configuration:\n- ${issues.join('\n- ')}`);

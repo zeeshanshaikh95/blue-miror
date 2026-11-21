@@ -16,18 +16,25 @@ import {
 import { lookupAdminByEmail } from '../models/index.js';
 import { AppError } from '../utils/app-error.js';
 
+/**
+ * A valid Argon2id digest of a value that is never accepted as a password.
+ * Verifying against it for unknown emails keeps the response time close to a
+ * wrong-password attempt, so callers cannot enumerate admin accounts.
+ */
+const timingEqualiserHash =
+  '$argon2id$v=19$m=65536,t=3,p=1$bWJnkkq31Kqh7b/YNSbhwg$aXbEmDUu4ZD0EuIu7Gcmko1dFeCoGxCVVP4gg8FRXjU';
+
 export async function authenticateAdmin(
   email: string,
   password: string,
 ): Promise<AuthenticatedAdmin> {
   const doc = await lookupAdminByEmail(email);
 
-  if (!doc) {
-    throw new AppError(401, 'ADMIN_INVALID_CREDENTIALS', 'Invalid email or password.');
-  }
+  // Always perform the expensive hash verification, even when no account
+  // exists, so the missing-user path is not measurably faster.
+  const valid = await verifyAdminPassword(password, doc?.passwordHash ?? timingEqualiserHash);
 
-  const valid = await verifyAdminPassword(password, doc.passwordHash);
-  if (!valid) {
+  if (!doc || !valid) {
     throw new AppError(401, 'ADMIN_INVALID_CREDENTIALS', 'Invalid email or password.');
   }
 

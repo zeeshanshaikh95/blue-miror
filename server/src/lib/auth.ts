@@ -109,6 +109,8 @@ export async function verifyAdminSessionToken(token: string): Promise<AdminToken
       issuer: env.JWT_ISSUER,
       audience: env.JWT_AUDIENCE,
       clockTolerance: clockSkewSeconds,
+      // Pin the symmetric algorithm so a token can never select another one.
+      algorithms: [jwtAlgorithm],
     }));
   } catch {
     // Signature, issuer, audience and expiry failures are authentication

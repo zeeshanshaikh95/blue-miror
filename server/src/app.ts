@@ -29,7 +29,9 @@ function createCorsOptions(allowedOrigins: string[]): CorsOptions {
 
       callback(new AppError(403, 'CORS_ORIGIN_DENIED', 'This origin is not allowed.'));
     },
-    credentials: true,
+    // The admin API authenticates with a bearer token, not cookies, so the
+    // browser never needs to attach credentials to cross-origin requests.
+    credentials: false,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
     exposedHeaders: ['X-Request-Id'],

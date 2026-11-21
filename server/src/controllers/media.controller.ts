@@ -13,7 +13,15 @@ export const mediaRouter = Router();
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: MAX_UPLOAD_BYTES, files: 1, fields: 4 },
+  limits: {
+    fileSize: MAX_UPLOAD_BYTES,
+    files: 1,
+    fields: 4,
+    // Bound the multipart envelope itself, not just the image payload.
+    fieldNameSize: 100,
+    fieldSize: 2048,
+    parts: 8,
+  },
 });
 
 function singleImage(request: Request, response: Response, next: NextFunction) {

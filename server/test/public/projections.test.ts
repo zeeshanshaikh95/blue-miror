@@ -133,6 +133,24 @@ describe('public projections', () => {
     expect(response.body.error.code).toBe('SERVICE_NOT_FOUND');
   });
 
+  it('does not expose an unpublished treatment by slug', async () => {
+    await request(app)
+      .post('/api/admin/services')
+      .set(bearer(token))
+      .send({
+        ...published,
+        slug: 'draft-treatment',
+        name: 'Draft Treatment',
+        isFeatured: false,
+        publishedAt: null,
+      });
+
+    const response = await request(app).get('/api/public/services/draft-treatment');
+
+    expect(response.status).toBe(404);
+    expect(response.body.error.code).toBe('SERVICE_NOT_FOUND');
+  });
+
   it('never exposes admin-only fields', async () => {
     const response = await request(app).get('/api/public/services/led-therapy');
     const serialized = JSON.stringify(response.body);

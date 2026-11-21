@@ -12,9 +12,9 @@ healthRouter.get('/', (_request, response) => {
     .status(databaseUp ? 200 : 503)
     .set('Cache-Control', 'no-store')
     .json({
+      // Deliberately minimal: enough for uptime monitors without publishing
+      // process timings or internal check details.
       status,
-      uptime: Math.round(process.uptime()),
-      timestamp: new Date().toISOString(),
       checks: {
         database: databaseUp ? 'up' : 'down',
       },

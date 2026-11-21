@@ -282,6 +282,8 @@ export async function findServiceBySlug(slug: string): Promise<PublicServiceDeta
   const doc = await Service.findOne({
     slug: slug.trim().toLowerCase(),
     isArchived: false,
+    // Draft treatments must not be reachable by guessing their slug.
+    publishedAt: mongoose.trusted({ $ne: null }),
   }).lean<ServiceDocument>();
   if (!doc) return null;
 
@@ -407,6 +409,8 @@ export async function findProductBySlug(slug: string): Promise<PublicProductDeta
   const doc = await Product.findOne({
     slug: slug.trim().toLowerCase(),
     isArchived: false,
+    // Draft products must not be reachable by guessing their slug.
+    publishedAt: mongoose.trusted({ $ne: null }),
   }).lean<ProductDocument>();
 
   if (!doc) return null;

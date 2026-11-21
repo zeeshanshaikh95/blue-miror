@@ -171,8 +171,21 @@ function urlEntry(loc, { priority = '0.5', changeFrequency = 'monthly', lastmod 
     .join('\n');
 }
 
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "img-src 'self' data: https://res.cloudinary.com",
+  "script-src 'self'",
+  "style-src 'self' 'unsafe-inline'",
+  "font-src 'self' data:",
+  "connect-src 'self' https://api.bluemiror.site",
+  "form-action 'self'",
+].join('; ');
+
 function applyMetadata(template, { title, description, canonical }) {
   const meta = [
+    `    <meta http-equiv="Content-Security-Policy" content="${contentSecurityPolicy}" />`,
     `    <link rel="canonical" href="${escapeHtml(canonical)}" />`,
     `    <meta property="og:type" content="website" />`,
     `    <meta property="og:site_name" content="Blue Miror" />`,

@@ -182,6 +182,10 @@ export const AdminLoginSchema = z.object({
   password: z.string().trim().min(1, 'Password is required.'),
 });
 
+/** Relative paths and absolute http(s) URLs only — never `javascript:` or `data:`. */
+const isSafeLink = (value: string) => value.startsWith('/') || /^https?:\/\//i.test(value);
+const safeLinkMessage = 'Use a relative path or an http(s) URL.';
+
 export const SettingsSchema = z
   .object({
     site: z
@@ -194,7 +198,12 @@ export const SettingsSchema = z
       .strict(),
     brand: z
       .object({
-        logoUrl: z.string().trim().min(1).max(500),
+        logoUrl: z
+          .string()
+          .trim()
+          .min(1)
+          .max(500)
+          .refine((value) => isSafeLink(value), safeLinkMessage),
         logoAlt: z.string().trim().min(1).max(200),
       })
       .strict(),
@@ -247,7 +256,12 @@ export const SettingsSchema = z
       .array(
         z.object({
           label: z.string().trim().min(1).max(60),
-          url: z.string().trim().min(1).max(500),
+          url: z
+            .string()
+            .trim()
+            .min(1)
+            .max(500)
+            .refine((value) => /^https?:\/\//i.test(value), 'Use an http(s) URL.'),
         }),
       )
       .max(20),
@@ -255,7 +269,15 @@ export const SettingsSchema = z
       .object({
         defaultTitle: z.string().trim().min(1).max(90),
         defaultDescription: z.string().trim().min(1).max(320),
-        canonicalBaseUrl: z.string().trim().max(500).nullable(),
+        canonicalBaseUrl: z
+          .string()
+          .trim()
+          .max(500)
+          .nullable()
+          .refine(
+            (value) => value === null || /^https?:\/\//i.test(value),
+            'Use an http(s) URL.',
+          ),
       })
       .strict(),
     legal: z
@@ -269,9 +291,21 @@ export const SettingsSchema = z
       .object({
         heroHeading: z.string().trim().max(160).nullable().optional(),
         heroDescription: z.string().trim().max(400).nullable().optional(),
-        heroImageUrl: z.string().trim().max(500).nullable().optional(),
+        heroImageUrl: z
+          .string()
+          .trim()
+          .max(500)
+          .nullable()
+          .optional()
+          .refine((value) => value == null || isSafeLink(value), safeLinkMessage),
         heroCtaLabel: z.string().trim().max(80).nullable().optional(),
-        heroCtaHref: z.string().trim().max(300).nullable().optional(),
+        heroCtaHref: z
+          .string()
+          .trim()
+          .max(300)
+          .nullable()
+          .optional()
+          .refine((value) => value == null || isSafeLink(value), safeLinkMessage),
         aboutHeading: z.string().trim().max(160).nullable().optional(),
         aboutBody: z.string().trim().max(1200).nullable().optional(),
         slides: z
@@ -282,9 +316,21 @@ export const SettingsSchema = z
                 eyebrow: z.string().trim().max(80).nullable().optional(),
                 heading: z.string().trim().max(160).nullable().optional(),
                 description: z.string().trim().max(400).nullable().optional(),
-                imageUrl: z.string().trim().max(500).nullable().optional(),
+                imageUrl: z
+                  .string()
+                  .trim()
+                  .max(500)
+                  .nullable()
+                  .optional()
+                  .refine((value) => value == null || isSafeLink(value), safeLinkMessage),
                 ctaLabel: z.string().trim().max(80).nullable().optional(),
-                ctaHref: z.string().trim().max(300).nullable().optional(),
+                ctaHref: z
+                  .string()
+                  .trim()
+                  .max(300)
+                  .nullable()
+                  .optional()
+                  .refine((value) => value == null || isSafeLink(value), safeLinkMessage),
               })
               .strict(),
           )

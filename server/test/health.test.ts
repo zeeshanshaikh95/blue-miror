@@ -27,7 +27,7 @@ describe('health endpoint', () => {
       status: 'ok',
       checks: { database: 'up' },
     });
-    expect(typeof response.body.uptime).toBe('number');
+    expect(response.body.uptime).toBeUndefined();
   });
 
   it('returns a structured 404 for unknown routes', async () => {
