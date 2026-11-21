@@ -161,6 +161,7 @@ authRouter.patch('/admin/password', requireAdminAuth, async (request, response, 
   }
 });
 
+// Account update: changing the login email or password requires the current password.
 authRouter.patch('/admin/account', requireAdminAuth, async (request, response, next) => {
   try {
     const { user } = request as AuthenticatedRequest;
