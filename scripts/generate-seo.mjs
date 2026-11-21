@@ -185,7 +185,6 @@ const contentSecurityPolicy = [
 
 function applyMetadata(template, { title, description, canonical }) {
   const meta = [
-    `    <meta http-equiv="Content-Security-Policy" content="${contentSecurityPolicy}" />`,
     `    <link rel="canonical" href="${escapeHtml(canonical)}" />`,
     `    <meta property="og:type" content="website" />`,
     `    <meta property="og:site_name" content="Blue Miror" />`,
@@ -202,6 +201,12 @@ function applyMetadata(template, { title, description, canonical }) {
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(title)}</title>`)
     .replace(/\s*<meta\s+name="description"[\s\S]*?\/>/, '')
     .replace(/\s*<link rel="canonical"[^>]*>/, '');
+
+  // A meta CSP only governs resources parsed after it, so put it first in head.
+  html = html.replace(
+    /<head(\s[^>]*)?>/i,
+    (match) => `${match}\n    <meta http-equiv="Content-Security-Policy" content="${contentSecurityPolicy}" />`,
+  );
 
   return html.replace('</head>', `${meta}\n  </head>`);
 }
