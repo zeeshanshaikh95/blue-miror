@@ -310,6 +310,18 @@ export const AdminPasswordChangeSchema = z
     path: ['newPassword'],
   });
 
+export const AdminAccountUpdateSchema = z
+  .object({
+    currentPassword: z.string().min(1).max(200),
+    email: z.string().trim().email().max(254).optional(),
+    newPassword: z.string().min(12, 'Use at least 12 characters.').max(72).optional(),
+  })
+  .strict()
+  .refine((value) => Boolean(value.email) || Boolean(value.newPassword), {
+    message: 'Provide a new email address or password.',
+    path: ['email'],
+  });
+
 export function buildPaginated<T>(items: T[], page: number, limit: number, total: number) {
   return {
     items,

@@ -8,6 +8,7 @@ import {
 } from '../services/auth.service.js';
 import { Admin } from '../models/index.js';
 import { AdminLoginSchema, AdminPasswordChangeSchema } from '../lib/validation.js';
+import { AdminAccountUpdateSchema } from '../lib/validation.js';
 import { constantTimeEquals, createAdminPasswordHash, verifyAdminPassword } from '../lib/auth.js';
 import { revokeAllSessionsForAdmin } from '../services/session.service.js';
 import { requireAdminAuth } from '../middleware/auth.middleware.js';
@@ -155,6 +156,59 @@ authRouter.patch('/admin/password', requireAdminAuth, async (request, response, 
     });
 
     return response.json({ success: true, data: { changed: true, sessionsRevoked } });
+  } catch (error) {
+    next(error);
+  }
+});
+
+authRouter.patch('/admin/account', requireAdminAuth, async (request, response, next) => {
+  try {
+    const { user } = request as AuthenticatedRequest;
+    const input = AdminAccountUpdateSchema.parse(request.body);
+
+    const admin = await Admin.findById(user.id).lean();
+    if (!admin) {
+      throw new AppError(404, 'ADMIN_NOT_FOUND', 'This admin account is no longer available.');
+    }
+
+    const currentValid = await verifyAdminPassword(input.currentPassword, admin.passwordHash);
+    if (!currentValid) {
+      throw new AppError(422, 'PASSWORD_CURRENT_INVALID', 'The current password is not correct.', {
+        currentPassword: 'The current password is not correct.',
+      });
+    }
+
+    const updates: Record<string, unknown> = {};
+
+    if (input.email) {
+      updates.email = input.email.toLowerCase();
+    }
+
+    if (input.newPassword) {
+      updates.passwordHash = await createAdminPasswordHash(input.newPassword);
+      updates.passwordUpdatedAt = new Date();
+    }
+
+    await Admin.updateOne({ _id: admin._id }, { $set: updates }, { runValidators: true });
+
+    // A credential change signs out every other device.
+    const sessionsRevoked = await revokeAllSessionsForAdmin(admin._id.toString());
+
+    logger.info({ adminId: admin._id.toString() }, 'Admin account updated');
+
+    void recordAudit({
+      action: 'admin.account_update',
+      method: request.method,
+      path: request.originalUrl.split('?')[0] ?? request.originalUrl,
+      statusCode: 200,
+      adminId: user.id,
+      adminEmail: input.email ?? user.email,
+      entityType: 'admin',
+      entityId: user.id,
+      requestId: response.locals.requestId as string | undefined,
+    });
+
+    return response.json({ success: true, data: { updated: true, sessionsRevoked } });
   } catch (error) {
     next(error);
   }
