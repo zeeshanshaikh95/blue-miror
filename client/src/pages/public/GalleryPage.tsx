@@ -34,14 +34,6 @@ export function GalleryPage() {
   const serviceLooks = servicesQuery.data?.items ?? [];
 
   const looks: Look[] = [
-    ...galleryItems.map((item) => ({
-      id: `gallery-${item.id}`,
-      title: item.title,
-      category: item.category,
-      alt: item.alt,
-      imageUrl: item.imageUrl,
-      variant: item.variant,
-    })),
     ...serviceLooks
       .filter((service) => service.imageUrl)
       .map((service) => ({
@@ -53,6 +45,14 @@ export function GalleryPage() {
         variant: service.visual,
         to: `/treatments/${service.slug}`,
       })),
+    ...galleryItems.map((item) => ({
+      id: `gallery-${item.id}`,
+      title: item.title,
+      category: item.category,
+      alt: item.alt,
+      imageUrl: item.imageUrl,
+      variant: item.variant,
+    })),
   ];
 
   const categories = [
