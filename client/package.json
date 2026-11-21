@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build && node ../scripts/generate-seo.mjs",
+    "build": "tsc --noEmit && vite build && node ../scripts/generate-seo.mjs && node ../scripts/check-public-bundle.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
