@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
-import { AdminAuthContext, useAdminAuth, type AdminAuthState } from './auth-context';
+import {
+  ADMIN_IDLE_TIMEOUT_MINUTES,
+  AdminAuthContext,
+  useAdminAuth,
+  type AdminAuthState,
+} from './auth-context';
 import { adminUnauthorizedEvent, ADMIN_UNAUTHORIZED_EVENT, login, logout } from './api';
 import { AdminThemeProvider } from './theme';
 import { clearSession, readSession, writeSession } from './session';
@@ -43,16 +49,19 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const signOut = useCallback(async () => {
-    try {
-      await logout();
-    } catch {
-      // A local sign-out must succeed even when the API call fails.
-    }
+  const signOut = useCallback(
+    async (reason: 'signed-out' | 'idle' = 'signed-out') => {
+      try {
+        await logout();
+      } catch {
+        // A local sign-out must succeed even when the API call fails.
+      }
 
-    clearSession();
-    setState({ status: 'anonymous', admin: null, expiresAt: null, reason: 'signed-out' });
-  }, []);
+      clearSession();
+      setState({ status: 'anonymous', admin: null, expiresAt: null, reason });
+    },
+    [],
+  );
 
   // Expire the local session exactly when the server-issued token does.
   useEffect(() => {
@@ -69,6 +78,38 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
     return () => window.clearTimeout(timer);
   }, [state.status, state.expiresAt]);
+
+  // Idle lock: an unattended dashboard revokes its own session and returns to
+  // the sign-in screen. Any real interaction restarts the countdown.
+  useEffect(() => {
+    if (state.status !== 'authenticated') return;
+
+    let timer = 0;
+
+    const restart = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(
+        () => {
+          void signOut('idle');
+        },
+        ADMIN_IDLE_TIMEOUT_MINUTES * 60_000,
+      );
+    };
+
+    const activityEvents = ['pointerdown', 'keydown', 'wheel', 'touchstart'] as const;
+
+    activityEvents.forEach((eventName) => {
+      window.addEventListener(eventName, restart, { passive: true });
+    });
+    restart();
+
+    return () => {
+      window.clearTimeout(timer);
+      activityEvents.forEach((eventName) => {
+        window.removeEventListener(eventName, restart);
+      });
+    };
+  }, [state.status, signOut]);
 
   // The API layer clears storage on 401; mirror that in React state.
   useEffect(() => {
@@ -101,6 +142,12 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 export function AdminAuthBoundary() {
   return (
     <AdminThemeProvider>
+      {/* Keep the staff area out of search engines and out of referrer headers. */}
+      <Helmet>
+        <title>Blue Miror — Admin</title>
+        <meta name="robots" content="noindex, nofollow, noarchive" />
+        <meta name="referrer" content="no-referrer" />
+      </Helmet>
       <AdminAuthProvider>
         <Outlet />
       </AdminAuthProvider>

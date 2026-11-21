@@ -94,6 +94,13 @@ export function createApp() {
   app.use('/api/health', healthRouter);
   app.use('/api', apiRateLimit);
 
+  // Authenticated staff data must never be cached by a browser or proxy.
+  app.use('/api/admin', (_request, response, next) => {
+    response.setHeader('Cache-Control', 'no-store, max-age=0');
+    response.setHeader('Pragma', 'no-cache');
+    next();
+  });
+
   app.use('/api/public', publicContentRouter);
   app.use('/api', publicSubmissionRouter);
   app.use('/api', adminRoutes);

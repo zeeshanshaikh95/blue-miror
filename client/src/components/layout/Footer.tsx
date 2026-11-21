@@ -14,6 +14,9 @@ const exploreLinks = [
   { label: 'Products', to: '/products' },
   { label: 'Gallery', to: '/gallery' },
   { label: 'Team', to: '/team' },
+  // Staff entrance. The link only opens the sign-in screen; every admin route
+  // and API call is still guarded server-side.
+  { label: 'Admin', to: '/admin/login' },
 ];
 
 const informationLinks = [

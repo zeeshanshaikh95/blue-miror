@@ -4,9 +4,17 @@ import { useNavigate } from 'react-router-dom';
 
 import { ApiError } from '@/lib/api-client';
 
-import { changePassword } from '../api';
+import { changePassword, revokeAllSessions } from '../api';
 import { useAdminAuth } from '../auth-context';
-import { AdminButton, Alert, Field, PageHeader, Panel, TextInput } from '../components/AdminUI';
+import {
+  AdminButton,
+  Alert,
+  ConfirmDialog,
+  Field,
+  PageHeader,
+  Panel,
+  TextInput,
+} from '../components/AdminUI';
 import { useToast } from '../toast';
 
 const minimumLength = 12;
@@ -20,6 +28,8 @@ export function AccountPage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [confirmRevokeAll, setConfirmRevokeAll] = useState(false);
+  const [sessionsError, setSessionsError] = useState<string | null>(null);
 
   const save = useMutation({
     mutationFn: () => changePassword({ currentPassword, newPassword }),
@@ -37,6 +47,27 @@ export function AccountPage() {
         caught instanceof ApiError
           ? caught.message
           : 'The password could not be changed. Please try again.',
+      );
+    },
+  });
+
+  const revokeSessions = useMutation({
+    mutationFn: () => revokeAllSessions(),
+    onSuccess: async (result) => {
+      setConfirmRevokeAll(false);
+      push({
+        title: 'Every device signed out',
+        description: `${result.revoked} active session${result.revoked === 1 ? '' : 's'} were revoked. Sign in again to continue.`,
+        tone: 'success',
+      });
+      await signOut();
+      navigate('/admin/login', { replace: true });
+    },
+    onError: (caught) => {
+      setSessionsError(
+        caught instanceof ApiError
+          ? caught.message
+          : 'The sessions could not be signed out. Please try again.',
       );
     },
   });
@@ -83,6 +114,38 @@ export function AccountPage() {
           </div>
         </dl>
       </Panel>
+
+      <Panel
+        title="Devices & sessions"
+        description="Each sign-in is a separate session. Sessions are also signed out automatically after 20 minutes of inactivity."
+      >
+        {sessionsError ? <Alert tone="error">{sessionsError}</Alert> : null}
+        <p className="text-sm leading-7 text-brand-muted">
+          Signing out all devices revokes every active session for this account, including the one
+          you are using now. Use this if a device was lost or a password may have been shared.
+        </p>
+        <div className="mt-4">
+          <AdminButton
+            variant="danger"
+            onClick={() => {
+              setSessionsError(null);
+              setConfirmRevokeAll(true);
+            }}
+          >
+            Sign out all devices
+          </AdminButton>
+        </div>
+      </Panel>
+
+      <ConfirmDialog
+        open={confirmRevokeAll}
+        title="Sign out all devices?"
+        message="Every tab, phone and computer signed in to this admin account will be signed out, including this one. You will need your email and password to sign in again."
+        confirmLabel="Sign out everywhere"
+        busy={revokeSessions.isPending}
+        onConfirm={() => revokeSessions.mutate()}
+        onCancel={() => setConfirmRevokeAll(false)}
+      />
 
       <Panel
         title="Change password"

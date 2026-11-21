@@ -4,7 +4,7 @@ import { Eye, EyeOff, Lock } from 'lucide-react';
 
 import { ApiError } from '@/lib/api-client';
 
-import { useAdminAuth } from '../auth-context';
+import { ADMIN_IDLE_TIMEOUT_MINUTES, useAdminAuth } from '../auth-context';
 import { AdminButton, Alert, Field, TextInput } from '../components/AdminUI';
 
 type FieldErrors = { email?: string; password?: string };
@@ -79,13 +79,15 @@ export function AdminLoginPage() {
   }
 
   const reasonMessage =
-    reason === 'expired'
-      ? 'Your session expired. Sign in again to continue.'
-      : reason === 'revoked'
-        ? 'Your session was signed out or is no longer valid. Sign in again to continue.'
-        : reason === 'signed-out'
-          ? 'You have been signed out.'
-          : null;
+    reason === 'idle'
+      ? `You were signed out after ${ADMIN_IDLE_TIMEOUT_MINUTES} minutes of inactivity.`
+      : reason === 'expired'
+        ? 'Your session expired. Sign in again to continue.'
+        : reason === 'revoked'
+          ? 'Your session was signed out or is no longer valid. Sign in again to continue.'
+          : reason === 'signed-out'
+            ? 'You have been signed out.'
+            : null;
 
   return (
     <div className="grid min-h-dvh bg-brand-ivory lg:grid-cols-[1.1fr_1fr]">

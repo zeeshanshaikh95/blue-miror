@@ -112,6 +112,32 @@ export const logoutHandler: RequestHandler = async (request, response, next) => 
   }
 };
 
+/** Signs every device out of this admin account, including the caller. */
+authRouter.post('/admin/sessions/revoke-all', requireAdminAuth, async (request, response, next) => {
+  try {
+    const { user } = request as AuthenticatedRequest;
+    const revoked = await revokeAllSessionsForAdmin(user.id);
+
+    logger.info({ adminId: user.id, revoked }, 'All admin sessions revoked');
+
+    void recordAudit({
+      action: 'admin.sessions_revoke_all',
+      method: request.method,
+      path: request.originalUrl.split('?')[0] ?? request.originalUrl,
+      statusCode: 200,
+      adminId: user.id,
+      adminEmail: user.email,
+      entityType: 'admin',
+      entityId: user.id,
+      requestId: response.locals.requestId as string | undefined,
+    });
+
+    return response.json({ success: true, data: { revoked } });
+  } catch (error) {
+    next(error);
+  }
+});
+
 authRouter.patch('/admin/password', requireAdminAuth, async (request, response, next) => {
   try {
     const { user } = request as AuthenticatedRequest;

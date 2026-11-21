@@ -112,6 +112,11 @@ export async function logout(): Promise<{ revoked: boolean }> {
   return adminRequest<{ revoked: boolean }>('/admin/logout', { method: 'POST' });
 }
 
+/** Revokes every session for this account, including the current one. */
+export async function revokeAllSessions(): Promise<{ revoked: number }> {
+  return adminRequest<{ revoked: number }>('/admin/sessions/revoke-all', { method: 'POST' });
+}
+
 // ---------------------------------------------------------------------------
 // Media
 // ---------------------------------------------------------------------------
