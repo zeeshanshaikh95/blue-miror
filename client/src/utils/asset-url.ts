@@ -17,3 +17,14 @@ export function publicAssetUrl(value: string): string {
 
   return `${base}${path}`;
 }
+
+/**
+ * Insert a transformation into a Cloudinary delivery URL so the same asset can
+ * be cropped differently per breakpoint. Any other URL is returned untouched.
+ */
+export function cloudinaryImage(url: string, transformation: string): string {
+  if (!url || !transformation) return url;
+  if (!url.includes('res.cloudinary.com') || !url.includes('/image/upload/')) return url;
+
+  return url.replace('/image/upload/', `/image/upload/${transformation}/`);
+}
