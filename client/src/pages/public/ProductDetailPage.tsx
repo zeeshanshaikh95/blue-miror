@@ -1,6 +1,7 @@
 import { Check } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 
+import { JsonLd } from '@/components/seo/JsonLd';
 import { Seo } from '@/components/seo/Seo';
 import { BookingLink } from '@/components/ui/BookingLink';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
@@ -78,9 +79,50 @@ export function ProductDetailPage() {
   const paragraphs =
     product.description.length > 0 ? product.description : [product.shortDescription];
 
+  const siteUrl = (import.meta.env.VITE_SITE_URL?.trim() || 'http://localhost:5173').replace(
+    /\/+$/,
+    '',
+  );
+  const productUrl = `${siteUrl}/products/${product.slug}/`;
+  const priceValue = product.price?.match(/₹\s?([\d,]+)/)?.[1]?.replace(/,/g, '');
+
+  const productSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    '@id': `${productUrl}#product`,
+    name: product.name,
+    ...(product.brand ? { brand: { '@type': 'Brand', name: product.brand } } : {}),
+    category: product.category,
+    description: product.shortDescription,
+    url: productUrl,
+    ...(product.imageUrl ? { image: [product.imageUrl] } : {}),
+    ...(priceValue
+      ? {
+          offers: {
+            '@type': 'Offer',
+            priceCurrency: 'INR',
+            price: priceValue,
+            availability: 'https://schema.org/InStock',
+            url: productUrl,
+          },
+        }
+      : {}),
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${siteUrl}/` },
+      { '@type': 'ListItem', position: 2, name: 'Products', item: `${siteUrl}/products/` },
+      { '@type': 'ListItem', position: 3, name: product.name, item: productUrl },
+    ],
+  };
+
   return (
     <>
       <Seo title={product.name} description={product.shortDescription} />
+      <JsonLd data={[productSchema, breadcrumbSchema]} />
 
       <section className="py-10 sm:py-14">
         <Container>

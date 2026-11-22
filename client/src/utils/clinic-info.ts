@@ -9,7 +9,9 @@ export function formatHoursLabel(hours: ClinicHour[] | null | undefined): string
 
   const sameEveryDay = hours.length > 1 && hours.every((entry) => entry.value === first);
 
-  return sameEveryDay ? `Daily ${first}` : `${hours[0]?.label} ${first}`;
+  if (!sameEveryDay) return `${hours[0]?.label} ${first}`;
+  if (hours.length === 7) return `Daily ${first}`;
+  return `${hours[0]?.label} to ${hours.at(-1)?.label}, ${first}`;
 }
 
 /** `tel:` link that survives spaces, brackets and dashes in the display number. */
@@ -20,14 +22,18 @@ export function phoneHref(phone: string | null | undefined): string | null {
   return cleaned.length > 3 ? `tel:${cleaned}` : null;
 }
 
-/** First meaningful line of an address, for tight spaces. */
+/** The most useful locality line of an address, for tight spaces. */
 export function shortAddress(address: string | null | undefined): string | null {
   if (!address) return null;
 
-  const first = address
+  const parts = address
     .split(',')
     .map((part) => part.trim())
-    .find(Boolean);
+    .filter(Boolean);
 
-  return first ?? null;
+  const locality = parts.find((part) =>
+    /mira road|mira bhayandar|dahisar|bhayandar/i.test(part),
+  );
+
+  return locality ?? parts.at(-2) ?? parts[0] ?? null;
 }

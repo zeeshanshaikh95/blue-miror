@@ -42,7 +42,7 @@ jobs:
           # Custom domain serves the site from the root, so assets must be rooted at "/".
           VITE_BASE: '/'
           VITE_SITE_URL: 'https://www.bluemiror.site'
-          VITE_ALLOW_INDEXING: 'false'
+          VITE_ALLOW_INDEXING: 'true'
           VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'http://localhost:4000/api' }}
           VITE_CLOUDINARY_CLOUD_NAME: ${{ vars.VITE_CLOUDINARY_CLOUD_NAME }}
 

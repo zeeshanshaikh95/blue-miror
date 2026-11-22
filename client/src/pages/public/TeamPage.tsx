@@ -22,7 +22,7 @@ export function TeamPage() {
   return (
     <>
       <Seo
-        title="Our team"
+        title="Our Salon Team in Mira Road East"
         description="Meet the stylists, therapists and makeup artists behind Blue Miror in Mira Road East."
       />
 

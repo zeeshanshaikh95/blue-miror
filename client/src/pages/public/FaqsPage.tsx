@@ -1,8 +1,8 @@
+import { JsonLd } from '@/components/seo/JsonLd';
 import { Seo } from '@/components/seo/Seo';
 import { Accordion } from '@/components/ui/Accordion';
 import { BookingLink } from '@/components/ui/BookingLink';
 import { Container } from '@/components/ui/Container';
-import { ContentBadge } from '@/components/ui/ContentBadge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Eyebrow } from '@/components/ui/Eyebrow';
@@ -17,10 +17,22 @@ export function FaqsPage() {
   return (
     <>
       <Seo
-        title="FAQs"
-        description="Answers about booking, treatment information and the Blue Miror website. Sample answers require clinic approval before publication."
-        noindex
+        title="FAQs — Booking, Prices & Treatments"
+        description="Answers about booking, prices, opening hours, location and treatments at Blue Miror salon and aesthetic clinic in Mira Road East, Mumbai."
       />
+      {faqs.length > 0 ? (
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: faqs.map((faq) => ({
+              '@type': 'Question',
+              name: faq.question,
+              acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+            })),
+          }}
+        />
+      ) : null}
 
       <PageHero
         eyebrow="Questions"
@@ -30,14 +42,19 @@ export function FaqsPage() {
             <br /> <em className="text-brand-gold-deep">clarity</em>.
           </>
         }
-        intro="Useful answers about the booking approach, treatment information and what the website will publish. Every answer remains a draft until the clinic approves it."
+        intro="Booking, pricing, parking and treatment questions — answered plainly. If something is missing, WhatsApp the clinic and ask."
         aside={
           <div className="border-l border-brand-gold/60 pl-5">
-            <ContentBadge>Draft answers</ContentBadge>
-            <p className="mt-3 text-sm leading-6 text-brand-muted">
-              These answers describe the planned experience. They are not clinic policies until
-              reviewed.
+            <p className="text-[0.6rem] tracking-[0.18em] text-brand-gold-deep uppercase">
+              Still unsure?
             </p>
+            <p className="mt-2 text-sm leading-6 text-brand-muted">
+              Send the treatment you have in mind and we will tell you what is realistic for your
+              hair or skin.
+            </p>
+            <div className="mt-4">
+              <BookingLink variant="secondary" />
+            </div>
           </div>
         }
       />

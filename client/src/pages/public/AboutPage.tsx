@@ -40,7 +40,7 @@ export function AboutPage() {
   return (
     <>
       <Seo
-        title="About"
+        title="About Blue Miror in Mira Road East"
         description="Blue Miror is a unisex salon and aesthetic clinic in Mira Road East — hair, skin, nails and makeup under one roof, with a consultation-led approach."
       />
 

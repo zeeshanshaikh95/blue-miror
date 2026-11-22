@@ -32,7 +32,7 @@ export function TestimonialsPage() {
   return (
     <>
       <Seo
-        title="Client stories"
+        title="Client Reviews & Stories in Mira Road East"
         description="Kind words from Blue Miror clients in Mira Road — real experiences, shared with consent."
       />
 

@@ -66,7 +66,7 @@ export function ProductsPage() {
   return (
     <>
       <Seo
-        title="Products"
+        title="Professional Salon Products in Mira Road East"
         description="The professional nail and beauty products used and available at Blue Miror, from gel polish and cat-eye collections to nail essentials."
       />
 

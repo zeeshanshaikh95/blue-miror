@@ -17,12 +17,12 @@ const bookingSteps = [
   {
     number: '01',
     title: 'Start the conversation',
-    body: 'WhatsApp will be the primary booking channel. The clinic’s verified number and approved message will be configured centrally.',
+    body: 'Message the salon on WhatsApp with the treatment you have in mind and a date or time that suits you.',
   },
   {
     number: '02',
     title: 'The clinic reviews the request',
-    body: 'A request is not a confirmed appointment. The clinic will review the details before confirming availability.',
+    body: 'A request is not a confirmed appointment. The clinic checks availability and any preparation your treatment needs.',
   },
   {
     number: '03',
@@ -44,12 +44,20 @@ export function BookPage() {
     ? buildServiceEnquiryUrl(settings, selectedService.name)
     : buildBookingWhatsAppUrl(settings);
 
+  const hours = settings?.contact.hours ?? [];
+  const sameDailyHours = hours.length > 1 && hours.every((entry) => entry.value === hours[0]?.value);
+  const hoursLabel =
+    hours.length > 0
+      ? sameDailyHours
+        ? `${hours[0].label} to ${hours.at(-1)?.label}, ${hours[0].value}`
+        : `${hours[0].label}, ${hours[0].value}`
+      : null;
+
   return (
     <>
       <Seo
-        title="Book a consultation"
-        description="How booking will work at Blue Miror: WhatsApp-first requests, clinic review and explicit confirmation. No appointment is confirmed automatically."
-        noindex
+        title="Book an Appointment — WhatsApp Booking"
+        description="Book hair, skin, nails or makeup at Blue Miror in Mira Road East. Send your treatment and preferred time on WhatsApp; the clinic confirms every appointment personally."
       />
 
       <PageHero
@@ -60,14 +68,20 @@ export function BookPage() {
             <br /> <em className="text-brand-gold-deep">conversation</em>.
           </>
         }
-        intro="Blue Miror is being built around a WhatsApp-first booking experience. This page explains the flow; the request form and live channel arrive in a later phase."
+        intro="Send the treatment you have in mind and a time that suits you on WhatsApp. The clinic checks availability and confirms every appointment personally."
         aside={
           <div className="border-l border-brand-gold/60 pl-5">
-            <ContentBadge>Booking channel being configured</ContentBadge>
-            <p className="mt-3 text-sm leading-6 text-brand-muted">
-              No WhatsApp number is hardcoded. The clinic will control the number, country code,
-              message and CTA labels from the admin settings.
+            <p className="text-[0.6rem] tracking-[0.18em] text-brand-gold-deep uppercase">
+              Booking
             </p>
+            <p className="mt-3 text-sm leading-6 text-brand-muted">
+              {settings?.contact.phone
+                ? `Call or WhatsApp ${settings.contact.phone}.`
+                : 'Message the clinic to request a date.'}
+            </p>
+            {hoursLabel ? (
+              <p className="mt-2 text-sm leading-6 text-brand-muted">Open {hoursLabel}.</p>
+            ) : null}
           </div>
         }
       />
@@ -76,7 +90,7 @@ export function BookPage() {
         <Container>
           <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
             <div>
-              <Eyebrow>How it will work</Eyebrow>
+              <Eyebrow>How it works</Eyebrow>
               <h2 className="mt-4 font-display text-[clamp(2.2rem,4.2vw,3.7rem)] leading-[0.97] text-brand-indigo">
                 A request, not an instant booking.
               </h2>
@@ -106,12 +120,12 @@ export function BookPage() {
                   />
                   <div>
                     <p className="text-[0.62rem] font-medium tracking-[0.15em] text-brand-indigo uppercase">
-                      Current status
+                      WhatsApp booking
                     </p>
                     <p className="mt-2 text-sm leading-6 text-brand-muted">
                       {whatsappHref
-                        ? 'The clinic’s WhatsApp channel is configured. You can begin a conversation now.'
-                        : 'The clinic has not yet supplied a verified WhatsApp number. No placeholder number or fake booking button is used.'}
+                        ? `Send a message to ${settings?.contact.phone ?? 'the clinic'} and the team will confirm your slot.`
+                        : 'Call the salon to request a date and time.'}
                     </p>
                   </div>
                 </div>

@@ -4,7 +4,7 @@ import { Link, NavLink } from 'react-router-dom';
 
 import { useSiteSettings } from '@/hooks/use-public-content';
 import { publicAssetUrl } from '@/utils/asset-url';
-import { formatHoursLabel, phoneHref } from '@/utils/clinic-info';
+import { formatHoursLabel, phoneHref, shortAddress } from '@/utils/clinic-info';
 import { cn } from '@/utils/cn';
 
 import { BookingLink } from '../ui/BookingLink';
@@ -29,6 +29,7 @@ export function Header() {
   const phone = settings?.contact.phone ?? null;
   const tel = phoneHref(phone);
   const hoursLabel = formatHoursLabel(settings?.contact.hours);
+  const area = shortAddress(settings?.contact.address) ?? 'Mira Road East';
   const instagram = settings?.social.find((item) => /instagram/i.test(item.label))?.url ?? null;
 
   useEffect(() => {
@@ -48,7 +49,7 @@ export function Header() {
         <Container className="flex h-9 items-center justify-between gap-6 text-[0.6rem] font-medium tracking-[0.16em] uppercase">
           <span className="flex items-center gap-2 text-brand-ivory/75">
             <MapPin aria-hidden="true" size={12} strokeWidth={1.6} className="text-brand-gold" />
-            {settings?.contact.address ?? 'Mira Road East'}
+            {area}
           </span>
           <div className="flex items-center gap-6 text-brand-ivory/75">
             {hoursLabel ? (

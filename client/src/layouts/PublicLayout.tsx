@@ -2,8 +2,8 @@ import { Outlet } from 'react-router-dom';
 
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
+import { StructuredData } from '@/components/seo/StructuredData';
 import { MobileBookingBar } from '@/components/layout/MobileBookingBar';
-import { PreviewBar } from '@/components/layout/PreviewBar';
 import { BackToTop, ScrollProgress } from '@/components/layout/ScrollUtilities';
 import { ScrollToTop } from '@/components/layout/ScrollToTop';
 import { WhatsAppFab } from '@/components/layout/WhatsAppFab';
@@ -11,6 +11,7 @@ import { WhatsAppFab } from '@/components/layout/WhatsAppFab';
 export function PublicLayout() {
   return (
     <div className="flex min-h-dvh flex-col bg-brand-ivory">
+      <StructuredData />
       <ScrollToTop />
       <ScrollProgress />
       <a
@@ -19,7 +20,6 @@ export function PublicLayout() {
       >
         Skip to content
       </a>
-      <PreviewBar />
       <Header />
       <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
         <Outlet />

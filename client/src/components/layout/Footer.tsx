@@ -62,9 +62,8 @@ export function Footer() {
               <p className="max-w-xs font-display text-2xl leading-tight text-brand-ivory">
                 Salon, hair &amp; aesthetic care in Mira Road.
               </p>
-              <p className="mt-2 max-w-sm text-[0.65rem] leading-5 tracking-[0.1em] text-brand-ivory/60 uppercase">
-                Preview content. Clinic details, photography and approved treatment information are
-                pending.
+              <p className="mt-2 max-w-sm text-[0.65rem] leading-5 tracking-[0.12em] text-brand-ivory/60 uppercase">
+                Mira Road East · Hair, skin, nails &amp; makeup
               </p>
             </div>
           </div>

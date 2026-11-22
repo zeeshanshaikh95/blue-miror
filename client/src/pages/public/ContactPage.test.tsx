@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { App } from '@/app/App';
@@ -22,18 +22,16 @@ describe('ContactPage', () => {
     vi.unstubAllGlobals();
   });
 
-  it('publishes no invented contact details when settings are empty', async () => {
+  it('shows the clinic address and a booking fallback when WhatsApp is not configured', async () => {
     mockPublicApi();
     renderContact();
 
+    expect((await screen.findAllByText(/Shop No\. 5, GH Society/i)).length).toBeGreaterThan(0);
     expect(
-      await screen.findByText(/The verified WhatsApp number is not yet configured/i),
-    ).toBeInTheDocument();
-    expect(screen.getByText(/Phone number pending verification/i)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'How booking works' })).toHaveAttribute(
-      'href',
-      '/book',
-    );
+      screen
+        .getAllByRole('link', { name: /Request an appointment/i })
+        .some((link) => link.getAttribute('href') === '/book'),
+    ).toBe(true);
     expect(document.querySelector('a[href^="https://wa.me/"]')).toBeNull();
   });
 
@@ -52,11 +50,11 @@ describe('ContactPage', () => {
     });
     renderContact();
 
-    expect(
-      await screen.findByText(/begin a booking request through the clinic’s verified WhatsApp/i),
-    ).toBeInTheDocument();
-    const links = [...document.querySelectorAll('a[href^="https://wa.me/"]')];
-    expect(links.length).toBeGreaterThan(0);
-    expect(links[0]).toHaveAttribute('target', '_blank');
+    expect(await screen.findByRole('heading', { name: 'WhatsApp' })).toBeInTheDocument();
+    await waitFor(() => {
+      const links = [...document.querySelectorAll('a[href^="https://wa.me/"]')];
+      expect(links.length).toBeGreaterThan(0);
+      expect(links[0]).toHaveAttribute('target', '_blank');
+    });
   });
 });

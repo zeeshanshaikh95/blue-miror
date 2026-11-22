@@ -66,8 +66,8 @@ export function TreatmentsPage() {
   return (
     <>
       <Seo
-        title="Treatments"
-        description="Explore the Blue Miror treatment structure. Final treatment names, suitability information and aftercare are awaiting clinic approval."
+        title="Salon Treatments & Prices in Mira Road East"
+        description="Browse 115+ salon and aesthetic treatments in Mira Road East — hair colour, haircuts, facials, waxing, threading, nails, makeup and advanced skin care, with published prices."
       />
 
       <section className="py-12 sm:py-16 lg:py-20">

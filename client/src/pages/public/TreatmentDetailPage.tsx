@@ -2,6 +2,7 @@ import { ArrowRight, Check, ShieldCheck } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 
 import { EnquiryForm } from '@/components/forms/PublicForms';
+import { JsonLd } from '@/components/seo/JsonLd';
 import { Seo } from '@/components/seo/Seo';
 import { Accordion } from '@/components/ui/Accordion';
 import { BookingLink } from '@/components/ui/BookingLink';
@@ -104,13 +105,68 @@ export function TreatmentDetailPage() {
     answer: faq.answer,
   }));
 
+  const siteUrl = (import.meta.env.VITE_SITE_URL?.trim() || 'http://localhost:5173').replace(
+    /\/+$/,
+    '',
+  );
+  const serviceUrl = `${siteUrl}/treatments/${service.slug}/`;
+  const priceValue = service.price?.match(/₹\s?([\d,]+)/)?.[1]?.replace(/,/g, '');
+
+  const serviceSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `${serviceUrl}#service`,
+    name: service.name,
+    serviceType: service.categoryName,
+    description: service.shortDescription,
+    url: serviceUrl,
+    provider: { '@id': `${siteUrl}/#salon` },
+    areaServed: 'Mira Road East, Maharashtra',
+    ...(service.imageUrl ? { image: service.imageUrl } : {}),
+    ...(priceValue
+      ? {
+          offers: {
+            '@type': 'Offer',
+            priceCurrency: 'INR',
+            price: priceValue,
+            url: serviceUrl,
+          },
+        }
+      : {}),
+  };
+
+  const faqSchema =
+    service.faqs.length > 0
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          '@id': `${serviceUrl}#faq`,
+          mainEntity: service.faqs.map((faq) => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+          })),
+        }
+      : null;
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${siteUrl}/` },
+      { '@type': 'ListItem', position: 2, name: 'Treatments', item: `${siteUrl}/treatments/` },
+      { '@type': 'ListItem', position: 3, name: service.name, item: serviceUrl },
+    ],
+  };
+
   return (
     <>
       <Seo
-        title={service.name}
+        title={`${service.name} in Mira Road East`}
         description={service.shortDescription}
         noindex={service.isPlaceholder}
       />
+      <JsonLd data={[serviceSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])]} />
 
       <PageHero
         breadcrumbs={

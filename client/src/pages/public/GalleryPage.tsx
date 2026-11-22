@@ -72,7 +72,7 @@ export function GalleryPage() {
   return (
     <>
       <Seo
-        title="Gallery"
+        title="Gallery — Blue Miror Salon in Mira Road East"
         description="A look inside Blue Miror in Mira Road — colour, nails, skin and makeup work from the salon chairs."
       />
 
