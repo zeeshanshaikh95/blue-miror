@@ -520,6 +520,7 @@ function breadcrumbSchema(route) {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
+    '@id': `${canonicalFor(crumbs.at(-1)?.path ?? route.path)}#breadcrumb`,
     itemListElement: crumbs.map((crumb, index) => ({
       '@type': 'ListItem',
       position: index + 1,

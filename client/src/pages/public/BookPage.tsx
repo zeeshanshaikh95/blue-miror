@@ -56,7 +56,7 @@ export function BookPage() {
   return (
     <>
       <Seo
-        title="Book an Appointment — WhatsApp Booking"
+        title="Book an Appointment on WhatsApp | Blue Miror Mira Road East"
         description="Book hair, skin, nails or makeup at Blue Miror in Mira Road East. Send your treatment and preferred time on WhatsApp; the clinic confirms every appointment personally."
       />
 

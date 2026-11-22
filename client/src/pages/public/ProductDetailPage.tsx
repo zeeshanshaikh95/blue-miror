@@ -112,6 +112,7 @@ export function ProductDetailPage() {
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
+    '@id': `${productUrl}#breadcrumb`,
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: `${siteUrl}/` },
       { '@type': 'ListItem', position: 2, name: 'Products', item: `${siteUrl}/products/` },
@@ -121,7 +122,10 @@ export function ProductDetailPage() {
 
   return (
     <>
-      <Seo title={product.name} description={product.shortDescription} />
+      <Seo
+        title={`${product.name}${product.brand ? ` — ${product.brand}` : ''}`}
+        description={product.shortDescription}
+      />
       <JsonLd data={[productSchema, breadcrumbSchema]} />
 
       <section className="py-10 sm:py-14">

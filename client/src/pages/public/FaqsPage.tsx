@@ -1,4 +1,3 @@
-import { JsonLd } from '@/components/seo/JsonLd';
 import { Seo } from '@/components/seo/Seo';
 import { Accordion } from '@/components/ui/Accordion';
 import { BookingLink } from '@/components/ui/BookingLink';
@@ -17,23 +16,9 @@ export function FaqsPage() {
   return (
     <>
       <Seo
-        title="FAQs — Booking, Prices & Treatments"
+        title="Salon FAQs — Booking, Prices & Location"
         description="Answers about booking, prices, opening hours, location and treatments at Blue Miror salon and aesthetic clinic in Mira Road East, Mumbai."
       />
-      {faqs.length > 0 ? (
-        <JsonLd
-          data={{
-            '@context': 'https://schema.org',
-            '@type': 'FAQPage',
-            mainEntity: faqs.map((faq) => ({
-              '@type': 'Question',
-              name: faq.question,
-              acceptedAnswer: { '@type': 'Answer', text: faq.answer },
-            })),
-          }}
-        />
-      ) : null}
-
       <PageHero
         eyebrow="Questions"
         title={

@@ -85,7 +85,7 @@ export function ContactPage() {
   return (
     <>
       <Seo
-        title="Contact & Visit — Salon in Mira Road East"
+        title="Contact Blue Miror — Mira Road East Salon & Clinic"
         description={`Visit Blue Miror at ${fullAddress}. Open ${hoursSummary}. Call ${contact?.phone ?? 'the clinic'} or book on WhatsApp.`}
       />
       <JsonLd data={[faqSchema, breadcrumbSchema]} />

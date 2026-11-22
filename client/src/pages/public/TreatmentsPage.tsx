@@ -66,7 +66,7 @@ export function TreatmentsPage() {
   return (
     <>
       <Seo
-        title="Salon Treatments & Prices in Mira Road East"
+        title="Salon Treatments & Price List in Mira Road East | Blue Miror"
         description="Browse 115+ salon and aesthetic treatments in Mira Road East — hair colour, haircuts, facials, waxing, threading, nails, makeup and advanced skin care, with published prices."
       />
 
