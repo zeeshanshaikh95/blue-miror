@@ -40,6 +40,7 @@ export type EnquiryDocument = {
   source: string;
   ipHash: string | null;
   userAgent: string | null;
+  purgeAt: Date;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -60,6 +61,9 @@ export type ContactSubmissionDocument = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+/** MongoDB TTL: expiry is evaluated on this field by the database itself. */
+const ENQUIRY_TTL_MS = 24 * 60 * 60 * 1000;
 
 const statusHistorySchema = new Schema(
   {
@@ -145,6 +149,10 @@ const enquirySchema = new Schema(
     source: { type: String, trim: true, maxlength: 40, default: 'website' },
     ipHash: { type: String, trim: true, maxlength: 64, default: null },
     userAgent: { type: String, trim: true, maxlength: 400, default: null },
+    purgeAt: {
+      type: Date,
+      default: () => new Date(Date.now() + ENQUIRY_TTL_MS),
+    },
   },
   { timestamps: true, minimize: false, toJSON: { virtuals: true, versionKey: false } },
 );
@@ -191,6 +199,7 @@ appointmentSchema.index({ status: 1, preferredDate: 1 });
 appointmentSchema.index({ createdAt: -1 });
 appointmentSchema.index({ phone: 1, createdAt: -1 });
 enquirySchema.index({ status: 1, createdAt: -1 });
+enquirySchema.index({ purgeAt: 1 }, { expireAfterSeconds: 0 });
 contactSubmissionSchema.index({ status: 1, createdAt: -1 });
 
 export const Appointment = mongoose.model('Appointment', appointmentSchema);

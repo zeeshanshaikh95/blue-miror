@@ -17,6 +17,7 @@ import {
   Testimonial,
   WebsiteSettings,
 } from '../../src/models/index.js';
+import { pruneEnquiries } from '../../src/services/submission.service.js';
 
 let app: Express;
 let stop: () => Promise<void>;
@@ -452,5 +453,41 @@ describe('inbox date filtering integration', () => {
     for (const item of [...first.data.items, ...second.data.items]) {
       expect(item.status).toBe('pending');
     }
+  });
+
+  it('keeps only the newest 50 enquiries and removes anything older than a day', async () => {
+    const now = Date.now();
+
+    // Insert oldest-to-newest so ObjectId order matches createdAt order.
+    await Enquiry.collection.insertMany(
+      Array.from({ length: 55 }, (_, index) => ({
+        name: `Lead ${index}`,
+        phone: `90000000${String(index).padStart(2, '0')}`,
+        message: 'A test enquiry.',
+        status: 'new',
+        createdAt: new Date(now - (55 - index) * 1000),
+        updatedAt: new Date(now - (55 - index) * 1000),
+      })),
+    );
+
+    await Enquiry.collection.insertMany([
+      {
+        name: 'Old lead',
+        phone: '9111111111',
+        message: 'This is more than a day old.',
+        status: 'closed',
+        createdAt: new Date(now - 2 * 24 * 60 * 60 * 1000),
+        updatedAt: new Date(now - 2 * 24 * 60 * 60 * 1000),
+      },
+    ]);
+
+    const removed = await pruneEnquiries();
+    const remaining = await Enquiry.find({}).lean<Array<{ name: string }>>();
+
+    expect(removed).toBe(6);
+    expect(remaining).toHaveLength(50);
+    expect(remaining.some((entry) => entry.name === 'Old lead')).toBe(false);
+    expect(remaining.some((entry) => entry.name === 'Lead 0')).toBe(false);
+    expect(remaining.some((entry) => entry.name === 'Lead 54')).toBe(true);
   });
 });

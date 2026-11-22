@@ -21,6 +21,22 @@ export async function connectDatabase(uri: string): Promise<void> {
   logger.info('MongoDB connected');
 }
 
+/**
+ * Creates any missing schema indexes (including TTL and unique indexes) in
+ * production, where Mongoose's automatic index build is disabled at boot.
+ */
+export async function ensureModelIndexes(): Promise<void> {
+  await Promise.all(
+    mongoose.modelNames().map(async (name) => {
+      try {
+        await mongoose.model(name).createIndexes();
+      } catch (error) {
+        logger.warn({ err: error, model: name }, 'Could not create model indexes');
+      }
+    }),
+  );
+}
+
 export function isDatabaseReady(): boolean {
   return mongoose.connection.readyState === 1;
 }

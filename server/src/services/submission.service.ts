@@ -13,10 +13,15 @@ import type {
 import { normalizePhone } from '../lib/submission-validation.js';
 import { findWebsiteSettings } from './content.service.js';
 import { AppError } from '../utils/app-error.js';
+import { logger } from '../utils/logger.js';
 import type { PublicSettings } from './content.service.js';
 
 const duplicateWindowMs = 10 * 60 * 1000;
 const bookingReferenceAlphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+/** Enquiries are kept for a rolling day, capped at the newest 50. */
+const ENQUIRY_RETENTION_MS = 24 * 60 * 60 * 1000;
+const MAX_STORED_ENQUIRIES = 50;
 
 export type SubmissionAcknowledgement = {
   reference: string;
@@ -168,6 +173,35 @@ export async function createAppointmentRequest(
   throw new AppError(500, 'REFERENCE_UNAVAILABLE', 'The request could not be stored.');
 }
 
+/**
+ * Keeps the enquiries collection bounded without losing the newest leads.
+ * Deletes anything older than 24 hours, then keeps only the newest 50.
+ */
+export async function pruneEnquiries(now = new Date()): Promise<number> {
+  const cutoff = new Date(now.getTime() - ENQUIRY_RETENTION_MS);
+
+  const expired = await Enquiry.deleteMany({
+    createdAt: mongoose.trusted({ $lt: cutoff }),
+  });
+
+  const overflow = await Enquiry.find({})
+    .sort({ _id: -1 })
+    .skip(MAX_STORED_ENQUIRIES)
+    .select({ _id: 1 })
+    .lean<Array<{ _id: mongoose.Types.ObjectId }>>();
+
+  let overflowRemoved = 0;
+
+  if (overflow.length > 0) {
+    const result = await Enquiry.deleteMany({
+      _id: mongoose.trusted({ $in: overflow.map((entry) => entry._id) }),
+    });
+    overflowRemoved = result.deletedCount ?? 0;
+  }
+
+  return (expired.deletedCount ?? 0) + overflowRemoved;
+}
+
 export async function createEnquiry(
   input: EnquiryCreateInput,
   context: RequestContext,
@@ -187,6 +221,12 @@ export async function createEnquiry(
     ipHash: context.ipHash,
     userAgent: context.userAgent,
   });
+
+  try {
+    await pruneEnquiries();
+  } catch (error) {
+    logger.warn({ err: error }, 'Enquiry retention cleanup failed');
+  }
 
   return {
     reference: enquiry._id.toString(),

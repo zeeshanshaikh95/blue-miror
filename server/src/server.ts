@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 
 import { createApp } from './app.js';
-import { connectDatabase, disconnectDatabase } from './config/database.js';
+import { connectDatabase, disconnectDatabase, ensureModelIndexes } from './config/database.js';
 import { env } from './config/env.js';
 import { logger } from './utils/logger.js';
 
@@ -20,15 +20,30 @@ server.listen(env.PORT, () => {
   );
 });
 
-connectDatabase(env.MONGODB_URI).catch((error: unknown) => {
-  const message = error instanceof Error ? error.message : 'Unknown database error';
-  logger.error({ message }, 'MongoDB connection failed');
+connectDatabase(env.MONGODB_URI)
+  .then(async () => {
+    await ensureModelIndexes();
 
-  if (env.IS_PRODUCTION) {
-    logger.fatal('Shutting down because the production database is unavailable.');
-    void shutdown('database-unavailable', 1);
-  }
-});
+    const { pruneEnquiries } = await import('./services/submission.service.js');
+
+    try {
+      const removed = await pruneEnquiries();
+      if (removed > 0) {
+        logger.info({ removed }, 'Pruned expired enquiries');
+      }
+    } catch (error) {
+      logger.warn({ err: error }, 'Enquiry retention cleanup failed at startup');
+    }
+  })
+  .catch((error: unknown) => {
+    const message = error instanceof Error ? error.message : 'Unknown database error';
+    logger.error({ message }, 'MongoDB connection failed');
+
+    if (env.IS_PRODUCTION) {
+      logger.fatal('Shutting down because the production database is unavailable.');
+      void shutdown('database-unavailable', 1);
+    }
+  });
 
 async function shutdown(reason: string, exitCode = 0): Promise<void> {
   if (shuttingDown) {
