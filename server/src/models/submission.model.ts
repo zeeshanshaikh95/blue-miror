@@ -40,7 +40,7 @@ export type EnquiryDocument = {
   source: string;
   ipHash: string | null;
   userAgent: string | null;
-  purgeAt: Date;
+  purgeAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -61,9 +61,6 @@ export type ContactSubmissionDocument = {
   createdAt: Date;
   updatedAt: Date;
 };
-
-/** MongoDB TTL: expiry is evaluated on this field by the database itself. */
-const ENQUIRY_TTL_MS = 24 * 60 * 60 * 1000;
 
 const statusHistorySchema = new Schema(
   {
@@ -149,10 +146,9 @@ const enquirySchema = new Schema(
     source: { type: String, trim: true, maxlength: 40, default: 'website' },
     ipHash: { type: String, trim: true, maxlength: 64, default: null },
     userAgent: { type: String, trim: true, maxlength: 400, default: null },
-    purgeAt: {
-      type: Date,
-      default: () => new Date(Date.now() + ENQUIRY_TTL_MS),
-    },
+    // Null while unread. Set when the enquiry is handled; the TTL index then
+    // removes it 24 hours later. The database ignores null/missing values.
+    purgeAt: { type: Date, default: null },
   },
   { timestamps: true, minimize: false, toJSON: { virtuals: true, versionKey: false } },
 );

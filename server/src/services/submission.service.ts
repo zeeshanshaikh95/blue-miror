@@ -19,9 +19,9 @@ import type { PublicSettings } from './content.service.js';
 const duplicateWindowMs = 10 * 60 * 1000;
 const bookingReferenceAlphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
-/** Enquiries are kept for a rolling day, capped at the newest 50. */
+/** Unread enquiries are kept indefinitely; handled ones expire after a day. */
 const ENQUIRY_RETENTION_MS = 24 * 60 * 60 * 1000;
-const MAX_STORED_ENQUIRIES = 50;
+const MAX_HANDLED_ENQUIRIES = 50;
 
 export type SubmissionAcknowledgement = {
   reference: string;
@@ -174,19 +174,21 @@ export async function createAppointmentRequest(
 }
 
 /**
- * Keeps the enquiries collection bounded without losing the newest leads.
- * Deletes anything older than 24 hours, then keeps only the newest 50.
+ * Unread enquiries are never removed automatically. A handled enquiry
+ * (contacted/closed) expires 24 hours after it was last updated, and at most
+ * the newest 50 handled enquiries are kept.
  */
 export async function pruneEnquiries(now = new Date()): Promise<number> {
   const cutoff = new Date(now.getTime() - ENQUIRY_RETENTION_MS);
 
   const expired = await Enquiry.deleteMany({
-    createdAt: mongoose.trusted({ $lt: cutoff }),
+    status: mongoose.trusted({ $ne: 'new' }),
+    updatedAt: mongoose.trusted({ $lt: cutoff }),
   });
 
-  const overflow = await Enquiry.find({})
+  const overflow = await Enquiry.find({ status: mongoose.trusted({ $ne: 'new' }) })
     .sort({ _id: -1 })
-    .skip(MAX_STORED_ENQUIRIES)
+    .skip(MAX_HANDLED_ENQUIRIES)
     .select({ _id: 1 })
     .lean<Array<{ _id: mongoose.Types.ObjectId }>>();
 
@@ -220,6 +222,7 @@ export async function createEnquiry(
     source: 'website',
     ipHash: context.ipHash,
     userAgent: context.userAgent,
+    purgeAt: null,
   });
 
   try {

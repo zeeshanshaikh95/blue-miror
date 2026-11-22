@@ -301,7 +301,7 @@ export function InboxPage() {
       <PageHeader
         eyebrow="Inbox"
         title="Submissions"
-        description="Every appointment request, question, message and client story, exactly as it was submitted. Nothing is auto-confirmed or auto-published. Enquiries are kept for 24 hours, capped at the newest 50."
+        description="Every appointment request, question, message and client story, exactly as it was submitted. Nothing is auto-confirmed or auto-published. Unread enquiries stay until handled; handled enquiries are kept for 24 hours, up to the newest 50."
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

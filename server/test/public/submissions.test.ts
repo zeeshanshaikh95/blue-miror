@@ -455,16 +455,16 @@ describe('inbox date filtering integration', () => {
     }
   });
 
-  it('keeps only the newest 50 enquiries and removes anything older than a day', async () => {
+  it('keeps unread enquiries and caps only the handled ones', async () => {
     const now = Date.now();
 
-    // Insert oldest-to-newest so ObjectId order matches createdAt order.
+    // 55 handled enquiries: only the newest 50 should survive.
     await Enquiry.collection.insertMany(
       Array.from({ length: 55 }, (_, index) => ({
-        name: `Lead ${index}`,
+        name: `Handled ${index}`,
         phone: `90000000${String(index).padStart(2, '0')}`,
-        message: 'A test enquiry.',
-        status: 'new',
+        message: 'A handled enquiry.',
+        status: 'closed',
         createdAt: new Date(now - (55 - index) * 1000),
         updatedAt: new Date(now - (55 - index) * 1000),
       })),
@@ -472,12 +472,28 @@ describe('inbox date filtering integration', () => {
 
     await Enquiry.collection.insertMany([
       {
-        name: 'Old lead',
+        name: 'Old handled',
         phone: '9111111111',
-        message: 'This is more than a day old.',
+        message: 'Handled more than a day ago.',
         status: 'closed',
-        createdAt: new Date(now - 2 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(now - 3 * 24 * 60 * 60 * 1000),
         updatedAt: new Date(now - 2 * 24 * 60 * 60 * 1000),
+      },
+      {
+        name: 'Old unread',
+        phone: '9222222222',
+        message: 'Unread and more than a day old.',
+        status: 'new',
+        createdAt: new Date(now - 3 * 24 * 60 * 60 * 1000),
+        updatedAt: new Date(now - 3 * 24 * 60 * 60 * 1000),
+      },
+      {
+        name: 'Second unread',
+        phone: '9333333333',
+        message: 'Another unread enquiry.',
+        status: 'new',
+        createdAt: new Date(now - 4 * 24 * 60 * 60 * 1000),
+        updatedAt: new Date(now - 4 * 24 * 60 * 60 * 1000),
       },
     ]);
 
@@ -485,9 +501,11 @@ describe('inbox date filtering integration', () => {
     const remaining = await Enquiry.find({}).lean<Array<{ name: string }>>();
 
     expect(removed).toBe(6);
-    expect(remaining).toHaveLength(50);
-    expect(remaining.some((entry) => entry.name === 'Old lead')).toBe(false);
-    expect(remaining.some((entry) => entry.name === 'Lead 0')).toBe(false);
-    expect(remaining.some((entry) => entry.name === 'Lead 54')).toBe(true);
+    expect(remaining).toHaveLength(52);
+    expect(remaining.some((entry) => entry.name === 'Old handled')).toBe(false);
+    expect(remaining.some((entry) => entry.name === 'Handled 0')).toBe(false);
+    expect(remaining.some((entry) => entry.name === 'Handled 54')).toBe(true);
+    expect(remaining.some((entry) => entry.name === 'Old unread')).toBe(true);
+    expect(remaining.some((entry) => entry.name === 'Second unread')).toBe(true);
   });
 });

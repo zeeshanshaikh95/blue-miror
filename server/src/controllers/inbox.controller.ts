@@ -23,6 +23,9 @@ import type { AuthenticatedRequest } from '../middleware/auth.middleware.js';
 
 export const inboxRouter = Router();
 
+/** Handled enquiries stay for a day; unread ones stay until they are handled. */
+const HANDLED_ENQUIRY_RETENTION_MS = 24 * 60 * 60 * 1000;
+
 function normaliseId(raw: unknown, code: string): string {
   const id = typeof raw === 'string' ? raw : '';
   if (!isValidObjectId(id)) {
@@ -220,9 +223,16 @@ inboxRouter.patch('/admin/enquiries/:id', async (request, response) => {
   const id = normaliseId(request.params.id, 'INVALID_ENQUIRY_ID');
   const input = EnquiryUpdateSchema.parse(request.body);
 
+  const updates: Record<string, unknown> = { ...input };
+
+  if (input.status) {
+    updates.purgeAt =
+      input.status === 'new' ? null : new Date(Date.now() + HANDLED_ENQUIRY_RETENTION_MS);
+  }
+
   const enquiry = await Enquiry.findByIdAndUpdate(
     id,
-    { $set: input },
+    { $set: updates },
     { new: true, projection: inboxProjection, runValidators: true },
   ).lean();
 
