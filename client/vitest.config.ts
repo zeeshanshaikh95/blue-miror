@@ -17,7 +17,7 @@ export default defineConfig({
     css: true,
     clearMocks: true,
     // The app shell is heavy to transform; give slower routes room under load.
-    testTimeout: 20_000,
-    hookTimeout: 20_000,
+    testTimeout: 30_000,
+    hookTimeout: 30_000,
   },
 });

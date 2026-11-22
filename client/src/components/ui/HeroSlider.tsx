@@ -25,6 +25,27 @@ export type HeroHighlight = {
 
 const visualVariants = ['arch', 'orbit', 'drape', 'horizon', 'bloom', 'column'] as const;
 
+function useIsDesktopLayout(): boolean {
+  const [isDesktop, setIsDesktop] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(min-width: 1024px)').matches,
+  );
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+
+    const query = window.matchMedia('(min-width: 1024px)');
+    const update = () => setIsDesktop(query.matches);
+    update();
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+
+  return isDesktop;
+}
+
 function usePrefersReducedMotion(): boolean {
   const [reduced, setReduced] = useState(false);
 
@@ -71,6 +92,7 @@ export function HeroSlider({
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const reducedMotion = usePrefersReducedMotion();
+  const isDesktop = useIsDesktopLayout();
   const count = slides.length;
 
   useEffect(() => {
@@ -98,6 +120,7 @@ export function HeroSlider({
       {/* Phone layout: a full-width landscape photo above the copy, so the   */}
       {/* image is never squeezed through a narrow portrait crop.            */}
       {/* ------------------------------------------------------------------ */}
+      {!isDesktop ? (
       <section
         className="relative overflow-hidden bg-brand-indigo-deep lg:hidden"
         aria-roledescription="carousel"
@@ -208,10 +231,12 @@ export function HeroSlider({
           ) : null}
         </Container>
       </section>
+      ) : null}
 
       {/* ------------------------------------------------------------------ */}
       {/* Desktop layout: the full-bleed editorial hero.                      */}
       {/* ------------------------------------------------------------------ */}
+      {isDesktop ? (
       <section
         className="relative isolate hidden overflow-hidden bg-brand-indigo-deep lg:block"
         aria-roledescription="carousel"
@@ -349,6 +374,7 @@ export function HeroSlider({
           </Container>
         </div>
       </section>
+      ) : null}
     </>
   );
 }
