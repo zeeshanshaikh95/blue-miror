@@ -93,35 +93,26 @@ export function HomePage() {
   const menuImage =
     signatureServices[4]?.imageUrl ?? slides[2]?.imageUrl ?? slides[1]?.imageUrl ?? null;
 
+  // The lookbook uses the clinic's own gallery uploads only — not treatment
+  // imagery, which belongs on the treatment cards themselves.
   const lookbook = useMemo(() => {
     const seen = new Set<string>();
-    const gallery = galleryQuery.data?.items ?? [];
 
-    return [
-      ...signatureServices
-        .filter((service) => service.imageUrl)
-        .map((service) => ({
-          id: `service-${service.id}`,
-          url: service.imageUrl as string,
-          title: service.name,
-          to: `/treatments/${service.slug}`,
-        })),
-      ...gallery
-        .filter((item) => item.imageUrl)
-        .map((item) => ({
-          id: `gallery-${item.id}`,
-          url: item.imageUrl as string,
-          title: item.title,
-          to: '/gallery',
-        })),
-    ]
+    return (galleryQuery.data?.items ?? [])
+      .filter((item) => item.imageUrl)
+      .map((item) => ({
+        id: `gallery-${item.id}`,
+        url: item.imageUrl as string,
+        title: item.title,
+        to: '/gallery',
+      }))
       .filter((item) => {
         if (seen.has(item.url)) return false;
         seen.add(item.url);
         return true;
       })
-      .slice(0, 5);
-  }, [signatureServices, galleryQuery.data]);
+      .slice(0, 4);
+  }, [galleryQuery.data]);
 
   return (
     <>
@@ -512,7 +503,7 @@ export function HomePage() {
                     <br /> for your <em className="text-brand-gold-deep">next visit</em>.
                   </>
                 }
-                intro="Colour, length, nails and finish — a feel for the looks created in the Blue Miror chairs."
+                intro="Real moments from the Blue Miror chairs, uploaded by the salon — no treatment stock imagery."
               />
               <Link
                 to="/gallery"
@@ -523,14 +514,23 @@ export function HomePage() {
               </Link>
             </div>
 
-            <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2">
+            <div
+              className={cn(
+                'mt-10 grid gap-3',
+                lookbook.length === 1
+                  ? 'grid-cols-1'
+                  : lookbook.length === 2
+                    ? 'grid-cols-1 sm:grid-cols-2'
+                    : 'grid-cols-2 md:grid-cols-4 md:grid-rows-2',
+              )}
+            >
               {lookbook.map((item, index) => (
                 <Link
                   key={item.id}
                   to={item.to}
                   className={cn(
                     'group relative overflow-hidden rounded-[1.5rem]',
-                    index === 0 && 'col-span-2 row-span-2',
+                    lookbook.length >= 3 && index === 0 && 'col-span-2 row-span-2',
                   )}
                 >
                   <img
@@ -540,7 +540,11 @@ export function HomePage() {
                     decoding="async"
                     className={cn(
                       'w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.05]',
-                      index === 0 ? 'aspect-square md:h-full' : 'aspect-square',
+                      lookbook.length >= 3 && index === 0
+                        ? 'aspect-square md:h-full'
+                        : lookbook.length === 2
+                          ? 'aspect-[4/5]'
+                          : 'aspect-square',
                     )}
                   />
                   <span
