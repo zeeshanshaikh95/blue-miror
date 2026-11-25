@@ -29,7 +29,7 @@ export type SubmissionAcknowledgement = {
   whatsappUrl: string | null;
 };
 
-function createBookingReference(now = new Date()): string {
+export function createBookingReference(now = new Date()): string {
   const stamp = [
     String(now.getUTCFullYear()).slice(2),
     String(now.getUTCMonth() + 1).padStart(2, '0'),

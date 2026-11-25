@@ -120,6 +120,49 @@ describe('appointments inbox', () => {
     expect(record.consentAccepted).toBeUndefined();
   });
 
+  it('creates a clinic appointment and toggles it between done and open', async () => {
+    const created = await request(app)
+      .post('/api/admin/appointments')
+      .set(bearer(token))
+      .send({
+        fullName: 'Walk-in Reminder',
+        phone: '07700900123',
+        serviceName: 'Hydra Facial',
+        preferredDate: '2026-12-01',
+        preferredTime: '16:00',
+        notes: 'Requested a reminder call.',
+        done: false,
+      });
+
+    expect(created.status).toBe(201);
+    expect(created.body.data).toMatchObject({
+      fullName: 'Walk-in Reminder',
+      serviceName: 'Hydra Facial',
+      preferredDate: '2026-12-01',
+      preferredTime: '16:00',
+      status: 'confirmed',
+      source: 'admin',
+    });
+
+    const id = created.body.data.id as string;
+
+    const done = await request(app)
+      .patch(`/api/admin/appointments/${id}/done`)
+      .set(bearer(token))
+      .send({ done: true });
+    expect(done.status).toBe(200);
+    expect(done.body.data.status).toBe('completed');
+
+    const reopened = await request(app)
+      .patch(`/api/admin/appointments/${id}/done`)
+      .set(bearer(token))
+      .send({ done: false });
+    expect(reopened.body.data.status).toBe('confirmed');
+
+    const unauthenticated = await request(app).post('/api/admin/appointments').send({});
+    expect(unauthenticated.status).toBe(401);
+  });
+
   it('filters by status, searches by reference and rejects unknown statuses', async () => {
     await Appointment.create(appointment({ status: 'confirmed', bookingRef: 'BM-261120-AAAA' }));
     await Appointment.create(appointment({ status: 'pending', bookingRef: 'BM-261120-BBBB' }));

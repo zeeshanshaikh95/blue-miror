@@ -28,7 +28,13 @@ export const appointmentTransitions: Record<AppointmentStatusValue, AppointmentS
   cancelled: [],
 };
 
-const isoDay = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use a YYYY-MM-DD date.');
+const isoDay = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Use a YYYY-MM-DD date.')
+  .refine(
+    (value) => !Number.isNaN(new Date(`${value}T00:00:00Z`).getTime()),
+    'Use a real calendar date.',
+  );
 
 export const InboxListQuerySchema = z
   .object({
@@ -39,6 +45,35 @@ export const InboxListQuerySchema = z
     from: isoDay.optional(),
     to: isoDay.optional(),
   })
+  .strict();
+
+const manualPhone = z
+  .string()
+  .trim()
+  .min(7, 'Enter a contact number.')
+  .max(20, 'That number is too long.')
+  .regex(/^\+?[0-9][0-9\s-]{5,19}$/, 'Use digits, spaces, hyphens and an optional leading +.');
+
+const manualTime = z
+  .string()
+  .trim()
+  .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Use a 24-hour time such as 14:30.');
+
+/** Clinic-created appointment/reminder. No public form fields are involved. */
+export const ManualAppointmentCreateSchema = z
+  .object({
+    fullName: z.string().trim().min(2).max(120),
+    phone: manualPhone,
+    serviceName: z.string().trim().min(1).max(160),
+    preferredDate: isoDay,
+    preferredTime: manualTime,
+    notes: z.string().trim().max(1000).nullable().optional(),
+    done: z.boolean().optional(),
+  })
+  .strict();
+
+export const ManualAppointmentDoneSchema = z
+  .object({ done: z.boolean() })
   .strict();
 
 export const AppointmentUpdateSchema = z

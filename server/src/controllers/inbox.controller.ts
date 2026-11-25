@@ -7,6 +7,8 @@ import {
   ContactUpdateSchema,
   EnquiryUpdateSchema,
   InboxListQuerySchema,
+  ManualAppointmentCreateSchema,
+  ManualAppointmentDoneSchema,
   TestimonialModerationSchema,
   appointmentStatuses,
   buildDateRange,
@@ -18,6 +20,8 @@ import {
   parseStatusFilter,
   type AppointmentStatusValue,
 } from '../lib/inbox-validation.js';
+import { createBookingReference } from '../services/submission.service.js';
+import { normalizePhone } from '../lib/submission-validation.js';
 import { AppError } from '../utils/app-error.js';
 import type { AuthenticatedRequest } from '../middleware/auth.middleware.js';
 
@@ -84,6 +88,69 @@ inboxRouter.get('/admin/appointments', async (request, response) => {
       totalPages: total > 0 ? Math.ceil(total / query.limit) : 0,
     },
   });
+});
+
+inboxRouter.post('/admin/appointments', async (request, response) => {
+  const input = ManualAppointmentCreateSchema.parse(request.body);
+  const now = new Date();
+  const status = input.done ? 'completed' : 'confirmed';
+
+  const appointment = await Appointment.create({
+    bookingRef: createBookingReference(now),
+    fullName: input.fullName,
+    phone: normalizePhone(input.phone),
+    email: null,
+    serviceSlug: null,
+    serviceName: input.serviceName,
+    preferredDate: input.preferredDate,
+    preferredTime: input.preferredTime,
+    message: null,
+    status,
+    adminNotes: input.notes ?? null,
+    statusHistory: [
+      {
+        status,
+        at: now,
+        note: input.done ? 'Added by the clinic as already done.' : 'Added by the clinic.',
+      },
+    ],
+    source: 'admin',
+    consentAccepted: true,
+    ipHash: null,
+    userAgent: null,
+  });
+
+  response.status(201).json({
+    success: true,
+    data: { ...appointment.toObject(), id: appointment._id },
+  });
+});
+
+inboxRouter.patch('/admin/appointments/:id/done', async (request, response) => {
+  const id = normaliseId(request.params.id, 'INVALID_APPOINTMENT_ID');
+  const input = ManualAppointmentDoneSchema.parse(request.body);
+  const status = input.done ? 'completed' : 'confirmed';
+
+  const appointment = await Appointment.findByIdAndUpdate(
+    id,
+    {
+      $set: { status },
+      $push: {
+        statusHistory: {
+          status,
+          at: new Date(),
+          note: input.done ? 'Marked done by the clinic.' : 'Reopened by the clinic.',
+        },
+      },
+    },
+    { new: true, projection: inboxProjection, runValidators: true },
+  ).lean();
+
+  if (!appointment) {
+    throw new AppError(404, 'APPOINTMENT_NOT_FOUND', 'Appointment not found.');
+  }
+
+  response.json({ success: true, data: { ...appointment, id: appointment._id } });
 });
 
 inboxRouter.get('/admin/appointments/:id', async (request, response) => {

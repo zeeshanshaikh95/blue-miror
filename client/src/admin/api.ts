@@ -456,6 +456,32 @@ export function getAppointment(id: string): Promise<AdminAppointment> {
   return adminRequest<AdminAppointment>(`/admin/appointments/${id}`);
 }
 
+export type ManualAppointmentInput = {
+  fullName: string;
+  phone: string;
+  serviceName: string;
+  preferredDate: string;
+  preferredTime: string;
+  notes?: string | null;
+  done?: boolean;
+};
+
+export function createAdminAppointment(
+  input: ManualAppointmentInput,
+): Promise<AdminAppointment> {
+  return adminRequest<AdminAppointment>('/admin/appointments', {
+    method: 'POST',
+    body: input,
+  });
+}
+
+export function markAppointmentDone(id: string, done: boolean): Promise<AdminAppointment> {
+  return adminRequest<AdminAppointment>(`/admin/appointments/${id}/done`, {
+    method: 'PATCH',
+    body: { done },
+  });
+}
+
 export function updateAppointment(
   id: string,
   input: { status?: AppointmentStatus; adminNotes?: string | null; note?: string },

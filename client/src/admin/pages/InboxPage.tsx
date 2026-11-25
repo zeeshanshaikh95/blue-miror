@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { CalendarClock, Mail, MessageCircle, Search, Star, X } from 'lucide-react';
+import { CalendarClock, Mail, MessageCircle, Plus, Search, Star, X } from 'lucide-react';
 
 import {
+  createAdminAppointment,
   getAppointment,
   getContactSubmission,
   getEnquiry,
@@ -13,6 +14,7 @@ import {
   listContactSubmissions,
   listEnquiries,
   listTestimonialSubmissions,
+  markAppointmentDone,
   moderateTestimonial,
   updateAppointment,
   updateContactSubmission,
@@ -22,6 +24,7 @@ import {
   AdminButton,
   Alert,
   Badge,
+  Checkbox,
   ConfirmDialog,
   EmptyNotice,
   Field,
@@ -161,6 +164,17 @@ export function InboxPage() {
   const [status, setStatus] = useState('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [confirmArchive, setConfirmArchive] = useState<string | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
+  const [newAppointment, setNewAppointment] = useState({
+    fullName: '',
+    phone: '',
+    serviceName: '',
+    preferredDate: new Date().toISOString().slice(0, 10),
+    preferredTime: '',
+    notes: '',
+    done: false,
+  });
 
   const config = tabs.find((item) => item.key === tab) ?? tabs[0];
 
@@ -261,6 +275,52 @@ export function InboxPage() {
       }),
   });
 
+  const createAppointment = useMutation({
+    mutationFn: () =>
+      createAdminAppointment({
+        fullName: newAppointment.fullName.trim(),
+        phone: newAppointment.phone.trim(),
+        serviceName: newAppointment.serviceName.trim(),
+        preferredDate: newAppointment.preferredDate,
+        preferredTime: newAppointment.preferredTime,
+        notes: newAppointment.notes.trim() || null,
+        done: newAppointment.done,
+      }),
+    onSuccess: () => {
+      push({ title: 'Appointment added', tone: 'success' });
+      setAddOpen(false);
+      setAddError(null);
+      setNewAppointment({
+        fullName: '',
+        phone: '',
+        serviceName: '',
+        preferredDate: new Date().toISOString().slice(0, 10),
+        preferredTime: '',
+        notes: '',
+        done: false,
+      });
+      invalidateAll();
+    },
+    onError: (error: unknown) => {
+      setAddError(error instanceof Error ? error.message : 'The appointment could not be saved.');
+    },
+  });
+
+  const toggleDone = useMutation({
+    mutationFn: (input: { id: string; done: boolean }) =>
+      markAppointmentDone(input.id, input.done),
+    onSuccess: (_data, variables) => {
+      push({ title: variables.done ? 'Marked as done' : 'Reopened', tone: 'success' });
+      invalidateAll();
+    },
+    onError: (error: unknown) =>
+      push({
+        title: 'The appointment could not be updated',
+        description: error instanceof Error ? error.message : undefined,
+        tone: 'error',
+      }),
+  });
+
   const moderate = useMutation({
     mutationFn: (input: { id: string; action: 'approve' | 'unpublish' | 'archive' }) =>
       moderateTestimonial(input.id, input.action),
@@ -302,6 +362,12 @@ export function InboxPage() {
         eyebrow="Inbox"
         title="Submissions"
         description="Every appointment request, question, message and client story, exactly as it was submitted. Nothing is auto-confirmed or auto-published. Unread enquiries stay until handled; handled enquiries are kept for 24 hours, up to the newest 50."
+        actions={
+          <AdminButton onClick={() => setAddOpen(true)}>
+            <Plus aria-hidden="true" size={15} />
+            Add appointment
+          </AdminButton>
+        }
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -440,11 +506,11 @@ export function InboxPage() {
                   : (item.status ?? 'new');
 
               return (
-                <li key={row.id}>
+                <li key={row.id} className="flex items-center gap-3 pr-4">
                   <button
                     type="button"
                     onClick={() => setSelectedId(row.id)}
-                    className="flex w-full flex-col gap-2 p-4 text-left transition-colors hover:bg-brand-ivory sm:flex-row sm:items-center sm:justify-between"
+                    className="flex w-full flex-1 flex-col gap-2 p-4 text-left transition-colors hover:bg-brand-ivory sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-brand-indigo">
@@ -475,6 +541,22 @@ export function InboxPage() {
                       </Badge>
                     </div>
                   </button>
+
+                  {tab === 'appointments' ? (
+                    <label className="flex shrink-0 cursor-pointer items-center gap-2 text-[0.58rem] font-medium tracking-[0.14em] text-brand-muted uppercase">
+                      <input
+                        type="checkbox"
+                        checked={rowStatus === 'completed'}
+                        disabled={toggleDone.isPending}
+                        onChange={(event) =>
+                          toggleDone.mutate({ id: row.id, done: event.target.checked })
+                        }
+                        className="size-4 accent-brand-indigo"
+                        aria-label={`Mark ${item.fullName ?? 'appointment'} as done`}
+                      />
+                      Done
+                    </label>
+                  ) : null}
                 </li>
               );
             })}
@@ -602,6 +684,145 @@ export function InboxPage() {
             }}
           />
         ) : null}
+      </Modal>
+
+      <Modal
+        open={addOpen}
+        onClose={() => {
+          if (!createAppointment.isPending) setAddOpen(false);
+        }}
+        title="Add appointment"
+        description="A clinic-side reminder for the team. Nothing is sent to the client automatically."
+        size="lg"
+      >
+        {addError ? <Alert tone="error">{addError}</Alert> : null}
+
+        <form
+          className="mt-2 space-y-5"
+          noValidate
+          onSubmit={(event) => {
+            event.preventDefault();
+            setAddError(null);
+
+            if (newAppointment.fullName.trim().length < 2) {
+              setAddError('Enter the client’s name.');
+              return;
+            }
+            if (newAppointment.phone.trim().length < 7) {
+              setAddError('Enter a contact number.');
+              return;
+            }
+            if (!newAppointment.serviceName.trim()) {
+              setAddError('Enter the service or treatment.');
+              return;
+            }
+            if (!newAppointment.preferredDate || !newAppointment.preferredTime) {
+              setAddError('Choose a date and time.');
+              return;
+            }
+
+            createAppointment.mutate();
+          }}
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Client name" htmlFor="manual-name" required>
+              <TextInput
+                id="manual-name"
+                value={newAppointment.fullName}
+                onChange={(event) =>
+                  setNewAppointment((current) => ({ ...current, fullName: event.target.value }))
+                }
+                placeholder="Full name"
+                autoComplete="name"
+              />
+            </Field>
+            <Field label="Contact number" htmlFor="manual-phone" required>
+              <TextInput
+                id="manual-phone"
+                type="tel"
+                value={newAppointment.phone}
+                onChange={(event) =>
+                  setNewAppointment((current) => ({ ...current, phone: event.target.value }))
+                }
+                placeholder="+91 …"
+                autoComplete="tel"
+              />
+            </Field>
+            <Field label="Service / treatment" htmlFor="manual-service" required>
+              <TextInput
+                id="manual-service"
+                value={newAppointment.serviceName}
+                onChange={(event) =>
+                  setNewAppointment((current) => ({ ...current, serviceName: event.target.value }))
+                }
+                placeholder="e.g. Hydra Facial"
+              />
+            </Field>
+            <div className="grid grid-cols-2 gap-4">
+              <Field label="Date" htmlFor="manual-date" required>
+                <TextInput
+                  id="manual-date"
+                  type="date"
+                  value={newAppointment.preferredDate}
+                  onChange={(event) =>
+                    setNewAppointment((current) => ({
+                      ...current,
+                      preferredDate: event.target.value,
+                    }))
+                  }
+                />
+              </Field>
+              <Field label="Time" htmlFor="manual-time" required>
+                <TextInput
+                  id="manual-time"
+                  type="time"
+                  value={newAppointment.preferredTime}
+                  onChange={(event) =>
+                    setNewAppointment((current) => ({
+                      ...current,
+                      preferredTime: event.target.value,
+                    }))
+                  }
+                />
+              </Field>
+            </div>
+          </div>
+
+          <Field label="Internal notes" htmlFor="manual-notes">
+            <TextArea
+              id="manual-notes"
+              rows={3}
+              value={newAppointment.notes}
+              onChange={(event) =>
+                setNewAppointment((current) => ({ ...current, notes: event.target.value }))
+              }
+              placeholder="Anything the team should remember."
+            />
+          </Field>
+
+          <Checkbox
+            label="Already done"
+            description="Tick this if the appointment has already taken place."
+            checked={newAppointment.done}
+            onChange={(event) =>
+              setNewAppointment((current) => ({ ...current, done: event.target.checked }))
+            }
+          />
+
+          <div className="flex flex-col-reverse gap-3 border-t border-brand-line pt-5 sm:flex-row sm:justify-end">
+            <AdminButton
+              type="button"
+              variant="secondary"
+              disabled={createAppointment.isPending}
+              onClick={() => setAddOpen(false)}
+            >
+              Cancel
+            </AdminButton>
+            <AdminButton type="submit" busy={createAppointment.isPending}>
+              Save appointment
+            </AdminButton>
+          </div>
+        </form>
       </Modal>
 
       <ConfirmDialog
