@@ -475,6 +475,12 @@ export function createAdminAppointment(
   });
 }
 
+export function deleteAppointment(id: string): Promise<{ deleted: boolean }> {
+  return adminRequest<{ deleted: boolean }>(`/admin/appointments/${id}`, {
+    method: 'DELETE',
+  });
+}
+
 export function markAppointmentDone(id: string, done: boolean): Promise<AdminAppointment> {
   return adminRequest<AdminAppointment>(`/admin/appointments/${id}/done`, {
     method: 'PATCH',

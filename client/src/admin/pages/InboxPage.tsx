@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { CalendarClock, Mail, MessageCircle, Plus, Search, Star, X } from 'lucide-react';
+import { CalendarClock, Mail, Plus, Search, Star, X } from 'lucide-react';
 
 import {
   createAdminAppointment,
+  deleteAppointment,
   getAppointment,
   getContactSubmission,
   getEnquiry,
   getInboxSummary,
-  getSettings,
   getTestimonialSubmission,
   listAppointments,
   listContactSubmissions,
@@ -43,7 +43,6 @@ import {
   type AdminAppointment,
   type AdminContactSubmission,
   type AdminEnquiry,
-  type AdminSettings,
   type AppointmentStatus,
   type ContactStatus,
   type EnquiryStatus,
@@ -112,35 +111,6 @@ function statusTone(status: string): 'published' | 'draft' | 'neutral' | 'featur
   return 'draft';
 }
 
-function whatsappHrefFor(
-  settings: AdminSettings | null,
-  appointment: AdminAppointment,
-): string | null {
-  const whatsapp = settings?.whatsapp;
-
-  if (!whatsapp?.enabled) return null;
-
-  const digits = `${whatsapp.countryCode ?? ''}${whatsapp.number ?? ''}`.replace(/\D/g, '');
-  if (digits.length < 7 || digits.length > 15) return null;
-
-  const template = whatsapp.bookingMessageTemplate ?? whatsapp.defaultMessage;
-
-  const message = template
-    ? template.replace(/\{([a-z][a-z0-9_]*)\}/gi, (match, key: string) => {
-        const values: Record<string, string> = {
-          reference: appointment.bookingRef,
-          name: appointment.fullName,
-          service: appointment.serviceName ?? 'Not selected',
-          date: appointment.preferredDate,
-          time: appointment.preferredTime,
-        };
-        return values[key] ?? match;
-      })
-    : `Hello, this is Blue Miror regarding booking ${appointment.bookingRef}.`;
-
-  return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
-}
-
 function SummaryCard({ label, value, tone }: { label: string; value: number; tone: string }) {
   return (
     <div className="border border-brand-line bg-brand-porcelain p-4">
@@ -164,6 +134,7 @@ export function InboxPage() {
   const [status, setStatus] = useState('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [confirmArchive, setConfirmArchive] = useState<string | null>(null);
+  const [confirmDeleteAppointment, setConfirmDeleteAppointment] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
   const [newAppointment, setNewAppointment] = useState({
@@ -183,8 +154,6 @@ export function InboxPage() {
     queryFn: getInboxSummary,
     staleTime: 30_000,
   });
-
-  const settings = useQuery({ queryKey: ['admin', 'settings'], queryFn: getSettings });
 
   const queryArgs = { page, limit: 10, ...(q ? { q } : {}), status };
 
@@ -321,6 +290,22 @@ export function InboxPage() {
       }),
   });
 
+  const removeAppointment = useMutation({
+    mutationFn: (id: string) => deleteAppointment(id),
+    onSuccess: () => {
+      push({ title: 'Appointment deleted', tone: 'success' });
+      setConfirmDeleteAppointment(null);
+      setSelectedId(null);
+      invalidateAll();
+    },
+    onError: (error: unknown) =>
+      push({
+        title: 'The appointment could not be deleted',
+        description: error instanceof Error ? error.message : undefined,
+        tone: 'error',
+      }),
+  });
+
   const moderate = useMutation({
     mutationFn: (input: { id: string; action: 'approve' | 'unpublish' | 'archive' }) =>
       moderateTestimonial(input.id, input.action),
@@ -361,7 +346,7 @@ export function InboxPage() {
       <PageHeader
         eyebrow="Inbox"
         title="Submissions"
-        description="Every appointment request, question, message and client story, exactly as it was submitted. Nothing is auto-confirmed or auto-published. Unread enquiries stay until handled; handled enquiries are kept for 24 hours, up to the newest 50."
+        description="Every appointment request, question, message and client story, exactly as it was submitted. Nothing is auto-confirmed or auto-published. Unread enquiries stay until handled; handled enquiries are kept for 24 hours, up to the newest 50. Completed appointments are removed after three days."
         actions={
           <AdminButton onClick={() => setAddOpen(true)}>
             <Plus aria-hidden="true" size={15} />
@@ -616,7 +601,6 @@ export function InboxPage() {
           <AppointmentDetail
             key={(detail.data as AdminAppointment).id}
             appointment={detail.data as AdminAppointment}
-            settings={settings.data ?? null}
             busy={save.isPending}
             onSave={(input) =>
               save.mutate({
@@ -625,6 +609,7 @@ export function InboxPage() {
                 ...input,
               })
             }
+            onDelete={() => setConfirmDeleteAppointment((detail.data as AdminAppointment).id)}
           />
         ) : null}
 
@@ -836,6 +821,18 @@ export function InboxPage() {
           confirmArchive && moderate.mutate({ id: confirmArchive, action: 'archive' })
         }
       />
+
+      <ConfirmDialog
+        open={Boolean(confirmDeleteAppointment)}
+        title="Delete this appointment?"
+        message="This permanently removes the appointment from the inbox and cannot be undone. Completed appointments are deleted automatically after three days."
+        confirmLabel="Delete appointment"
+        busy={removeAppointment.isPending}
+        onCancel={() => setConfirmDeleteAppointment(null)}
+        onConfirm={() =>
+          confirmDeleteAppointment && removeAppointment.mutate(confirmDeleteAppointment)
+        }
+      />
     </div>
   );
 }
@@ -852,20 +849,19 @@ function DetailRow({ label, value }: { label: string; value: string | null }) {
 
 function AppointmentDetail({
   appointment,
-  settings,
   busy,
   onSave,
+  onDelete,
 }: {
   appointment: AdminAppointment;
-  settings: AdminSettings | null;
   busy: boolean;
   onSave: (input: { status?: string; adminNotes?: string | null; note?: string }) => void;
+  onDelete: () => void;
 }) {
   const allowed = [appointment.status, ...appointmentStatusTransitions[appointment.status]];
   const [status, setStatus] = useState(appointment.status);
   const [note, setNote] = useState('');
   const [adminNotes, setAdminNotes] = useState(appointment.adminNotes ?? '');
-  const whatsappHref = whatsappHrefFor(settings, appointment);
 
   return (
     <div className="space-y-6">
@@ -891,28 +887,6 @@ function AppointmentDetail({
         <DetailRow label="Submitted" value={formatDate(appointment.createdAt)} />
         <DetailRow label="Message" value={appointment.message} />
       </dl>
-
-      {whatsappHref ? (
-        <a
-          href={whatsappHref}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex min-h-10 items-center gap-2 border border-brand-gold bg-brand-gold/10 px-4 py-2 text-[0.625rem] font-medium tracking-[0.14em] text-brand-indigo uppercase"
-        >
-          <MessageCircle aria-hidden="true" size={15} />
-          Open WhatsApp
-        </a>
-      ) : (
-        <Alert tone="info">
-          WhatsApp is not configured in website settings, so no handoff link is available. The
-          customer’s phone number is shown above.
-        </Alert>
-      )}
-
-      <p className="text-xs leading-6 text-brand-muted">
-        Opening WhatsApp does not message the customer and does not confirm the appointment. Send
-        the message yourself, then record what happened below.
-      </p>
 
       <div className="space-y-4 border-t border-brand-line pt-4">
         <Field label="Update status" htmlFor="appointment-status">
@@ -982,6 +956,16 @@ function AppointmentDetail({
             </li>
           ))}
         </ol>
+      </div>
+
+      <div className="border-t border-brand-line pt-4">
+        <AdminButton variant="danger" onClick={onDelete} disabled={busy}>
+          Delete appointment
+        </AdminButton>
+        <p className="mt-2 text-xs leading-5 text-brand-muted">
+          Permanently removes this appointment from the inbox. Completed appointments are deleted
+          automatically after three days.
+        </p>
       </div>
     </div>
   );

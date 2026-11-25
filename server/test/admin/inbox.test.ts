@@ -163,6 +163,18 @@ describe('appointments inbox', () => {
     expect(unauthenticated.status).toBe(401);
   });
 
+  it('deletes an appointment permanently', async () => {
+    const created = await Appointment.create(appointment());
+
+    const response = await request(app)
+      .delete(`/api/admin/appointments/${created._id.toString()}`)
+      .set(bearer(token));
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.deleted).toBe(true);
+    expect(await Appointment.findById(created._id)).toBeNull();
+  });
+
   it('filters by status, searches by reference and rejects unknown statuses', async () => {
     await Appointment.create(appointment({ status: 'confirmed', bookingRef: 'BM-261120-AAAA' }));
     await Appointment.create(appointment({ status: 'pending', bookingRef: 'BM-261120-BBBB' }));

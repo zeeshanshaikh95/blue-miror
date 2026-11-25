@@ -24,15 +24,20 @@ connectDatabase(env.MONGODB_URI)
   .then(async () => {
     await ensureModelIndexes();
 
-    const { pruneEnquiries } = await import('./services/submission.service.js');
+    const { pruneCompletedAppointments, pruneEnquiries } = await import(
+      './services/submission.service.js'
+    );
 
     try {
-      const removed = await pruneEnquiries();
-      if (removed > 0) {
-        logger.info({ removed }, 'Pruned expired enquiries');
+      const [enquiries, appointments] = await Promise.all([
+        pruneEnquiries(),
+        pruneCompletedAppointments(),
+      ]);
+      if (enquiries > 0 || appointments > 0) {
+        logger.info({ enquiries, appointments }, 'Pruned expired inbox records');
       }
     } catch (error) {
-      logger.warn({ err: error }, 'Enquiry retention cleanup failed at startup');
+      logger.warn({ err: error }, 'Inbox retention cleanup failed at startup');
     }
   })
   .catch((error: unknown) => {

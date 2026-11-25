@@ -20,7 +20,10 @@ import {
   parseStatusFilter,
   type AppointmentStatusValue,
 } from '../lib/inbox-validation.js';
-import { createBookingReference } from '../services/submission.service.js';
+import {
+  COMPLETED_APPOINTMENT_RETENTION_MS,
+  createBookingReference,
+} from '../services/submission.service.js';
 import { normalizePhone } from '../lib/submission-validation.js';
 import { AppError } from '../utils/app-error.js';
 import type { AuthenticatedRequest } from '../middleware/auth.middleware.js';
@@ -118,6 +121,9 @@ inboxRouter.post('/admin/appointments', async (request, response) => {
     consentAccepted: true,
     ipHash: null,
     userAgent: null,
+    purgeAt: input.done
+      ? new Date(now.getTime() + COMPLETED_APPOINTMENT_RETENTION_MS)
+      : null,
   });
 
   response.status(201).json({
@@ -131,14 +137,20 @@ inboxRouter.patch('/admin/appointments/:id/done', async (request, response) => {
   const input = ManualAppointmentDoneSchema.parse(request.body);
   const status = input.done ? 'completed' : 'confirmed';
 
+  const now = new Date();
   const appointment = await Appointment.findByIdAndUpdate(
     id,
     {
-      $set: { status },
+      $set: {
+        status,
+        purgeAt: input.done
+          ? new Date(now.getTime() + COMPLETED_APPOINTMENT_RETENTION_MS)
+          : null,
+      },
       $push: {
         statusHistory: {
           status,
-          at: new Date(),
+          at: now,
           note: input.done ? 'Marked done by the clinic.' : 'Reopened by the clinic.',
         },
       },
@@ -151,6 +163,17 @@ inboxRouter.patch('/admin/appointments/:id/done', async (request, response) => {
   }
 
   response.json({ success: true, data: { ...appointment, id: appointment._id } });
+});
+
+inboxRouter.delete('/admin/appointments/:id', async (request, response) => {
+  const id = normaliseId(request.params.id, 'INVALID_APPOINTMENT_ID');
+  const deleted = await Appointment.findByIdAndDelete(id).lean();
+
+  if (!deleted) {
+    throw new AppError(404, 'APPOINTMENT_NOT_FOUND', 'Appointment not found.');
+  }
+
+  response.json({ success: true, data: { deleted: true } });
 });
 
 inboxRouter.get('/admin/appointments/:id', async (request, response) => {
@@ -187,6 +210,10 @@ inboxRouter.patch('/admin/appointments/:id', async (request, response) => {
     }
 
     changes.status = input.status;
+    changes.purgeAt =
+      input.status === 'completed'
+        ? new Date(Date.now() + COMPLETED_APPOINTMENT_RETENTION_MS)
+        : null;
 
     const updated = await Appointment.findOneAndUpdate(
       { _id: id, status: appointment.status },

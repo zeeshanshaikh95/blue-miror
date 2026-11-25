@@ -149,19 +149,17 @@ describe('Inbox page', () => {
     expect(options).not.toContain('WhatsApp pending');
   });
 
-  it('offers a WhatsApp handoff built from the configured settings', async () => {
+  it('does not render a WhatsApp handoff and offers a delete action', async () => {
     mockAdminApi({ settings: settingsWithWhatsApp });
     renderInbox();
 
     fireEvent.click(await screen.findByText('BM-261120-AB12 · Ayesha Khan'));
 
     const dialog = await screen.findByRole('dialog');
-    const link = await within(dialog).findByRole('link', { name: /Open WhatsApp/i });
-
-    const href = link.getAttribute('href') ?? '';
-    expect(href.startsWith('https://wa.me/447700900123')).toBe(true);
-    expect(decodeURIComponent(href)).toContain('BM-261120-AB12');
-    expect(link).toHaveAttribute('target', '_blank');
+    expect(within(dialog).queryByRole('link', { name: /Open WhatsApp/i })).toBeNull();
+    expect(
+      await within(dialog).findByRole('button', { name: /Delete appointment/i }),
+    ).toBeInTheDocument();
   });
 
   it('lists enquiries and contact messages on their own tabs', async () => {

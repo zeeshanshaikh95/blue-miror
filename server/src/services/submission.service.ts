@@ -178,6 +178,26 @@ export async function createAppointmentRequest(
  * (contacted/closed) expires 24 hours after it was last updated, and at most
  * the newest 50 handled enquiries are kept.
  */
+/** Completed appointments are removed three days after completion. */
+export const COMPLETED_APPOINTMENT_RETENTION_MS = 3 * 24 * 60 * 60 * 1000;
+
+export async function pruneCompletedAppointments(now = new Date()): Promise<number> {
+  const cutoff = new Date(now.getTime() - COMPLETED_APPOINTMENT_RETENTION_MS);
+
+  const expired = await Appointment.deleteMany({
+    status: 'completed',
+    purgeAt: mongoose.trusted({ $lte: now }),
+  });
+
+  const legacy = await Appointment.deleteMany({
+    status: 'completed',
+    purgeAt: null,
+    updatedAt: mongoose.trusted({ $lt: cutoff }),
+  });
+
+  return (expired.deletedCount ?? 0) + (legacy.deletedCount ?? 0);
+}
+
 export async function pruneEnquiries(now = new Date()): Promise<number> {
   const cutoff = new Date(now.getTime() - ENQUIRY_RETENTION_MS);
 

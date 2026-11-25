@@ -17,7 +17,10 @@ import {
   Testimonial,
   WebsiteSettings,
 } from '../../src/models/index.js';
-import { pruneEnquiries } from '../../src/services/submission.service.js';
+import {
+  pruneCompletedAppointments,
+  pruneEnquiries,
+} from '../../src/services/submission.service.js';
 
 let app: Express;
 let stop: () => Promise<void>;
@@ -507,5 +510,57 @@ describe('inbox date filtering integration', () => {
     expect(remaining.some((entry) => entry.name === 'Handled 54')).toBe(true);
     expect(remaining.some((entry) => entry.name === 'Old unread')).toBe(true);
     expect(remaining.some((entry) => entry.name === 'Second unread')).toBe(true);
+  });
+
+  it('removes completed appointments after three days but keeps open ones', async () => {
+    const now = Date.now();
+
+    await Appointment.collection.insertMany([
+      {
+        bookingRef: 'BM-OLD-COMPLETED',
+        fullName: 'Completed old',
+        phone: '90000000001',
+        preferredDate: '2026-11-01',
+        preferredTime: '10:00',
+        status: 'completed',
+        consentAccepted: true,
+        statusHistory: [],
+        createdAt: new Date(now - 5 * 24 * 60 * 60 * 1000),
+        updatedAt: new Date(now - 4 * 24 * 60 * 60 * 1000),
+      },
+      {
+        bookingRef: 'BM-NEW-COMPLETED',
+        fullName: 'Completed recent',
+        phone: '90000000002',
+        preferredDate: '2026-11-25',
+        preferredTime: '10:00',
+        status: 'completed',
+        consentAccepted: true,
+        statusHistory: [],
+        createdAt: new Date(now - 60 * 1000),
+        updatedAt: new Date(now - 60 * 1000),
+      },
+      {
+        bookingRef: 'BM-OLD-CONFIRMED',
+        fullName: 'Confirmed old',
+        phone: '90000000003',
+        preferredDate: '2026-11-01',
+        preferredTime: '11:00',
+        status: 'confirmed',
+        consentAccepted: true,
+        statusHistory: [],
+        createdAt: new Date(now - 5 * 24 * 60 * 60 * 1000),
+        updatedAt: new Date(now - 4 * 24 * 60 * 60 * 1000),
+      },
+    ]);
+
+    const removed = await pruneCompletedAppointments();
+    const remaining = await Appointment.find({}).lean<Array<{ bookingRef: string }>>();
+
+    expect(removed).toBe(1);
+    expect(remaining).toHaveLength(2);
+    expect(remaining.some((entry) => entry.bookingRef === 'BM-OLD-COMPLETED')).toBe(false);
+    expect(remaining.some((entry) => entry.bookingRef === 'BM-NEW-COMPLETED')).toBe(true);
+    expect(remaining.some((entry) => entry.bookingRef === 'BM-OLD-CONFIRMED')).toBe(true);
   });
 });

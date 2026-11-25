@@ -21,6 +21,7 @@ export type AppointmentDocument = {
   consentAccepted: boolean;
   ipHash: string | null;
   userAgent: string | null;
+  purgeAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -117,6 +118,8 @@ const appointmentSchema = new Schema(
     },
     ipHash: { type: String, trim: true, maxlength: 64, default: null },
     userAgent: { type: String, trim: true, maxlength: 400, default: null },
+    // Set when completed; the TTL index removes it after three days.
+    purgeAt: { type: Date, default: null },
   },
   { timestamps: true, minimize: false, toJSON: { virtuals: true, versionKey: false } },
 );
@@ -194,6 +197,7 @@ const contactSubmissionSchema = new Schema(
 appointmentSchema.index({ status: 1, preferredDate: 1 });
 appointmentSchema.index({ createdAt: -1 });
 appointmentSchema.index({ phone: 1, createdAt: -1 });
+appointmentSchema.index({ purgeAt: 1 }, { expireAfterSeconds: 0 });
 enquirySchema.index({ status: 1, createdAt: -1 });
 enquirySchema.index({ purgeAt: 1 }, { expireAfterSeconds: 0 });
 contactSubmissionSchema.index({ status: 1, createdAt: -1 });
