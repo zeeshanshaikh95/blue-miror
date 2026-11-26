@@ -212,7 +212,7 @@ function socialImage(value) {
   if (url.includes('res.cloudinary.com') && url.includes('/image/upload/')) {
     return url.replace(
       '/image/upload/',
-      '/image/upload/c_fill,w_1200,h_630,q_auto,f_auto/',
+      '/image/upload/c_fill,w_1200,h_630,q_auto:eco,f_auto/',
     );
   }
   return url;
@@ -312,7 +312,7 @@ function applyMetadata(
 ) {
   const meta = [
     `    <link rel="canonical" href="${escapeHtml(canonical)}" />`,
-    `    <link rel="alternate" hreflang="en-IN" href="${escapeHtml(canonical)}" />`,
+    `    <meta name="description" content="${escapeHtml(description)}" />`,
     `    <meta property="og:type" content="website" />`,
     `    <meta property="og:site_name" content="Blue Miror" />`,
     `    <meta property="og:title" content="${escapeHtml(title)}" />`,
@@ -603,12 +603,12 @@ function routeSchema(route) {
 
 function fallbackHtml(route) {
   const nav = [
-    ['About', '/about'],
-    ['Treatments', '/treatments'],
-    ['Products', '/products'],
-    ['Gallery', '/gallery'],
-    ['Contact', '/contact'],
-    ['FAQs', '/faqs'],
+    ['About', '/about/'],
+    ['Treatments', '/treatments/'],
+    ['Products', '/products/'],
+    ['Gallery', '/gallery/'],
+    ['Contact', '/contact/'],
+    ['FAQs', '/faqs/'],
   ]
     .map(([label, href]) => `<a href="${href}">${label}</a>`)
     .join('');
@@ -624,13 +624,49 @@ function fallbackHtml(route) {
           }</p>`
         : '';
 
+  const serviceList =
+    route.path === '/' || route.path === '/treatments'
+      ? `<h2>Treatments and prices at Blue Miror</h2><ul>${services
+          .map(
+            (service) =>
+              `<li><a href="/treatments/${service.slug}/">${escapeHtml(service.name)}</a>${
+                service.price ? ` — ${escapeHtml(service.price)}` : ''
+              }</li>`,
+          )
+          .join('')}</ul>`
+      : '';
+
+  const productList =
+    route.path === '/' || route.path === '/products'
+      ? `<h2>Professional products used in the salon</h2><ul>${(productsData?.items ?? [])
+          .map(
+            (product) =>
+              `<li><a href="/products/${product.slug}/">${escapeHtml(product.name)}</a>${
+                product.brand ? ` — ${escapeHtml(product.brand)}` : ''
+              }</li>`,
+          )
+          .join('')}</ul>`
+      : '';
+
+  const faqList =
+    route.path === '/faqs' && (faqsData?.items ?? []).length > 0
+      ? `<h2>Frequently asked questions</h2><dl>${faqsData.items
+          .map(
+            (faq) =>
+              `<dt>${escapeHtml(faq.question)}</dt><dd>${escapeHtml(faq.answer)}</dd>`,
+          )
+          .join('')}</dl>`
+      : '';
+
   return `<div id="seo-fallback"><p class="brand">Blue Miror · Mira Road East</p><h1>${escapeHtml(
     route.h1 ?? route.title,
-  )}</h1><p>${escapeHtml(route.description)}</p>${extra}<p>${escapeHtml(
+  )}</h1><p>${escapeHtml(route.description)}</p>${extra}<h2>A unisex salon and aesthetic clinic in Mira Road East</h2><p>Blue Miror brings hair, skin, nails and makeup together under one roof in Mira Road East, Mumbai. The menu covers haircuts and styling, colouring, hair spa and smoothing, facials and advanced skin care, waxing and threading, manicures and pedicures, makeup, permanent makeup and aesthetic treatments. Every treatment page explains what is involved, who it suits and the published price.</p><p>Appointments are confirmed personally by the clinic. Send the treatment you have in mind and a preferred date or time on WhatsApp; a request is not a confirmed appointment until the team replies. Professional products used in the salon include L’Oréal, Moroccan, Plex, Silk Protein, Perfect Touch, Shills Professional and Venalisa.</p>${serviceList}<h2>Visit Blue Miror</h2><p>${escapeHtml(
     addressText,
   )}<br>${escapeHtml(phone)} · ${escapeHtml(
     hoursSummary,
-  )}</p><nav>${nav}</nav><p><a href="/book">Book an appointment on WhatsApp</a></p></div>`;
+  )}</p><h2>Book an appointment</h2><p>Message the clinic on WhatsApp or use the booking page. The salon is open ${escapeHtml(
+    hoursSummary,
+  )} and every appointment is reviewed before confirmation.</p>${productList}${faqList}<nav>${nav}</nav><p><a href="/book/">Book an appointment on WhatsApp</a></p></div>`;
 }
 
 for (const route of allRoutes) {

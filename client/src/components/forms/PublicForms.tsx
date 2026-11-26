@@ -376,7 +376,7 @@ export function BookingForm({
         error={errors.consentAccepted}
       >
         I agree to be contacted about this request and have read the{' '}
-        <a href="/privacy-policy" className="border-b border-brand-gold pb-0.5 text-brand-indigo">
+        <a href="/privacy-policy/" className="border-b border-brand-gold pb-0.5 text-brand-indigo">
           privacy notice
         </a>
         .
@@ -507,7 +507,7 @@ export function EnquiryForm({
         error={errors.consentAccepted}
       >
         I agree to be contacted about this question and have read the{' '}
-        <a href="/privacy-policy" className="border-b border-brand-gold pb-0.5 text-brand-indigo">
+        <a href="/privacy-policy/" className="border-b border-brand-gold pb-0.5 text-brand-indigo">
           privacy notice
         </a>
         .
@@ -630,7 +630,7 @@ export function ContactForm() {
         error={errors.consentAccepted}
       >
         I agree to be contacted and have read the{' '}
-        <a href="/privacy-policy" className="border-b border-brand-gold pb-0.5 text-brand-indigo">
+        <a href="/privacy-policy/" className="border-b border-brand-gold pb-0.5 text-brand-indigo">
           privacy notice
         </a>
         .

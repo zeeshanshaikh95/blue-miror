@@ -10,27 +10,27 @@ import { Container } from '../ui/Container';
 import { Eyebrow } from '../ui/Eyebrow';
 
 const exploreLinks = [
-  { label: 'About', to: '/about' },
-  { label: 'Treatments', to: '/treatments' },
-  { label: 'Products', to: '/products' },
-  { label: 'Gallery', to: '/gallery' },
-  { label: 'Team', to: '/team' },
+  { label: 'About', to: '/about/' },
+  { label: 'Treatments', to: '/treatments/' },
+  { label: 'Products', to: '/products/' },
+  { label: 'Gallery', to: '/gallery/' },
+  { label: 'Team', to: '/team/' },
   // Staff entrance. The link only opens the sign-in screen; every admin route
   // and API call is still guarded server-side.
   { label: 'Admin', to: '/admin/login' },
 ];
 
 const informationLinks = [
-  { label: 'Testimonials', to: '/testimonials' },
-  { label: 'FAQs', to: '/faqs' },
-  { label: 'Contact', to: '/contact' },
-  { label: 'Book a consultation', to: '/book' },
+  { label: 'Testimonials', to: '/testimonials/' },
+  { label: 'FAQs', to: '/faqs/' },
+  { label: 'Contact', to: '/contact/' },
+  { label: 'Book a consultation', to: '/book/' },
 ];
 
 const legalLinks = [
-  { label: 'Privacy policy', to: '/privacy-policy' },
-  { label: 'Terms', to: '/terms' },
-  { label: 'Medical disclaimer', to: '/medical-disclaimer' },
+  { label: 'Privacy policy', to: '/privacy-policy/' },
+  { label: 'Terms', to: '/terms/' },
+  { label: 'Medical disclaimer', to: '/medical-disclaimer/' },
 ];
 
 export function Footer() {

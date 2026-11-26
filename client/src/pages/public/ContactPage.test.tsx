@@ -30,7 +30,7 @@ describe('ContactPage', () => {
     expect(
       screen
         .getAllByRole('link', { name: /Request an appointment/i })
-        .some((link) => link.getAttribute('href') === '/book'),
+        .some((link) => link.getAttribute('href') === '/book/'),
     ).toBe(true);
     expect(document.querySelector('a[href^="https://wa.me/"]')).toBeNull();
   });

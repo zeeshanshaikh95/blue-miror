@@ -104,7 +104,7 @@ export function HomePage() {
         id: `gallery-${item.id}`,
         url: item.imageUrl as string,
         title: item.title,
-        to: '/gallery',
+        to: '/gallery/',
       }))
       .filter((item) => {
         if (seen.has(item.url)) return false;
@@ -167,7 +167,7 @@ export function HomePage() {
                 <BookingLink variant="light" />
               )}
               <ButtonLink
-                to="/treatments"
+                to="/treatments/"
                 variant="secondary"
                 className="border-brand-ivory/40 text-brand-ivory hover:border-brand-ivory hover:bg-brand-ivory/10"
               >
@@ -289,11 +289,11 @@ export function HomePage() {
             </dl>
 
             <div className="mt-7 flex flex-wrap items-center gap-4">
-              <ButtonLink to="/about" variant="secondary">
+              <ButtonLink to="/about/" variant="secondary">
                 Our story
               </ButtonLink>
               <Link
-                to="/team"
+                to="/team/"
                 className="inline-flex items-center gap-2 text-[0.67rem] font-medium tracking-[0.18em] text-brand-indigo uppercase transition-colors hover:text-brand-gold-deep"
               >
                 Meet the team
@@ -319,7 +319,7 @@ export function HomePage() {
                 intro="A short edit from the full menu — the looks, colours and care rituals our chairs are known for."
               />
               <Link
-                to="/treatments"
+                to="/treatments/"
                 className="inline-flex shrink-0 items-center gap-2 border-b border-brand-gold pb-1 text-[0.67rem] font-medium tracking-[0.18em] text-brand-indigo uppercase transition-colors hover:text-brand-gold-deep"
               >
                 View all treatments
@@ -330,7 +330,7 @@ export function HomePage() {
             {categories.length > 0 ? (
               <div className="scrollbar-none mt-8 flex gap-2 overflow-x-auto pb-2">
                 <Link
-                  to="/treatments"
+                  to="/treatments/"
                   className="shrink-0 rounded-full bg-brand-indigo px-4 py-2 text-[0.6rem] font-medium tracking-[0.14em] text-brand-ivory uppercase"
                 >
                   All
@@ -338,7 +338,7 @@ export function HomePage() {
                 {categories.map((category) => (
                   <Link
                     key={category.slug}
-                    to={`/treatments?category=${encodeURIComponent(category.slug)}`}
+                    to={`/treatments/?category=${encodeURIComponent(category.slug)}`}
                     className="shrink-0 rounded-full border border-brand-line bg-brand-ivory px-4 py-2 text-[0.6rem] font-medium tracking-[0.14em] text-brand-muted uppercase transition-colors hover:border-brand-gold hover:text-brand-indigo"
                   >
                     {category.name}
@@ -424,7 +424,7 @@ export function HomePage() {
                 {categories.map((category) => (
                   <li key={category.slug}>
                     <Link
-                      to={`/treatments?category=${encodeURIComponent(category.slug)}`}
+                      to={`/treatments/?category=${encodeURIComponent(category.slug)}`}
                       className="group flex items-center justify-between gap-4 border-b border-brand-line py-3.5 transition-colors hover:border-brand-gold"
                     >
                       <span className="font-display text-xl leading-tight text-brand-indigo">
@@ -441,7 +441,7 @@ export function HomePage() {
                 ))}
               </ul>
 
-              <ButtonLink to="/treatments" className="mt-8">
+              <ButtonLink to="/treatments/" className="mt-8">
                 Browse the full menu
               </ButtonLink>
             </div>
@@ -474,7 +474,7 @@ export function HomePage() {
                 intro="Gel polish, cat-eye collections and professional care — the same products used on the salon floor."
               />
               <Link
-                to="/products"
+                to="/products/"
                 className="inline-flex shrink-0 items-center gap-2 border-b border-brand-gold/70 pb-1 text-[0.67rem] font-medium tracking-[0.18em] text-brand-ivory uppercase transition-colors hover:text-brand-gold"
               >
                 View all products
@@ -506,7 +506,7 @@ export function HomePage() {
                 intro="Real moments from the Blue Miror chairs, uploaded by the salon — no treatment stock imagery."
               />
               <Link
-                to="/gallery"
+                to="/gallery/"
                 className="inline-flex shrink-0 items-center gap-2 border-b border-brand-gold pb-1 text-[0.67rem] font-medium tracking-[0.18em] text-brand-indigo uppercase transition-colors hover:text-brand-gold-deep"
               >
                 View the gallery
@@ -572,7 +572,7 @@ export function HomePage() {
                 </h2>
               </div>
               <Link
-                to="/testimonials"
+                to="/testimonials/"
                 className="inline-flex shrink-0 items-center gap-2 border-b border-brand-gold pb-1 text-[0.67rem] font-medium tracking-[0.18em] text-brand-indigo uppercase transition-colors hover:text-brand-gold-deep"
               >
                 All stories

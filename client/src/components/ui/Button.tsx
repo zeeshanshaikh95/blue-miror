@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
+import { withTrailingSlash } from '@/utils/link';
+
 import { buttonClasses, type ButtonVariant } from './button-styles';
 
 type ButtonLinkProps = {
@@ -12,7 +14,7 @@ type ButtonLinkProps = {
 
 export function ButtonLink({ to, children, variant = 'primary', className }: ButtonLinkProps) {
   return (
-    <Link to={to} className={buttonClasses(variant, className)}>
+    <Link to={withTrailingSlash(to)} className={buttonClasses(variant, className)}>
       {children}
     </Link>
   );

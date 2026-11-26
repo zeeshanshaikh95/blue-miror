@@ -136,11 +136,11 @@ export function BookPage() {
                       Continue on WhatsApp
                     </ButtonAnchor>
                   ) : (
-                    <ButtonLink to="/treatments" variant="secondary">
+                    <ButtonLink to="/treatments/" variant="secondary">
                       Explore treatments
                     </ButtonLink>
                   )}
-                  <ButtonLink to="/contact" variant="secondary">
+                  <ButtonLink to="/contact/" variant="secondary">
                     Contact details
                   </ButtonLink>
                 </div>
@@ -153,7 +153,7 @@ export function BookPage() {
                   <div className="flex items-start justify-between gap-4">
                     <ContentBadge>Selected treatment</ContentBadge>
                     <ButtonLink
-                      to={`/treatments/${selectedService.slug}`}
+                      to={`/treatments/${selectedService.slug}/`}
                       variant="quiet"
                       className="min-h-0 px-0 py-0 text-[0.625rem]"
                     >
@@ -243,7 +243,7 @@ export function BookPage() {
           {serviceQuery.isError && serviceSlug ? (
             <p className="mt-8 text-sm text-brand-muted">
               The selected treatment could not be loaded.{' '}
-              <ButtonLink to="/treatments" variant="quiet" className="min-h-0 px-0 py-0">
+              <ButtonLink to="/treatments/" variant="quiet" className="min-h-0 px-0 py-0">
                 Browse the service menu
               </ButtonLink>
             </p>
@@ -287,7 +287,7 @@ export function BookPage() {
                       now. Existing requests remain with the clinic, and no appointment is confirmed
                       until the clinic says so.
                     </p>
-                    <ButtonLink to="/contact" variant="secondary">
+                    <ButtonLink to="/contact/" variant="secondary">
                       Contact the clinic
                     </ButtonLink>
                   </div>

@@ -44,7 +44,7 @@ export function MobileBookingBar() {
           </a>
         ) : (
           <Link
-            to="/book"
+            to="/book/"
             className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-brand-gold px-5 text-[0.65rem] font-medium tracking-[0.14em] text-brand-indigo-deep uppercase"
           >
             Book a consultation

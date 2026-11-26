@@ -43,7 +43,7 @@ export function Seo({ title, description, noindex = false, type = 'website' }: S
     settings?.homepage?.heroImageUrl ??
     null;
   const socialImage = configuredImage
-    ? cloudinaryImage(configuredImage, 'c_fill,w_1200,h_630,q_auto,f_auto')
+    ? cloudinaryImage(configuredImage, 'c_fill,w_1200,h_630,q_auto:eco,f_auto')
     : `${siteUrl}/brand/blue-miror-logo.png`;
   const imageUrl = /^https?:\/\//i.test(socialImage) ? socialImage : `${siteUrl}${socialImage}`;
 
@@ -54,7 +54,6 @@ export function Seo({ title, description, noindex = false, type = 'website' }: S
       <title>{pageTitle}</title>
       <meta name="description" content={pageDescription} />
       <link rel="canonical" href={canonicalUrl} />
-      <link rel="alternate" hrefLang="en-IN" href={canonicalUrl} />
       {shouldNoindex ? (
         <meta name="robots" content="noindex, nofollow" />
       ) : (

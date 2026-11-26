@@ -150,7 +150,7 @@ export function ContactPage() {
                     {settings?.whatsapp.cta.booking ?? 'Book on WhatsApp'}
                   </ButtonAnchor>
                 ) : (
-                  <ButtonLink to="/book" variant="secondary" className="w-full">
+                  <ButtonLink to="/book/" variant="secondary" className="w-full">
                     Request an appointment
                   </ButtonLink>
                 )}
@@ -269,7 +269,7 @@ export function ContactPage() {
               </p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <BookingLink />
-                <ButtonLink to="/book" variant="secondary">
+                <ButtonLink to="/book/" variant="secondary">
                   Request an appointment
                 </ButtonLink>
               </div>

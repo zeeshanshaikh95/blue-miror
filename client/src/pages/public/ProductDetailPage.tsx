@@ -43,7 +43,7 @@ export function ProductDetailPage() {
             <Breadcrumbs
               items={[
                 { label: 'Home', to: '/' },
-                { label: 'Products', to: '/products' },
+                { label: 'Products', to: '/products/' },
                 { label: 'Not found' },
               ]}
             />
@@ -53,7 +53,7 @@ export function ProductDetailPage() {
                   eyebrow="Product not found"
                   title="This product is not available"
                   action={
-                    <ButtonLink to="/products" variant="secondary">
+                    <ButtonLink to="/products/" variant="secondary">
                       View all products
                     </ButtonLink>
                   }
@@ -133,7 +133,7 @@ export function ProductDetailPage() {
           <Breadcrumbs
             items={[
               { label: 'Home', to: '/' },
-              { label: 'Products', to: '/products' },
+              { label: 'Products', to: '/products/' },
               { label: product.name },
             ]}
           />
@@ -217,7 +217,7 @@ export function ProductDetailPage() {
                   serviceName={product.name}
                   label="Enquire about this product"
                 />
-                <ButtonLink to="/products" variant="secondary">
+                <ButtonLink to="/products/" variant="secondary">
                   Back to products
                 </ButtonLink>
               </div>

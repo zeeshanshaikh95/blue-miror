@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { cn } from '@/utils/cn';
+import { withTrailingSlash } from '@/utils/link';
 
 import { BookingLink } from './BookingLink';
 import { BrandVisual } from './BrandVisual';
@@ -76,7 +77,7 @@ function HeroCta({ label, href }: { label: string; href: string }) {
   }
 
   return (
-    <Link to={href} className={classes}>
+    <Link to={withTrailingSlash(href)} className={classes}>
       {label}
     </Link>
   );
@@ -206,7 +207,7 @@ export function HeroSlider({
             <div className="mt-6 flex flex-col gap-3">
               {cta ? <HeroCta label={cta.label} href={cta.href} /> : <BookingLink variant="light" />}
               <Link
-                to="/treatments"
+                to="/treatments/"
                 className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-brand-ivory/35 px-7 py-3.5 text-[0.6875rem] font-medium tracking-[0.16em] text-brand-ivory uppercase transition-colors hover:border-brand-ivory hover:bg-brand-ivory/10"
               >
                 Explore the menu
@@ -311,7 +312,7 @@ export function HeroSlider({
             <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               {cta ? <HeroCta label={cta.label} href={cta.href} /> : <BookingLink variant="light" />}
               <Link
-                to="/treatments"
+                to="/treatments/"
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-brand-ivory/35 px-7 py-3.5 text-[0.6875rem] font-medium tracking-[0.16em] text-brand-ivory uppercase transition-colors hover:border-brand-ivory hover:bg-brand-ivory/10"
               >
                 Explore the menu

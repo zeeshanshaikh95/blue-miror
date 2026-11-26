@@ -96,7 +96,7 @@ export function AboutPage() {
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <BookingLink />
               <Link
-                to="/treatments"
+                to="/treatments/"
                 className="inline-flex items-center gap-2 text-[0.67rem] font-medium tracking-[0.18em] text-brand-indigo uppercase transition-colors hover:text-brand-gold-deep"
               >
                 See the menu
@@ -144,7 +144,7 @@ export function AboutPage() {
               the same face next time and we will remember what worked.
             </p>
             <Link
-              to="/team"
+              to="/team/"
               className="mt-7 inline-flex items-center gap-2 border-b border-brand-gold pb-1 text-[0.67rem] font-medium tracking-[0.18em] text-brand-indigo uppercase transition-colors hover:text-brand-gold-deep"
             >
               Meet the team
@@ -200,7 +200,7 @@ export function AboutPage() {
             </div>
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
               <BookingLink />
-              <ButtonLink to="/treatments" variant="secondary">
+              <ButtonLink to="/treatments/" variant="secondary">
                 Explore treatments
               </ButtonLink>
             </div>

@@ -11,12 +11,12 @@ import { BookingLink } from '../ui/BookingLink';
 import { Container } from '../ui/Container';
 
 const navigation = [
-  { label: 'About', to: '/about' },
-  { label: 'Treatments', to: '/treatments' },
-  { label: 'Products', to: '/products' },
-  { label: 'Gallery', to: '/gallery' },
-  { label: 'Team', to: '/team' },
-  { label: 'Contact', to: '/contact' },
+  { label: 'About', to: '/about/' },
+  { label: 'Treatments', to: '/treatments/' },
+  { label: 'Products', to: '/products/' },
+  { label: 'Gallery', to: '/gallery/' },
+  { label: 'Team', to: '/team/' },
+  { label: 'Contact', to: '/contact/' },
 ];
 
 export function Header() {

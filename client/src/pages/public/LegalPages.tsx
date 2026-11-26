@@ -70,7 +70,7 @@ function LegalPage({ title, intro, eyebrow, sections, children }: LegalPageProps
               Questions about this draft should be directed to the clinic’s legal reviewer.
             </p>
             <div className="mt-5">
-              <ButtonLink to="/contact" variant="secondary">
+              <ButtonLink to="/contact/" variant="secondary">
                 Contact page
               </ButtonLink>
             </div>

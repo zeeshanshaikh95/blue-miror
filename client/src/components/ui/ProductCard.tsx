@@ -12,7 +12,7 @@ type ProductCardProps = {
 export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
-      to={`/products/${product.slug}`}
+      to={`/products/${product.slug}/`}
       className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-brand-line bg-brand-porcelain transition-all duration-500 hover:-translate-y-1 hover:border-brand-gold/60 hover:shadow-[0_30px_60px_-34px_rgba(38,37,75,0.45)]"
     >
       <div className="relative overflow-hidden bg-brand-champagne">

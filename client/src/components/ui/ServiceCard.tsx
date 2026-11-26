@@ -13,7 +13,7 @@ type ServiceCardProps = {
 export function ServiceCard({ service }: ServiceCardProps) {
   return (
     <Link
-      to={`/treatments/${service.slug}`}
+      to={`/treatments/${service.slug}/`}
       className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-brand-line bg-brand-porcelain transition-all duration-500 hover:-translate-y-1 hover:border-brand-gold/60 hover:shadow-[0_30px_60px_-34px_rgba(38,37,75,0.4)]"
     >
       <div className="relative overflow-hidden">

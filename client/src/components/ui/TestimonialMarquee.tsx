@@ -31,7 +31,7 @@ export function TestimonialMarquee({ testimonials, showHeader = true }: Testimon
             Client stories
           </p>
           <Link
-            to="/testimonials"
+            to="/testimonials/"
             className="text-[0.6rem] font-medium tracking-[0.14em] text-brand-indigo uppercase underline decoration-brand-gold/60 underline-offset-4 transition-colors hover:text-brand-gold-deep"
           >
             All stories

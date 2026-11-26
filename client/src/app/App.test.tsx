@@ -43,7 +43,7 @@ describe('public routes', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /view all treatments/i })).toHaveAttribute(
       'href',
-      '/treatments',
+      '/treatments/',
     );
   });
 

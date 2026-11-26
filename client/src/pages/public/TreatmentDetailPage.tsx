@@ -66,7 +66,7 @@ export function TreatmentDetailPage() {
             <Breadcrumbs
               items={[
                 { label: 'Home', to: '/' },
-                { label: 'Treatments', to: '/treatments' },
+                { label: 'Treatments', to: '/treatments/' },
                 { label: 'Not found' },
               ]}
             />
@@ -76,7 +76,7 @@ export function TreatmentDetailPage() {
                   eyebrow="Treatment not found"
                   title="This treatment is not available"
                   action={
-                    <ButtonLink to="/treatments" variant="secondary">
+                    <ButtonLink to="/treatments/" variant="secondary">
                       View all treatments
                     </ButtonLink>
                   }
@@ -174,7 +174,7 @@ export function TreatmentDetailPage() {
           <Breadcrumbs
             items={[
               { label: 'Home', to: '/' },
-              { label: 'Treatments', to: '/treatments' },
+              { label: 'Treatments', to: '/treatments/' },
               { label: service.name },
             ]}
           />
@@ -403,7 +403,7 @@ export function TreatmentDetailPage() {
                     serviceSlug={service.slug}
                     className="w-full"
                   />
-                  <ButtonLink to="/contact" variant="secondary" className="w-full">
+                  <ButtonLink to="/contact/" variant="secondary" className="w-full">
                     Contact details
                   </ButtonLink>
                 </div>
@@ -433,7 +433,7 @@ export function TreatmentDetailPage() {
                     Related treatments.
                   </h2>
                 </div>
-                <ButtonLink to="/treatments" variant="secondary">
+                <ButtonLink to="/treatments/" variant="secondary">
                   View all treatments
                 </ButtonLink>
               </div>
@@ -443,7 +443,7 @@ export function TreatmentDetailPage() {
                 ))}
               </div>
               <div className="mt-8 sm:hidden">
-                <ButtonLink to="/treatments" variant="secondary" className="w-full">
+                <ButtonLink to="/treatments/" variant="secondary" className="w-full">
                   View all treatments
                   <ArrowRight aria-hidden="true" size={15} />
                 </ButtonLink>

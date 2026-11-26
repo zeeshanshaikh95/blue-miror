@@ -20,7 +20,7 @@ export function NotFoundPage() {
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <ButtonLink to="/">Return home</ButtonLink>
-            <ButtonLink to="/treatments" variant="secondary">
+            <ButtonLink to="/treatments/" variant="secondary">
               Explore treatments
             </ButtonLink>
           </div>
